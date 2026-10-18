@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "502701571624",
+    "project_id": "dafmoney",
+    "storage_bucket": "dafmoney.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:502701571624:android:e0bb10fbdaa7d754f8ff1d",
+        "android_client_info": {
+          "package_name": "com.example.keuangan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvn2Wlk1N5Sm9LQ2GI5O5nqo2kFDC0fL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
