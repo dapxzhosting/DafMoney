@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class MainShell extends StatelessWidget {
+import '../../features/categories/presentation/providers/category_providers.dart';
+
+class MainShell extends ConsumerWidget {
   const MainShell({super.key, required this.shell});
 
   final StatefulNavigationShell shell;
@@ -35,7 +38,10 @@ class MainShell extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Memicu pengisian kategori bawaan untuk pengguna baru.
+    ref.watch(categorySeedProvider);
+
     return Scaffold(
       body: shell,
       bottomNavigationBar: NavigationBar(

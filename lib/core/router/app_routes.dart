@@ -11,6 +11,10 @@ abstract class AppRoutes {
   static const reports = '/reports';
   static const settings = '/settings';
 
+  // Halaman penuh (di luar bottom navigation)
+  static const transactionForm = '/transaction-form';
+  static const categories = '/categories';
+
   /// Halaman yang hanya boleh diakses saat belum login.
   static const authRoutes = {login, register, forgotPassword};
 }

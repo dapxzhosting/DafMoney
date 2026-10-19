@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/firebase_providers.dart';
+import '../../../core/router/app_routes.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 
@@ -87,6 +89,17 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ],
               ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            child: ListTile(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              leading: const Icon(Icons.category_rounded),
+              title: const Text('Kelola kategori'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => context.push(AppRoutes.categories),
             ),
           ),
           const SizedBox(height: 24),

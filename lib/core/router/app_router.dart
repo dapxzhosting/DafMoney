@@ -3,6 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
+import '../../features/budgets/presentation/pages/budgets_page.dart';
+import '../../features/categories/presentation/pages/categories_page.dart';
+import '../../features/dashboard/presentation/dashboard_page.dart';
+import '../../features/reports/presentation/reports_page.dart';
+import '../../features/transactions/domain/money_transaction.dart';
+import '../../features/transactions/presentation/pages/transaction_form_page.dart';
+import '../../features/transactions/presentation/pages/transactions_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/verify_email_page.dart';
@@ -10,7 +17,6 @@ import '../../features/settings/presentation/settings_page.dart';
 import '../../features/splash/presentation/splash_page.dart';
 import '../providers/firebase_providers.dart';
 import '../widgets/main_shell.dart';
-import '../widgets/placeholder_page.dart';
 import 'app_routes.dart';
 
 /// Menjembatani Riverpod -> GoRouter: router di-refresh saat status auth berubah.
@@ -86,6 +92,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const VerifyEmailPage(),
       ),
 
+      // ---- Halaman penuh ----
+      GoRoute(
+        path: AppRoutes.transactionForm,
+        builder: (_, state) =>
+            TransactionFormPage(initial: state.extra as MoneyTransaction?),
+      ),
+      GoRoute(
+        path: AppRoutes.categories,
+        builder: (_, __) => const CategoriesPage(),
+      ),
+
       // ---- Aplikasi utama: bottom navigation dengan state per tab ----
       StatefulShellRoute.indexedStack(
         builder: (_, __, shell) => MainShell(shell: shell),
@@ -93,45 +110,25 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(routes: [
             GoRoute(
               path: AppRoutes.dashboard,
-              builder: (_, __) => const PlaceholderPage(
-                title: 'Beranda',
-                icon: Icons.space_dashboard_rounded,
-                note: 'Dashboard dibuat di Tahap 3',
-                showAppBar: false,
-              ),
+              builder: (_, __) => const DashboardPage(),
             ),
           ]),
           StatefulShellBranch(routes: [
             GoRoute(
               path: AppRoutes.transactions,
-              builder: (_, __) => const PlaceholderPage(
-                title: 'Transaksi',
-                icon: Icons.receipt_long_rounded,
-                note: 'Dibuat di Tahap 4',
-                showAppBar: false,
-              ),
+              builder: (_, __) => const TransactionsPage(),
             ),
           ]),
           StatefulShellBranch(routes: [
             GoRoute(
               path: AppRoutes.budgets,
-              builder: (_, __) => const PlaceholderPage(
-                title: 'Anggaran',
-                icon: Icons.account_balance_wallet_rounded,
-                note: 'Dibuat di Tahap 5',
-                showAppBar: false,
-              ),
+              builder: (_, __) => const BudgetsPage(),
             ),
           ]),
           StatefulShellBranch(routes: [
             GoRoute(
               path: AppRoutes.reports,
-              builder: (_, __) => const PlaceholderPage(
-                title: 'Laporan',
-                icon: Icons.insert_chart_rounded,
-                note: 'Dibuat di Tahap 6',
-                showAppBar: false,
-              ),
+              builder: (_, __) => const ReportsPage(),
             ),
           ]),
           StatefulShellBranch(routes: [
