@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/error/app_exception.dart';
 import '../../../core/models/entry_type.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../../core/providers/session_providers.dart';
@@ -48,6 +49,12 @@ class DashboardPage extends ConsumerWidget {
     final budgets = ref.watch(budgetProgressProvider);
     final user = ref.watch(authStateProvider).valueOrNull;
 
+    final allTxns = txAsync.valueOrNull;
+    final monthRange = DateRange.month(month);
+    final monthSummary = allTxns == null
+        ? const PeriodSummary(0, 0)
+        : summarize(allTxns.where((t) => monthRange.contains(t.date)).toList());
+
     final name = (user?.displayName?.trim().isNotEmpty ?? false)
         ? user!.displayName!.trim().split(' ').first
         : 'Pengguna';
@@ -72,6 +79,13 @@ class DashboardPage extends ConsumerWidget {
               const SizedBox(height: 18),
               const MonthSelector(),
               const SizedBox(height: 16),
+              _BalanceCard(
+                total: balance.valueOrNull?.total,
+                income: monthSummary.income,
+                expense: monthSummary.expense,
+                error: balance.hasError ? errorText(balance.error!) : null,
+              ),
+              const SizedBox(height: 16),
               AsyncView<List<MoneyTransaction>>(
                 value: txAsync,
                 onRetry: () => ref.invalidate(transactionsByRangeProvider),
@@ -79,7 +93,6 @@ class DashboardPage extends ConsumerWidget {
                   final range = DateRange.month(month);
                   final monthTxns =
                       all.where((t) => range.contains(t.date)).toList();
-                  final summary = summarize(monthTxns);
                   final slices =
                       buildSlices(byCategory(monthTxns, EntryType.expense), cats);
                   final trend = byMonth(
@@ -93,12 +106,6 @@ class DashboardPage extends ConsumerWidget {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      _BalanceCard(
-                        total: balance.valueOrNull?.total,
-                        income: summary.income,
-                        expense: summary.expense,
-                      ),
-                      const SizedBox(height: 16),
                       _SectionCard(
                         title: 'Pengeluaran per kategori',
                         child: slices.isEmpty
@@ -218,11 +225,13 @@ class _BalanceCard extends StatelessWidget {
     required this.total,
     required this.income,
     required this.expense,
+    this.error,
   });
 
   final int? total;
   final int income;
   final int expense;
+  final String? error;
 
   @override
   Widget build(BuildContext context) {
@@ -314,6 +323,15 @@ class _BalanceCard extends StatelessWidget {
                     letterSpacing: -0.5,
                   ),
                 ),
+              ),
+            ),
+          if (error != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(
+                'Saldo gagal dimuat: $error',
+                style: tt.labelSmall
+                    ?.copyWith(color: Colors.white.withValues(alpha: 0.9)),
               ),
             ),
           const SizedBox(height: 18),
