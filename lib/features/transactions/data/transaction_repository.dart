@@ -80,6 +80,11 @@ class TransactionRepository {
 
   Future<void> delete(String uid, String id) => _col(uid).doc(id).delete();
 
+  Future<List<MoneyTransaction>> fetchAll(String uid) async {
+    final snap = await _col(uid).get();
+    return snap.docs.map(_fromDoc).toList();
+  }
+
   /// Total pemasukan & pengeluaran sepanjang waktu, diperbarui realtime.
   /// Dihitung di klien agar tidak membutuhkan index Firestore.
   Stream<Balance> watchTotals(String uid) {

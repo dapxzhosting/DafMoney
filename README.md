@@ -1,4 +1,4 @@
-# DafMoney - Tahap 1-6
+# DafMoney - Tahap 1-7
 
 Tahap 1-2: fondasi + autentikasi. Tahap 3-6: dashboard, transaksi, kategori, anggaran, laporan.
 Tidak ada dependensi baru dibanding Tahap 2.
@@ -27,3 +27,8 @@ Tidak perlu membuat index Firestore.
 - [ ] Buat anggaran -> progres naik saat menambah pengeluaran kategori itu
 - [ ] Laporan: ganti periode (termasuk Kustom), toggle rincian, salin CSV
 - [ ] Ganti tema terang/gelap di Pengaturan
+
+## Tahap 7 - Pengaturan
+Profil (ubah nama), saldo awal, kelola kategori, tema, ubah kata sandi, salin semua transaksi (CSV),
+hapus semua transaksi, keluar, hapus akun, tentang aplikasi.
+WAJIB publish ulang firestore.rules (ada perubahan untuk saldo awal dan hapus akun).

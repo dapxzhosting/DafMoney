@@ -1,7 +1,10 @@
+import '../../../core/error/app_exception.dart';
+
 /// Error yang sudah diterjemahkan ke pesan yang ramah untuk pengguna.
-class AuthFailure implements Exception {
+class AuthFailure implements AppException {
   const AuthFailure(this.message);
 
+  @override
   final String message;
 
   factory AuthFailure.fromCode(String code) {
@@ -27,6 +30,9 @@ class AuthFailure implements Exception {
       case 'operation-not-allowed':
         return const AuthFailure(
             'Login Email/Password belum diaktifkan di Firebase Console.');
+      case 'requires-recent-login':
+        return const AuthFailure(
+            'Demi keamanan, keluar lalu masuk lagi, kemudian ulangi.');
       case 'permission-denied':
         return const AuthFailure('Akses ditolak oleh aturan keamanan.');
       default:

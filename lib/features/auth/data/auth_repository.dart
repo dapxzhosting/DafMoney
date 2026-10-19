@@ -88,6 +88,47 @@ class AuthRepository {
     return _guard(() => _auth.sendPasswordResetEmail(email: email.trim()));
   }
 
+  Future<void> updateDisplayName(String name) {
+    return _guard(() async {
+      final user = _auth.currentUser;
+      if (user == null) return;
+      await user.updateDisplayName(name);
+      await user.reload();
+    });
+  }
+
+  Future<void> _reauth(String password) async {
+    final user = _auth.currentUser;
+    final email = user?.email;
+    if (user == null || email == null) {
+      throw const AuthFailure('Sesi berakhir. Masuk lagi.');
+    }
+    try {
+      await user.reauthenticateWithCredential(
+        EmailAuthProvider.credential(email: email, password: password),
+      );
+    } on FirebaseAuthException catch (e) {
+      const wrong = {'wrong-password', 'invalid-credential', 'invalid-login-credentials'};
+      if (wrong.contains(e.code)) {
+        throw const AuthFailure('Kata sandi saat ini salah.');
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> reauthenticate(String password) => _guard(() => _reauth(password));
+
+  Future<void> changePassword({required String current, required String next}) {
+    return _guard(() async {
+      await _reauth(current);
+      await _auth.currentUser!.updatePassword(next);
+    });
+  }
+
+  Future<void> deleteCurrentUser() {
+    return _guard(() async => _auth.currentUser?.delete());
+  }
+
   Future<void> signOut() => _guard(_auth.signOut);
 
   // ---- Profil di Firestore: users/{uid} ----

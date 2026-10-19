@@ -58,14 +58,19 @@ service cloud.firestore {
         && request.resource.data.email == request.auth.token.email
         && request.resource.data.createdAt == request.time;
 
-      // Hanya nama yang boleh diubah.
+      // Hanya nama dan saldo awal yang boleh diubah.
       allow update: if isOwner(uid)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'initialBalance'])
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
-        && request.resource.data.name.size() <= 60;
+        && request.resource.data.name.size() <= 60
+        && (!('initialBalance' in request.resource.data)
+            || (request.resource.data.initialBalance is int
+                && request.resource.data.initialBalance >= 0
+                && request.resource.data.initialBalance <= 100000000000));
 
-      allow delete: if false;
+      // Dihapus saat pengguna menghapus akunnya (setelah semua datanya dihapus).
+      allow delete: if isOwner(uid);
 
       // Kategori: tipe tidak boleh diubah setelah dibuat.
       match /categories/{id} {

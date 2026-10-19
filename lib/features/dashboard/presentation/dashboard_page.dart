@@ -22,6 +22,7 @@ import '../../budgets/presentation/providers/budget_providers.dart';
 import '../../categories/presentation/category_style.dart';
 import '../../categories/presentation/providers/category_providers.dart';
 import '../../reports/domain/report_calculator.dart';
+import '../../settings/presentation/providers/settings_providers.dart';
 import '../../transactions/domain/money_transaction.dart';
 import '../../transactions/presentation/providers/transaction_providers.dart';
 import '../../transactions/presentation/widgets/transaction_tile.dart';
@@ -55,9 +56,12 @@ class DashboardPage extends ConsumerWidget {
         ? const PeriodSummary(0, 0)
         : summarize(allTxns.where((t) => monthRange.contains(t.date)).toList());
 
-    final name = (user?.displayName?.trim().isNotEmpty ?? false)
-        ? user!.displayName!.trim().split(' ').first
-        : 'Pengguna';
+    final profile = ref.watch(userProfileProvider).valueOrNull;
+    final initialBalance = profile?.initialBalance ?? 0;
+    final fullName = (profile?.name.trim().isNotEmpty ?? false)
+        ? profile!.name.trim()
+        : (user?.displayName?.trim() ?? '');
+    final name = fullName.isNotEmpty ? fullName.split(' ').first : 'Pengguna';
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
@@ -80,7 +84,9 @@ class DashboardPage extends ConsumerWidget {
               const MonthSelector(),
               const SizedBox(height: 16),
               _BalanceCard(
-                total: balance.valueOrNull?.total,
+                total: balance.valueOrNull == null
+                    ? null
+                    : balance.valueOrNull!.total + initialBalance,
                 income: monthSummary.income,
                 expense: monthSummary.expense,
                 error: balance.hasError ? errorText(balance.error!) : null,
