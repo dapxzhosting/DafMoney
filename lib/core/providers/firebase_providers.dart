@@ -9,9 +9,13 @@ final firestoreProvider =
     Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);
 
 /// Stream status login / perubahan user. null = belum login.
-final authStateProvider = StreamProvider<User?>(
-  (ref) => ref.watch(firebaseAuthProvider).userChanges(),
-);
+/// Langsung memberi nilai awal dari currentUser supaya aplikasi tidak
+/// menunggu event pertama dari plugin.
+final authStateProvider = StreamProvider<User?>((ref) async* {
+  final auth = ref.watch(firebaseAuthProvider);
+  yield auth.currentUser;
+  yield* auth.userChanges();
+});
 
 /// Dinaikkan setiap kali status verifikasi email diperiksa ulang,
 /// supaya router mengevaluasi ulang redirect.

@@ -1,0 +1,14 @@
+PERBAIKAN RILIS - DafMoney
+
+Letakkan file di proyek (folder keuangan), timpa yang lama:
+  android/gradle.properties
+  android/app/build.gradle.kts
+  lib/main.dart
+  lib/core/providers/firebase_providers.dart
+  lib/features/splash/presentation/splash_page.dart
+
+Lalu:
+  flutter clean
+  flutter pub get
+  flutter build apk --release
+  (pasang build\app\outputs\flutter-apk\app-release.apk ke HP)
