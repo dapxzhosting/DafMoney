@@ -68,7 +68,6 @@ class SettingsActions {
           throw AppException('Gagal menghapus akun: $e');
         }
       });
-      });
 }
 
 final settingsActionsProvider =
