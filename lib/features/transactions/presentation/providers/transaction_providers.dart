@@ -19,14 +19,12 @@ final transactionsByRangeProvider = StreamProvider.autoDispose
   return ref.watch(transactionRepositoryProvider).watchRange(uid, range);
 });
 
-/// Transaksi pada bulan yang sedang dipilih.
 final monthTransactionsProvider =
     Provider.autoDispose<AsyncValue<List<MoneyTransaction>>>((ref) {
   final month = ref.watch(selectedMonthProvider);
   return ref.watch(transactionsByRangeProvider(DateRange.month(month)));
 });
 
-/// Saldo total (semua waktu), realtime.
 final balanceProvider = StreamProvider.autoDispose<Balance>((ref) {
   final uid = ref.watch(uidProvider);
   if (uid == null) return Stream.value(Balance.zero);

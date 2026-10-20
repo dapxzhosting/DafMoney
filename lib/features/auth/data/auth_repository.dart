@@ -15,7 +15,6 @@ class AuthRepository {
     } on AuthFailure {
       rethrow;
     } on FirebaseException catch (e) {
-      // FirebaseAuthException juga turunan FirebaseException.
       throw AuthFailure.fromCode(e.code);
     } catch (_) {
       throw const AuthFailure('Terjadi kesalahan. Coba lagi.');
@@ -46,12 +45,10 @@ class AuthRepository {
       final user = cred.user!;
       final cleanName = name.trim();
 
-      // 1) Kirim email verifikasi PERTAMA, sebelum urusan Firestore.
       try {
         await user.sendEmailVerification();
       } catch (_) {}
 
-      // 2) Profil best-effort dengan batas waktu, supaya tidak menggantung.
       try {
         await user.updateDisplayName(cleanName);
         await _createProfile(user, cleanName)
@@ -68,8 +65,6 @@ class AuthRepository {
     });
   }
 
-  /// Memuat ulang user dari server. Jika sudah terverifikasi, token ID juga
-  /// di-refresh supaya aturan Firestore (email_verified) langsung berlaku.
   Future<bool> refreshVerification() {
     return _guard(() async {
       final user = _auth.currentUser;
@@ -131,8 +126,6 @@ class AuthRepository {
 
   Future<void> signOut() => _guard(_auth.signOut);
 
-  // ---- Profil di Firestore: users/{uid} ----
-
   Future<void> _createProfile(User user, String name) {
     return _db.collection('users').doc(user.uid).set({
       'name': name,
@@ -149,8 +142,6 @@ class AuthRepository {
         final fallback = (user.email ?? 'Pengguna').split('@').first;
         await _createProfile(user, user.displayName ?? fallback);
       }
-    } catch (_) {
-      // Best-effort: jangan menggagalkan login.
-    }
+    } catch (_) {}
   }
 }

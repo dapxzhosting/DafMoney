@@ -32,7 +32,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Future<void> _submit() async {
     if (!_form.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
-    // Berhasil -> router otomatis memindahkan halaman lewat redirect.
     await ref
         .read(authControllerProvider.notifier)
         .signIn(_email.text, _password.text);

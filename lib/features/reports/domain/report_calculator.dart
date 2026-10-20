@@ -13,7 +13,6 @@ class PeriodSummary {
 
   int get net => income - expense;
 
-  /// Rasio tabungan terhadap pemasukan (0..1, bisa negatif).
   double get savingsRate => income <= 0 ? 0 : net / income;
 }
 

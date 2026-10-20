@@ -11,8 +11,6 @@ class Budget extends Equatable {
   final String id;
   final String categoryId;
   final int amount;
-
-  /// Format "2026-10".
   final String month;
 
   @override

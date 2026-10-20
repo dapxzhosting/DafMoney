@@ -43,7 +43,6 @@ class SettingsRepository {
   Future<void> deleteAllTransactions(String uid) =>
       _deleteCollection(uid, 'transactions');
 
-  /// Menghapus semua data pengguna, termasuk dokumen profil.
   Future<void> deleteAllData(String uid) async {
     for (final name in const ['transactions', 'budgets', 'categories']) {
       await _deleteCollection(uid, name);

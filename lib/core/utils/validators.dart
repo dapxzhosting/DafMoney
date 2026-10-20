@@ -16,13 +16,11 @@ abstract class Validators {
     return null;
   }
 
-  /// Untuk login: cukup tidak kosong.
   static String? passwordRequired(String? v) {
     if (v == null || v.isEmpty) return 'Kata sandi wajib diisi';
     return null;
   }
 
-  /// Untuk daftar: minimal 8 karakter, ada huruf dan angka.
   static String? newPassword(String? v) {
     if (v == null || v.isEmpty) return 'Kata sandi wajib diisi';
     if (v.length < 8) return 'Minimal 8 karakter';

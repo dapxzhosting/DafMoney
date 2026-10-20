@@ -21,7 +21,6 @@ final monthBudgetsProvider =
   return ref.watch(budgetRepositoryProvider).watchMonth(uid, monthKey(month));
 });
 
-/// Anggaran bulan terpilih + pengeluaran aktual per kategori.
 final budgetProgressProvider =
     Provider.autoDispose<AsyncValue<List<BudgetProgress>>>((ref) {
   final budgets = ref.watch(monthBudgetsProvider);

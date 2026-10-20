@@ -36,7 +36,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   Future<void> _submit() async {
     if (!_form.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
-    // Berhasil -> user belum terverifikasi, router mengarahkan ke /verify-email.
     await ref
         .read(authControllerProvider.notifier)
         .register(_name.text, _email.text, _password.text);

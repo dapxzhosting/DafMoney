@@ -19,7 +19,6 @@ import '../providers/firebase_providers.dart';
 import '../widgets/main_shell.dart';
 import 'app_routes.dart';
 
-/// Menjembatani Riverpod -> GoRouter: router di-refresh saat status auth berubah.
 class _RouterRefresh extends ChangeNotifier {
   _RouterRefresh(this._ref) {
     _ref.listen(authStateProvider, (_, __) => notifyListeners());
@@ -32,25 +31,20 @@ class _RouterRefresh extends ChangeNotifier {
     final loc = state.matchedLocation;
     final auth = _ref.read(authStateProvider);
 
-    // Firebase belum menjawab -> tahan di splash.
     if (auth.isLoading && !auth.hasValue) {
       return loc == AppRoutes.splash ? null : AppRoutes.splash;
     }
 
-    // Baca langsung dari currentUser agar emailVerified selalu terbaru.
     final user = _ref.read(firebaseAuthProvider).currentUser;
 
-    // 1) Belum login
     if (user == null) {
       return AppRoutes.authRoutes.contains(loc) ? null : AppRoutes.login;
     }
 
-    // 2) Sudah login tapi email belum diverifikasi
     if (!user.emailVerified) {
       return loc == AppRoutes.verifyEmail ? null : AppRoutes.verifyEmail;
     }
 
-    // 3) Login + terverifikasi: jangan biarkan di halaman auth / splash
     if (loc == AppRoutes.splash ||
         loc == AppRoutes.verifyEmail ||
         AppRoutes.authRoutes.contains(loc)) {
@@ -73,8 +67,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.splash,
         builder: (_, __) => const SplashPage(),
       ),
-
-      // ---- Auth ----
       GoRoute(
         path: AppRoutes.login,
         builder: (_, __) => const LoginPage(),
@@ -91,8 +83,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.verifyEmail,
         builder: (_, __) => const VerifyEmailPage(),
       ),
-
-      // ---- Halaman penuh ----
       GoRoute(
         path: AppRoutes.transactionForm,
         builder: (_, state) =>
@@ -102,8 +92,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.categories,
         builder: (_, __) => const CategoriesPage(),
       ),
-
-      // ---- Aplikasi utama: bottom navigation dengan state per tab ----
       StatefulShellRoute.indexedStack(
         builder: (_, __, shell) => MainShell(shell: shell),
         branches: [

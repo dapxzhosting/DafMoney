@@ -1,8 +1,0 @@
-Ekstrak zip ini di folder utama proyek (keuangan). Struktur sudah sama:
-  android/app/src/main/AndroidManifest.xml   (nama aplikasi -> DafMoney)
-  android/app/src/main/res/...               (ikon semua ukuran + ikon adaptif)
-Timpa file yang sama jika diminta. Lalu:
-  flutter clean
-  flutter pub get
-  flutter build apk --release --target-platform android-arm,android-arm64
-Hapus versi lama di HP, lalu pasang APK baru.

@@ -23,7 +23,6 @@ final categoryMapProvider = Provider<Map<String, Category>>((ref) {
   return {for (final c in list) c.id: c};
 });
 
-/// Mengisi kategori bawaan sekali untuk pengguna baru.
 final categorySeedProvider = FutureProvider<void>((ref) async {
   final uid = ref.watch(uidProvider);
   if (uid == null) return;

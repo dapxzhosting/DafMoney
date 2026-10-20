@@ -46,7 +46,6 @@ class BudgetRepository {
 
   Future<void> delete(String uid, String id) => _col(uid).doc(id).delete();
 
-  /// Menyalin anggaran dari bulan lain (yang belum ada di bulan tujuan).
   Future<void> copyMonth(String uid,
       {required String from, required String to}) async {
     final src = await _col(uid).where('month', isEqualTo: from).get();

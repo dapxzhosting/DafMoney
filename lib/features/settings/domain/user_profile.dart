@@ -7,7 +7,5 @@ class UserProfile {
 
   final String name;
   final String email;
-
-  /// Saldo yang dimiliki sebelum mulai mencatat; ditambahkan ke total saldo.
   final int initialBalance;
 }

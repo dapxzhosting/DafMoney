@@ -12,8 +12,6 @@ final authRepositoryProvider = Provider<AuthRepository>(
   ),
 );
 
-/// State = status operasi terakhir (loading / error). Navigasi ditangani
-/// router lewat redirect, jadi controller tidak perlu memanggil context.go.
 class AuthController extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
@@ -39,7 +37,6 @@ class AuthController extends AsyncNotifier<void> {
 
   Future<void> signOut() => _run(_repo.signOut);
 
-  /// Pengecekan diam-diam (polling) — tidak mengubah state loading/error.
   Future<bool> checkVerified() async {
     try {
       final ok = await _repo.refreshVerification();

@@ -25,7 +25,6 @@ class TransactionRepository {
     );
   }
 
-  /// Transaksi dalam rentang [start, end), terbaru lebih dulu.
   Stream<List<MoneyTransaction>> watchRange(String uid, DateRange range) {
     return _col(uid)
         .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(range.start))
@@ -85,8 +84,6 @@ class TransactionRepository {
     return snap.docs.map(_fromDoc).toList();
   }
 
-  /// Total pemasukan & pengeluaran sepanjang waktu, diperbarui realtime.
-  /// Dihitung di klien agar tidak membutuhkan index Firestore.
   Stream<Balance> watchTotals(String uid) {
     return _col(uid).snapshots().map((snap) {
       var inc = 0;

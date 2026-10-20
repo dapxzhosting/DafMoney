@@ -8,7 +8,6 @@ import '../../theme/app_colors.dart';
 import '../../utils/formatters.dart';
 import 'chart_legend.dart';
 
-/// Grafik garis harian pemasukan & pengeluaran (untuk rentang <= 31 hari).
 class TrendLineChart extends StatelessWidget {
   const TrendLineChart({super.key, required this.data});
 

@@ -49,7 +49,6 @@ class ReportFilterNotifier extends Notifier<ReportFilter> {
 
   void setPeriod(ReportPeriod p) => state = ReportFilter(p, state.custom);
 
-  /// [last] adalah hari terakhir yang ikut (inklusif).
   void setCustom(DateTime first, DateTime last) {
     state = ReportFilter(
       ReportPeriod.custom,

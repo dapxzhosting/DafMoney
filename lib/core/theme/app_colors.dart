@@ -7,7 +7,6 @@ abstract class AppColors {
   static const warning = Color(0xFFF59E0B);
 }
 
-/// Warna semantik keuangan yang ikut berubah mengikuti light/dark.
 @immutable
 class FinanceColors extends ThemeExtension<FinanceColors> {
   const FinanceColors({

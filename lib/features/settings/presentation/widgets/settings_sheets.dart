@@ -55,7 +55,6 @@ class _Frame extends StatelessWidget {
   }
 }
 
-// ---------------- Ubah nama ----------------
 class EditNameSheet extends ConsumerStatefulWidget {
   const EditNameSheet({super.key, required this.initial});
 
@@ -115,7 +114,6 @@ class _EditNameSheetState extends ConsumerState<EditNameSheet> {
   }
 }
 
-// ---------------- Saldo awal ----------------
 class InitialBalanceSheet extends ConsumerStatefulWidget {
   const InitialBalanceSheet({super.key, required this.current});
 
@@ -179,7 +177,6 @@ class _InitialBalanceSheetState extends ConsumerState<InitialBalanceSheet> {
   }
 }
 
-// ---------------- Ubah kata sandi ----------------
 class ChangePasswordSheet extends ConsumerStatefulWidget {
   const ChangePasswordSheet({super.key});
 
@@ -273,7 +270,6 @@ class _ChangePasswordSheetState extends ConsumerState<ChangePasswordSheet> {
   }
 }
 
-// ---------------- Hapus akun ----------------
 class DeleteAccountSheet extends ConsumerStatefulWidget {
   const DeleteAccountSheet({super.key});
 

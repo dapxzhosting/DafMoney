@@ -1,6 +1,5 @@
 import '../../../core/error/app_exception.dart';
 
-/// Error yang sudah diterjemahkan ke pesan yang ramah untuk pengguna.
 class AuthFailure implements AppException {
   const AuthFailure(this.message);
 

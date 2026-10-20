@@ -47,7 +47,6 @@ class SettingsPage extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 40),
         children: [
-          // ---- Profil ----
           Card(
             child: Padding(
               padding: const EdgeInsets.all(18),
@@ -104,8 +103,6 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 22),
-
-          // ---- Keuangan ----
           _Group(title: 'Keuangan', children: [
             _Tile(
               icon: Icons.account_balance_wallet_rounded,
@@ -121,8 +118,6 @@ class SettingsPage extends ConsumerWidget {
               onTap: () => context.push(AppRoutes.categories),
             ),
           ]),
-
-          // ---- Tampilan ----
           _Group(title: 'Tampilan', children: [
             Padding(
               padding: const EdgeInsets.all(16),
@@ -164,8 +159,6 @@ class SettingsPage extends ConsumerWidget {
               ),
             ),
           ]),
-
-          // ---- Keamanan ----
           _Group(title: 'Keamanan', children: [
             _Tile(
               icon: Icons.lock_reset_rounded,
@@ -174,8 +167,6 @@ class SettingsPage extends ConsumerWidget {
                   showSettingsSheet(context, const ChangePasswordSheet()),
             ),
           ]),
-
-          // ---- Data ----
           _Group(title: 'Data', children: [
             _Tile(
               icon: Icons.file_download_outlined,
@@ -204,8 +195,6 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
           ]),
-
-          // ---- Akun ----
           _Group(title: 'Akun', children: [
             _Tile(
               icon: Icons.logout_rounded,
@@ -232,8 +221,6 @@ class SettingsPage extends ConsumerWidget {
                   showSettingsSheet(context, const DeleteAccountSheet()),
             ),
           ]),
-
-          // ---- Tentang ----
           _Group(title: 'Tentang', children: [
             _Tile(
               icon: Icons.info_outline_rounded,

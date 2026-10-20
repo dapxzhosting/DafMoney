@@ -39,7 +39,6 @@ class MainShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Memicu pengisian kategori bawaan untuk pengguna baru.
     ref.watch(categorySeedProvider);
 
     return Scaffold(

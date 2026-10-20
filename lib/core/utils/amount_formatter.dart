@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 
-/// Memformat angka dengan pemisah ribuan titik: 1500000 -> 1.500.000
 class ThousandsFormatter extends TextInputFormatter {
   static String format(String raw) {
     var digits = raw.replaceAll(RegExp(r'[^0-9]'), '');

@@ -14,7 +14,6 @@ class CategorySlice {
   final int value;
 }
 
-/// Mengubah total per kategori menjadi irisan; sisanya digabung "Lainnya".
 List<CategorySlice> buildSlices(
   List<CategoryTotal> totals,
   Map<String, Category> cats, {

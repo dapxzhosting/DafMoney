@@ -29,13 +29,11 @@ Future<void> main() async {
         child: const DafMoneyApp(),
       ),
     );
-  } catch (e, st) {
-    debugPrint('Startup error: $e\n$st');
+  } catch (e) {
     runApp(_StartupErrorApp(message: '$e'));
   }
 }
 
-/// Ditampilkan jika inisialisasi gagal, agar tidak macet di logo tanpa penjelasan.
 class _StartupErrorApp extends StatelessWidget {
   const _StartupErrorApp({required this.message});
 

@@ -27,7 +27,6 @@ import '../../transactions/domain/money_transaction.dart';
 import '../../transactions/presentation/providers/transaction_providers.dart';
 import '../../transactions/presentation/widgets/transaction_tile.dart';
 
-/// 6 bulan berakhir di bulan terpilih (untuk grafik tren + ringkasan bulan).
 final dashboardRangeProvider = Provider.autoDispose<DateRange>((ref) {
   final m = ref.watch(selectedMonthProvider);
   return DateRange(DateTime(m.year, m.month - 5), DateTime(m.year, m.month + 1));

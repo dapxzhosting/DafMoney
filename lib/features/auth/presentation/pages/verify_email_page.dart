@@ -22,7 +22,7 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage>
   static const _pollEvery = 4;
 
   Timer? _timer;
-  int _cooldown = _cooldownSeconds; // email pertama baru saja dikirim
+  int _cooldown = _cooldownSeconds;
   int _ticks = 0;
   bool _checking = false;
 
@@ -47,7 +47,6 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Pengguna kembali dari aplikasi email.
     if (state == AppLifecycleState.resumed) _check(silent: true);
   }
 
@@ -63,7 +62,6 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage>
         error: true,
       );
     }
-    // Jika ok -> router otomatis pindah ke dashboard.
   }
 
   Future<void> _resend() async {

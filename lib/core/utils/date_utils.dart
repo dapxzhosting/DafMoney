@@ -8,7 +8,6 @@ bool isSameDay(DateTime a, DateTime b) =>
 String monthKey(DateTime d) =>
     '${d.year}-${d.month.toString().padLeft(2, '0')}';
 
-/// Rentang waktu [start, end) — end tidak termasuk.
 class DateRange extends Equatable {
   const DateRange(this.start, this.end);
 

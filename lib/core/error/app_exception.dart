@@ -31,7 +31,6 @@ String errorText(Object error) {
   return 'Terjadi kesalahan. Coba lagi.';
 }
 
-/// Menjalankan aksi dan mengembalikan pesan error (null jika sukses).
 Future<String?> runGuarded(Future<void> Function() action) async {
   try {
     await action();

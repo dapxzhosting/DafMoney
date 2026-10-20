@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../error/app_exception.dart';
 
-/// Menampilkan data bila ada (termasuk data lama saat reload), loading, atau error.
 class AsyncView<T> extends StatelessWidget {
   const AsyncView({
     super.key,

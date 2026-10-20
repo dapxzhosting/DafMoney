@@ -52,7 +52,6 @@ extension CategoryStyle on Category {
   Color get color => Color(colorValue);
 }
 
-/// Tampilan kategori yang aman walau kategorinya sudah terhapus.
 class CategoryLook {
   const CategoryLook(this.name, this.icon, this.color);
 
