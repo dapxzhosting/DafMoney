@@ -62,7 +62,12 @@ class SettingsActions {
         final uid = _uid;
         await _auth.reauthenticate(password);
         await _repo.deleteAllData(uid);
-        await _auth.deleteCurrentUser();
+        try {
+          await _auth.deleteCurrentUser();
+        } catch (e) {
+          throw AppException('Gagal menghapus akun: $e');
+        }
+      });
       });
 }
 

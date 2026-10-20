@@ -80,7 +80,8 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     setState(() => _saving = true);
 
     final actions = ref.read(transactionActionsProvider);
-    final amount = parseAmount(_amount.text)!;
+    final amount = parseAmount(_amount.text) ?? 0;
+    if (amount <= 0) return;
     final note = _note.text.trim();
     final err = _editing
         ? await actions.update(widget.initial!.id,
