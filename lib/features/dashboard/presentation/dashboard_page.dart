@@ -8,7 +8,7 @@ import '../../../core/models/entry_type.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../../core/providers/session_providers.dart';
 import '../../../core/router/app_routes.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/services/widget_service.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/async_view.dart';
@@ -61,6 +61,14 @@ class DashboardPage extends ConsumerWidget {
         ? profile!.name.trim()
         : (user?.displayName?.trim() ?? '');
     final name = fullName.isNotEmpty ? fullName.split(' ').first : 'Pengguna';
+
+    final totalBalance = (balance.valueOrNull?.total ?? 0) + initialBalance;
+    final budgetList = budgets.valueOrNull ?? const <BudgetProgress>[];
+    final remainingBudget = budgetList.fold<int>(0, (sum, b) => sum + (b.remaining > 0 ? b.remaining : 0));
+
+    if (balance.hasValue && budgets.hasValue) {
+      WidgetService.updateWidgetData(balance: totalBalance, remainingBudget: remainingBudget);
+    }
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
