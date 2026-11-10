@@ -1,8 +1,17 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/models/entry_type.dart';
 import '../../../core/utils/date_utils.dart';
 import '../domain/money_transaction.dart';
+
+Future<void> writeSafe(Future<void> Function() op) async {
+  try {
+    await op().timeout(const Duration(seconds: 6));
+  } on TimeoutException {
+    // Offline mode: Firestore will sync automatically when back online.
+  }
+}
 
 class TransactionRepository {
   TransactionRepository(this._db);
@@ -12,16 +21,28 @@ class TransactionRepository {
   CollectionReference<Map<String, dynamic>> _col(String uid) =>
       _db.collection('users').doc(uid).collection('transactions');
 
+  DateTime _parseDate(dynamic v) {
+    if (v is Timestamp) return v.toDate();
+    if (v is DateTime) return v;
+    if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
+    if (v is String) return DateTime.tryParse(v) ?? DateTime.now();
+    return DateTime.now();
+  }
+
   MoneyTransaction _fromDoc(QueryDocumentSnapshot<Map<String, dynamic>> d) {
     final m = d.data();
+    final w = m['walletId'];
+    final r = m['recurringId'];
     return MoneyTransaction(
       id: d.id,
       type: EntryType.parse(m['type'] as String?),
       amount: (m['amount'] as num?)?.toInt() ?? 0,
       categoryId: (m['categoryId'] as String?) ?? '',
       note: (m['note'] as String?) ?? '',
-      date: (m['date'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      createdAt: (m['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      date: _parseDate(m['date']),
+      createdAt: _parseDate(m['createdAt']),
+      walletId: (w is String && w.isNotEmpty) ? w : null,
+      recurringId: (r is String && r.isNotEmpty) ? r : null,
     );
   }
 
@@ -48,15 +69,19 @@ class TransactionRepository {
     required String categoryId,
     required String note,
     required DateTime date,
+    String? walletId,
+    String? recurringId,
   }) {
-    return _col(uid).add({
+    return writeSafe(() => _col(uid).add({
       'type': type.name,
       'amount': amount,
       'categoryId': categoryId,
       'note': note,
       'date': Timestamp.fromDate(dateOnly(date)),
       'createdAt': FieldValue.serverTimestamp(),
-    });
+      if (walletId != null) 'walletId': walletId,
+      if (recurringId != null) 'recurringId': recurringId,
+    }));
   }
 
   Future<void> update(
@@ -67,14 +92,18 @@ class TransactionRepository {
     required String categoryId,
     required String note,
     required DateTime date,
+    String? walletId,
+    String? recurringId,
   }) {
-    return _col(uid).doc(id).update({
+    return writeSafe(() => _col(uid).doc(id).update({
       'type': type.name,
       'amount': amount,
       'categoryId': categoryId,
       'note': note,
       'date': Timestamp.fromDate(dateOnly(date)),
-    });
+      if (walletId != null) 'walletId': walletId,
+      if (recurringId != null) 'recurringId': recurringId,
+    }));
   }
 
   Future<void> delete(String uid, String id) => _col(uid).doc(id).delete();

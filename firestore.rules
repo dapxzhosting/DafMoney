@@ -29,13 +29,15 @@ service cloud.firestore {
     }
 
     function validTransaction(d) {
-      return d.keys().hasOnly(['type', 'amount', 'categoryId', 'note', 'date', 'createdAt'])
+      return d.keys().hasOnly(['type', 'amount', 'categoryId', 'note', 'date', 'createdAt', 'walletId', 'recurringId'])
         && d.type in ['income', 'expense']
         && d.amount is int && d.amount > 0 && d.amount <= 100000000000
         && d.categoryId is string && d.categoryId.size() > 0 && d.categoryId.size() <= 60
         && d.note is string && d.note.size() <= 200
         && d.date is timestamp
-        && d.createdAt is timestamp;
+        && d.createdAt is timestamp
+        && (!('walletId' in d) || (d.walletId is string && d.walletId.size() <= 60))
+        && (!('recurringId' in d) || (d.recurringId is string && d.recurringId.size() <= 60));
     }
 
     function validBudget(d) {
