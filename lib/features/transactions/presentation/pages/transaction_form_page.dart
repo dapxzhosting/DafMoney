@@ -82,6 +82,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     final actions = ref.read(transactionActionsProvider);
     final amount = parseAmount(_amount.text) ?? 0;
     if (amount <= 0) return;
+    HapticFeedback.mediumImpact();
     final note = _note.text.trim();
     final err = _editing
         ? await actions.update(widget.initial!.id,

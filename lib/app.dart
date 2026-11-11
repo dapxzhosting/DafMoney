@@ -1,9 +1,11 @@
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/constants/app_constants.dart';
 import 'core/router/app_router.dart';
+import 'core/services/biometric_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/quick_actions_service.dart';
 import 'core/theme/app_theme.dart';
@@ -20,7 +22,8 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
+    Future.microtask(() async {
+      await BiometricService.authenticate();
       NotificationService.init();
       NotificationService.scheduleDailyReminder();
       final router = ref.read(routerProvider);
@@ -33,22 +36,30 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp> {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
 
-    return MaterialApp.router(
-      title: AppConstants.appName,
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: themeMode,
-      themeAnimationDuration: const Duration(milliseconds: 350),
-      themeAnimationCurve: Curves.easeInOut,
-      routerConfig: router,
-      locale: const Locale('id', 'ID'),
-      supportedLocales: const [Locale('id', 'ID'), Locale('en')],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        return MaterialApp.router(
+          title: AppConstants.appName,
+          debugShowCheckedModeBanner: false,
+          theme: lightDynamic != null
+              ? AppTheme.light.copyWith(colorScheme: lightDynamic)
+              : AppTheme.light,
+          darkTheme: darkDynamic != null
+              ? AppTheme.dark.copyWith(colorScheme: darkDynamic)
+              : AppTheme.dark,
+          themeMode: themeMode,
+          themeAnimationDuration: const Duration(milliseconds: 350),
+          themeAnimationCurve: Curves.easeInOut,
+          routerConfig: router,
+          locale: const Locale('id', 'ID'),
+          supportedLocales: const [Locale('id', 'ID'), Locale('en')],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+        );
+      },
     );
   }
 }
