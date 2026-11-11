@@ -48,8 +48,7 @@ class NotificationService {
       'Sudah mencatat pengeluaran Anda hari ini? Buka DafMoney sekarang.',
       tz.TZDateTime.from(scheduledDate, tz.local),
       details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,      uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );

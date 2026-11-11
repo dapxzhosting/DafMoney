@@ -23,9 +23,10 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp> {
   void initState() {
     super.initState();
     Future.microtask(() async {
-      await BiometricService.authenticate();
-      NotificationService.init();
-      NotificationService.scheduleDailyReminder();
+      try {
+        await NotificationService.init();
+        await NotificationService.scheduleDailyReminder();
+      } catch (_) {}
       final router = ref.read(routerProvider);
       QuickActionsService.init(router);
     });
