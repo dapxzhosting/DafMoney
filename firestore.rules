@@ -29,7 +29,7 @@ service cloud.firestore {
     }
 
     function validTransaction(d) {
-      return d.keys().hasOnly(['type', 'amount', 'categoryId', 'note', 'date', 'createdAt', 'walletId', 'recurringId'])
+      return d.keys().hasOnly(['type', 'amount', 'categoryId', 'note', 'date', 'createdAt', 'walletId', 'recurringId', 'hasReceipt'])
         && d.type in ['income', 'expense']
         && d.amount is int && d.amount > 0 && d.amount <= 100000000000
         && d.categoryId is string && d.categoryId.size() > 0 && d.categoryId.size() <= 60
@@ -37,7 +37,24 @@ service cloud.firestore {
         && d.date is timestamp
         && d.createdAt is timestamp
         && (!('walletId' in d) || (d.walletId is string && d.walletId.size() <= 60))
-        && (!('recurringId' in d) || (d.recurringId is string && d.recurringId.size() <= 60));
+        && (!('recurringId' in d) || (d.recurringId is string && d.recurringId.size() <= 60))
+        && (!('hasReceipt' in d) || d.hasReceipt is bool);
+    }
+
+    function validWallet(d) {
+      return d.keys().hasOnly(['name', 'icon', 'color', 'initialBalance', 'createdAt'])
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 40
+        && d.icon is string && d.icon.size() <= 30
+        && d.color is int
+        && d.initialBalance is int && d.initialBalance >= 0 && d.initialBalance <= 100000000000
+        && d.createdAt is timestamp;
+    }
+
+    // Foto struk (JPEG terkompresi) disimpan sebagai bytes, maksimal ~900 KB.
+    function validReceipt(d) {
+      return d.keys().hasOnly(['data', 'updatedAt'])
+        && d.data is bytes && d.data.size() > 0 && d.data.size() <= 900000
+        && d.updatedAt == request.time;
     }
 
     function validBudget(d) {
@@ -94,6 +111,23 @@ service cloud.firestore {
         allow update: if canUse(uid)
           && validTransaction(request.resource.data)
           && request.resource.data.createdAt == resource.data.createdAt;
+      }
+
+      match /wallets/{id} {
+        allow read, delete: if canUse(uid);
+        allow create: if canUse(uid)
+          && validWallet(request.resource.data)
+          && request.resource.data.createdAt == request.time;
+        allow update: if canUse(uid)
+          && validWallet(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt;
+      }
+
+      // Id dokumen struk = id transaksinya.
+      match /receipts/{id} {
+        allow read, delete: if canUse(uid);
+        allow create, update: if canUse(uid)
+          && validReceipt(request.resource.data);
       }
 
       // Id dokumen anggaran: "<yyyy-MM>_<categoryId>" (satu per kategori per bulan).

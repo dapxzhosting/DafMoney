@@ -13,6 +13,7 @@ class MoneyTransaction extends Equatable {
     required this.createdAt,
     this.walletId,
     this.recurringId,
+    this.hasReceipt = false,
   });
 
   final String id;
@@ -24,10 +25,22 @@ class MoneyTransaction extends Equatable {
   final DateTime createdAt;
   final String? walletId;
   final String? recurringId;
+  final bool hasReceipt;
 
   @override
   List<Object?> get props =>
-      [id, type, amount, categoryId, note, date, createdAt, walletId, recurringId];
+      [
+        id,
+        type,
+        amount,
+        categoryId,
+        note,
+        date,
+        createdAt,
+        walletId,
+        recurringId,
+        hasReceipt,
+      ];
 }
 
 class Balance {

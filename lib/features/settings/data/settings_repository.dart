@@ -40,11 +40,19 @@ class SettingsRepository {
     }
   }
 
-  Future<void> deleteAllTransactions(String uid) =>
-      _deleteCollection(uid, 'transactions');
+  Future<void> deleteAllTransactions(String uid) async {
+    await _deleteCollection(uid, 'transactions');
+    await _deleteCollection(uid, 'receipts');
+  }
 
   Future<void> deleteAllData(String uid) async {
-    for (final name in const ['transactions', 'budgets', 'categories']) {
+    for (final name in const [
+      'transactions',
+      'receipts',
+      'wallets',
+      'budgets',
+      'categories',
+    ]) {
       await _deleteCollection(uid, name);
     }
     await _user(uid).delete();

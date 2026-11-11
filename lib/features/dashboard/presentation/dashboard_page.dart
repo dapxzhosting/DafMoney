@@ -26,6 +26,7 @@ import '../../settings/presentation/providers/settings_providers.dart';
 import '../../transactions/domain/money_transaction.dart';
 import '../../transactions/presentation/providers/transaction_providers.dart';
 import '../../transactions/presentation/widgets/transaction_tile.dart';
+import '../../wallets/presentation/providers/wallet_providers.dart';
 
 final dashboardRangeProvider = Provider.autoDispose<DateRange>((ref) {
   final m = ref.watch(selectedMonthProvider);
@@ -33,7 +34,7 @@ final dashboardRangeProvider = Provider.autoDispose<DateRange>((ref) {
 });
 
 final dashboardTransactionsProvider =
-    Provider.autoDispose<AsyncValue<List<MoneyTransaction>>>((ref) {
+Provider.autoDispose<AsyncValue<List<MoneyTransaction>>>((ref) {
   return ref.watch(transactionsByRangeProvider(ref.watch(dashboardRangeProvider)));
 });
 
@@ -56,7 +57,9 @@ class DashboardPage extends ConsumerWidget {
         : summarize(allTxns.where((t) => monthRange.contains(t.date)).toList());
 
     final profile = ref.watch(userProfileProvider).valueOrNull;
-    final initialBalance = profile?.initialBalance ?? 0;
+    final int initialBalance = (profile?.initialBalance ?? 0).toInt() +
+        ref.watch(walletsInitialSumProvider).toInt();
+    final wallets = ref.watch(walletMapProvider);
     final fullName = (profile?.name.trim().isNotEmpty ?? false)
         ? profile!.name.trim()
         : (user?.displayName?.trim() ?? '');
@@ -105,16 +108,16 @@ class DashboardPage extends ConsumerWidget {
                 data: (all) {
                   final range = DateRange.month(month);
                   final monthTxns =
-                      all.where((t) => range.contains(t.date)).toList();
+                  all.where((t) => range.contains(t.date)).toList();
                   final slices =
-                      buildSlices(byCategory(monthTxns, EntryType.expense), cats);
+                  buildSlices(byCategory(monthTxns, EntryType.expense), cats);
                   final trend = byMonth(
                       all, DateTime(month.year, month.month - 5), 6);
                   final recent = monthTxns.take(5).toList();
                   final topBudgets =
-                      (budgets.valueOrNull ?? const <BudgetProgress>[])
-                          .take(3)
-                          .toList();
+                  (budgets.valueOrNull ?? const <BudgetProgress>[])
+                      .take(3)
+                      .toList();
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,9 +127,9 @@ class DashboardPage extends ConsumerWidget {
                         child: slices.isEmpty
                             ? const _Hint('Belum ada pengeluaran bulan ini.')
                             : CategoryDonut(
-                                slices: slices,
-                                centerLabel: 'Total',
-                              ),
+                          slices: slices,
+                          centerLabel: 'Total',
+                        ),
                       ),
                       const SizedBox(height: 16),
                       _SectionCard(
@@ -159,21 +162,22 @@ class DashboardPage extends ConsumerWidget {
                         child: recent.isEmpty
                             ? const _Hint('Belum ada transaksi bulan ini.')
                             : Column(
-                                children: [
-                                  for (final t in recent)
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 8),
-                                      child: TransactionTile(
-                                        transaction: t,
-                                        categories: cats,
-                                        showDate: true,
-                                        onTap: () => context.push(
-                                            AppRoutes.transactionForm,
-                                            extra: t),
-                                      ),
-                                    ),
-                                ],
+                          children: [
+                            for (final t in recent)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: TransactionTile(
+                                  transaction: t,
+                                  categories: cats,
+                                  wallets: wallets,
+                                  showDate: true,
+                                  onTap: () => context.push(
+                                      AppRoutes.transactionForm,
+                                      extra: t),
+                                ),
                               ),
+                          ],
+                        ),
                       ),
                     ]
                         .animate(interval: 60.ms)
@@ -252,45 +256,45 @@ class _BalanceCard extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
 
     Widget pill(IconData icon, String label, int value) => Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.16),
-              borderRadius: BorderRadius.circular(18),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.16),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.22),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 16, color: Colors.white),
             ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.22),
-                    shape: BoxShape.circle,
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label,
+                      style: tt.labelSmall?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.85))),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(Fmt.rupiah(value),
+                        style: tt.titleSmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800)),
                   ),
-                  child: Icon(icon, size: 16, color: Colors.white),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(label,
-                          style: tt.labelSmall?.copyWith(
-                              color: Colors.white.withValues(alpha: 0.85))),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: Text(Fmt.rupiah(value),
-                            style: tt.titleSmall?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800)),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
+          ],
+        ),
+      ),
+    );
 
     return Container(
       padding: const EdgeInsets.all(22),

@@ -14,6 +14,7 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/month_selector.dart';
 import '../../../categories/presentation/category_style.dart';
 import '../../../categories/presentation/providers/category_providers.dart';
+import '../../../wallets/presentation/providers/wallet_providers.dart';
 import '../../domain/money_transaction.dart';
 import '../providers/transaction_providers.dart';
 import '../widgets/transaction_tile.dart';
@@ -88,6 +89,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
     final fin = context.finance;
     final txAsync = ref.watch(monthTransactionsProvider);
     final cats = ref.watch(categoryMapProvider);
+    final wallets = ref.watch(walletMapProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -230,6 +232,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                         child: TransactionTile(
                           transaction: t,
                           categories: cats,
+                          wallets: wallets,
                           onTap: () => context.push(
                               AppRoutes.transactionForm,
                               extra: t),

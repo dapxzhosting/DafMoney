@@ -6,6 +6,7 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/category_avatar.dart';
 import '../../../categories/domain/category.dart';
 import '../../../categories/presentation/category_style.dart';
+import '../../../wallets/domain/wallet.dart';
 import '../../domain/money_transaction.dart';
 
 class TransactionTile extends StatelessWidget {
@@ -14,11 +15,13 @@ class TransactionTile extends StatelessWidget {
     required this.transaction,
     required this.categories,
     required this.onTap,
+    this.wallets = const <String, Wallet>{},
     this.showDate = false,
   });
 
   final MoneyTransaction transaction;
   final Map<String, Category> categories;
+  final Map<String, Wallet> wallets;
   final VoidCallback onTap;
   final bool showDate;
 
@@ -31,9 +34,11 @@ class TransactionTile extends StatelessWidget {
     final isIncome = transaction.type == EntryType.income;
     final amountColor = isIncome ? fin.income : fin.expense;
 
-    final subtitle = transaction.note.isNotEmpty
+    final base = transaction.note.isNotEmpty
         ? transaction.note
         : (showDate ? Fmt.dateShort(transaction.date) : transaction.type.label);
+    final walletName = wallets[transaction.walletId]?.name;
+    final subtitle = walletName != null ? '$walletName · $base' : base;
 
     return Card(
       child: InkWell(
@@ -64,6 +69,11 @@ class TransactionTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
+              if (transaction.hasReceipt) ...[
+                Icon(Icons.attach_file_rounded,
+                    size: 16, color: cs.onSurfaceVariant),
+                const SizedBox(width: 4),
+              ],
               Text(
                 '${isIncome ? '+' : '-'}${Fmt.rupiah(transaction.amount)}',
                 style: tt.titleSmall?.copyWith(

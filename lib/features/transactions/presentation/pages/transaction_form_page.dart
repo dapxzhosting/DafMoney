@@ -1,7 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/models/entry_type.dart';
 import '../../../../core/router/app_routes.dart';
@@ -14,6 +17,10 @@ import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../categories/presentation/category_style.dart';
 import '../../../categories/presentation/providers/category_providers.dart';
+import '../../../wallets/domain/wallet.dart';
+import '../../../wallets/presentation/providers/wallet_providers.dart';
+import '../../../wallets/presentation/wallet_style.dart';
+import '../../data/receipt_repository.dart';
 import '../../domain/money_transaction.dart';
 import '../providers/transaction_providers.dart';
 
@@ -37,6 +44,15 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
   String? _categoryError;
   bool _saving = false;
 
+  // Dompet: selama belum disentuh, transaksi baru memakai dompet pertama.
+  String? _walletId;
+  bool _walletTouched = false;
+
+  // Foto struk.
+  final _picker = ImagePicker();
+  Uint8List? _newReceipt;
+  bool _removeReceipt = false;
+
   bool get _editing => widget.initial != null;
 
   @override
@@ -49,6 +65,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
       _amount.text = ThousandsFormatter.format(i.amount.toString());
       _note.text = i.note;
       _categoryId = i.categoryId;
+      _walletId = i.walletId;
     }
   }
 
@@ -57,6 +74,100 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     _amount.dispose();
     _note.dispose();
     super.dispose();
+  }
+
+  String? _currentWalletId(List<Wallet> wallets) {
+    if (_walletTouched || _editing) return _walletId;
+    return wallets.isEmpty ? null : wallets.first.id;
+  }
+
+  Future<void> _chooseReceiptSource() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_rounded),
+              title: const Text('Ambil foto'),
+              onTap: () => Navigator.pop(ctx, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_rounded),
+              title: const Text('Pilih dari galeri'),
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null) return;
+    await _pickReceipt(source);
+  }
+
+  Future<void> _pickReceipt(ImageSource source) async {
+    try {
+      final file = await _picker.pickImage(
+        source: source,
+        maxWidth: 1280,
+        maxHeight: 1280,
+        imageQuality: 65,
+      );
+      if (file == null) return;
+      final bytes = await file.readAsBytes();
+      if (!mounted) return;
+      if (bytes.length > ReceiptRepository.maxBytes) {
+        context.showSnack(
+            'Foto terlalu besar. Coba ambil ulang dengan resolusi lebih kecil.',
+            error: true);
+        return;
+      }
+      setState(() {
+        _newReceipt = bytes;
+        _removeReceipt = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      context.showSnack('Tidak bisa mengambil foto. Periksa izin kamera atau galeri.',
+          error: true);
+    }
+  }
+
+  void _removeCurrentReceipt() {
+    setState(() {
+      _newReceipt = null;
+      _removeReceipt = true;
+    });
+  }
+
+  void _viewReceipt(Uint8List bytes) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => Dialog.fullscreen(
+        backgroundColor: Colors.black,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: InteractiveViewer(
+                maxScale: 5,
+                child: Center(child: Image.memory(bytes, fit: BoxFit.contain)),
+              ),
+            ),
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  icon: const Icon(Icons.close_rounded, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _pickDate() async {
@@ -76,27 +187,39 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
       return;
     }
     if (!valid) return;
+    final amount = parseAmount(_amount.text) ?? 0;
+    if (amount <= 0) return;
     FocusScope.of(context).unfocus();
     setState(() => _saving = true);
 
     final actions = ref.read(transactionActionsProvider);
-    final amount = parseAmount(_amount.text) ?? 0;
-    if (amount <= 0) return;
+    final wallets = ref.read(walletsProvider).valueOrNull ?? const <Wallet>[];
+    final walletId = _currentWalletId(wallets);
     HapticFeedback.mediumImpact();
     final note = _note.text.trim();
+
+    final hadReceipt = _editing && widget.initial!.hasReceipt;
+    final keepReceipt = hadReceipt && !_removeReceipt && _newReceipt == null;
+
     final err = _editing
         ? await actions.update(widget.initial!.id,
             type: _type,
             amount: amount,
             categoryId: _categoryId!,
             note: note,
-            date: _date)
+            date: _date,
+            walletId: walletId,
+            newReceipt: _newReceipt,
+            keepReceipt: keepReceipt,
+            hadReceipt: hadReceipt)
         : await actions.add(
             type: _type,
             amount: amount,
             categoryId: _categoryId!,
             note: note,
-            date: _date);
+            date: _date,
+            walletId: walletId,
+            receipt: _newReceipt);
 
     if (!mounted) return;
     setState(() => _saving = false);
@@ -126,6 +249,94 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     context.pop();
   }
 
+  Widget _buildReceipt(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    final hasExisting =
+        _editing && widget.initial!.hasReceipt && !_removeReceipt;
+    AsyncValue<Uint8List?>? existing;
+    if (_newReceipt == null && hasExisting) {
+      existing = ref.watch(receiptProvider(widget.initial!.id));
+    }
+    final Uint8List? bytes = _newReceipt ?? existing?.valueOrNull;
+
+    if (bytes != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          children: [
+            InkWell(
+              onTap: () => _viewReceipt(bytes),
+              child: Image.memory(
+                bytes,
+                width: double.infinity,
+                height: 200,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned(
+              right: 8,
+              top: 8,
+              child: Row(
+                children: [
+                  _ReceiptAction(
+                    icon: Icons.swap_horiz_rounded,
+                    tooltip: 'Ganti foto',
+                    onTap: _chooseReceiptSource,
+                  ),
+                  const SizedBox(width: 8),
+                  _ReceiptAction(
+                    icon: Icons.delete_outline_rounded,
+                    tooltip: 'Hapus foto',
+                    onTap: _removeCurrentReceipt,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (existing != null && existing.isLoading) {
+      return Container(
+        height: 120,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: cs.outlineVariant),
+        ),
+        child: const CircularProgressIndicator(),
+      );
+    }
+
+    final failed = existing != null && existing.hasError;
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: _chooseReceiptSource,
+      child: Container(
+        height: 96,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: cs.outlineVariant),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.receipt_long_rounded, color: cs.primary),
+            const SizedBox(height: 6),
+            Text(
+              failed ? 'Foto gagal dimuat. Ketuk untuk ganti.' : 'Tambah foto struk',
+              style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -134,6 +345,8 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     final accent = _type == EntryType.income ? fin.income : fin.expense;
     final cats = ref.watch(categoriesProvider).valueOrNull ?? const [];
     final options = cats.where((c) => c.type == _type).toList();
+    final wallets = ref.watch(walletsProvider).valueOrNull ?? const <Wallet>[];
+    final selectedWallet = _currentWalletId(wallets);
 
     return Scaffold(
       appBar: AppBar(
@@ -250,6 +463,33 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                     style: tt.bodySmall?.copyWith(color: cs.error)),
               ),
             const SizedBox(height: 24),
+            Text('Dompet',
+                style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final w in wallets)
+                  ChoiceChip(
+                    avatar: Icon(w.icon, size: 18, color: w.color),
+                    label: Text(w.name),
+                    selected: selectedWallet == w.id,
+                    onSelected: (sel) => setState(() {
+                      _walletTouched = true;
+                      _walletId = sel ? w.id : null;
+                    }),
+                  ),
+                ActionChip(
+                  avatar: Icon(
+                      wallets.isEmpty ? Icons.add_rounded : Icons.tune_rounded,
+                      size: 18),
+                  label: Text(wallets.isEmpty ? 'Tambah dompet' : 'Kelola'),
+                  onPressed: () => context.push(AppRoutes.wallets),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
             Text('Tanggal',
                 style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
             const SizedBox(height: 8),
@@ -277,8 +517,38 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                 prefixIcon: Icon(Icons.notes_rounded),
               ),
             ),
+            const SizedBox(height: 24),
+            Text('Foto struk (opsional)',
+                style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
+            const SizedBox(height: 8),
+            _buildReceipt(context),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ReceiptAction extends StatelessWidget {
+  const _ReceiptAction({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black54,
+      shape: const CircleBorder(),
+      child: IconButton(
+        tooltip: tooltip,
+        onPressed: onTap,
+        icon: Icon(icon, color: Colors.white, size: 20),
       ),
     );
   }

@@ -14,6 +14,7 @@ import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/verify_email_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
+import '../../features/wallets/presentation/pages/wallets_page.dart';
 import '../../features/splash/presentation/splash_page.dart';
 import '../providers/firebase_providers.dart';
 import '../widgets/main_shell.dart';
@@ -91,6 +92,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.categories,
         builder: (_, __) => const CategoriesPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.wallets,
+        builder: (_, __) => const WalletsPage(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (_, __, shell) => MainShell(shell: shell),

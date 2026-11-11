@@ -112,6 +112,12 @@ class SettingsPage extends ConsumerWidget {
                   context, InitialBalanceSheet(current: initial)),
             ),
             _Tile(
+              icon: Icons.account_balance_rounded,
+              title: 'Kelola dompet',
+              subtitle: 'Tunai, rekening bank, dompet digital',
+              onTap: () => context.push(AppRoutes.wallets),
+            ),
+            _Tile(
               icon: Icons.category_rounded,
               title: 'Kelola kategori',
               subtitle: 'Tambah, ubah, atau hapus kategori',

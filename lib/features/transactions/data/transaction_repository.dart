@@ -43,6 +43,7 @@ class TransactionRepository {
       createdAt: _parseDate(m['createdAt']),
       walletId: (w is String && w.isNotEmpty) ? w : null,
       recurringId: (r is String && r.isNotEmpty) ? r : null,
+      hasReceipt: m['hasReceipt'] == true,
     );
   }
 
@@ -62,7 +63,8 @@ class TransactionRepository {
     });
   }
 
-  Future<void> add(
+  /// Mengembalikan id dokumen baru (dipakai untuk menyimpan foto struk).
+  Future<String> add(
     String uid, {
     required EntryType type,
     required int amount,
@@ -71,17 +73,21 @@ class TransactionRepository {
     required DateTime date,
     String? walletId,
     String? recurringId,
-  }) {
-    return writeSafe(() => _col(uid).add({
-      'type': type.name,
-      'amount': amount,
-      'categoryId': categoryId,
-      'note': note,
-      'date': Timestamp.fromDate(dateOnly(date)),
-      'createdAt': FieldValue.serverTimestamp(),
-      if (walletId != null) 'walletId': walletId,
-      if (recurringId != null) 'recurringId': recurringId,
-    }));
+    bool hasReceipt = false,
+  }) async {
+    final ref = _col(uid).doc();
+    await writeSafe(() => ref.set({
+          'type': type.name,
+          'amount': amount,
+          'categoryId': categoryId,
+          'note': note,
+          'date': Timestamp.fromDate(dateOnly(date)),
+          'createdAt': FieldValue.serverTimestamp(),
+          if (walletId != null) 'walletId': walletId,
+          if (recurringId != null) 'recurringId': recurringId,
+          if (hasReceipt) 'hasReceipt': true,
+        }));
+    return ref.id;
   }
 
   Future<void> update(
@@ -94,19 +100,28 @@ class TransactionRepository {
     required DateTime date,
     String? walletId,
     String? recurringId,
+    bool hasReceipt = false,
   }) {
     return writeSafe(() => _col(uid).doc(id).update({
-      'type': type.name,
-      'amount': amount,
-      'categoryId': categoryId,
-      'note': note,
-      'date': Timestamp.fromDate(dateOnly(date)),
-      if (walletId != null) 'walletId': walletId,
-      if (recurringId != null) 'recurringId': recurringId,
-    }));
+          'type': type.name,
+          'amount': amount,
+          'categoryId': categoryId,
+          'note': note,
+          'date': Timestamp.fromDate(dateOnly(date)),
+          'walletId': walletId ?? FieldValue.delete(),
+          'hasReceipt': hasReceipt ? true : FieldValue.delete(),
+          if (recurringId != null) 'recurringId': recurringId,
+        }));
   }
 
-  Future<void> delete(String uid, String id) => _col(uid).doc(id).delete();
+  /// Menghapus transaksi beserta foto struknya (jika ada).
+  Future<void> delete(String uid, String id) {
+    final user = _db.collection('users').doc(uid);
+    final batch = _db.batch()
+      ..delete(_col(uid).doc(id))
+      ..delete(user.collection('receipts').doc(id));
+    return writeSafe(() => batch.commit());
+  }
 
   Future<List<MoneyTransaction>> fetchAll(String uid) async {
     final snap = await _col(uid).get();
@@ -127,6 +142,30 @@ class TransactionRepository {
         }
       }
       return Balance(income: inc, expense: exp);
+    });
+  }
+
+  /// Total per dompet. Kunci '' berarti transaksi tanpa dompet.
+  Stream<Map<String, Balance>> watchTotalsByWallet(String uid) {
+    return _col(uid).snapshots().map((snap) {
+      final inc = <String, int>{};
+      final exp = <String, int>{};
+      for (final d in snap.docs) {
+        final m = d.data();
+        final w = m['walletId'];
+        final key = (w is String && w.isNotEmpty) ? w : '';
+        final amount = (m['amount'] as num?)?.toInt() ?? 0;
+        if (m['type'] == 'income') {
+          inc[key] = (inc[key] ?? 0) + amount;
+        } else {
+          exp[key] = (exp[key] ?? 0) + amount;
+        }
+      }
+      final keys = {...inc.keys, ...exp.keys};
+      return {
+        for (final k in keys)
+          k: Balance(income: inc[k] ?? 0, expense: exp[k] ?? 0),
+      };
     });
   }
 }

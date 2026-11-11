@@ -13,6 +13,7 @@ abstract class AppRoutes {
 
   static const transactionForm = '/transaction-form';
   static const categories = '/categories';
+  static const wallets = '/wallets';
 
   static const authRoutes = {login, register, forgotPassword};
 }
