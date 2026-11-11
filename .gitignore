@@ -58,3 +58,8 @@ key.properties
 
 # Widget Preview related
 .widget_preview/
+
+# Added build and kotlin junk files
+android/.kotlin/
+android/build/
+hs_err_pid*.log
