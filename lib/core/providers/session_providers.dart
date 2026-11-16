@@ -21,8 +21,9 @@ class SelectedMonth extends Notifier<DateTime> {
   }
 }
 
-final selectedMonthProvider =
-    NotifierProvider<SelectedMonth, DateTime>(SelectedMonth.new);
+final selectedMonthProvider = NotifierProvider<SelectedMonth, DateTime>(
+  SelectedMonth.new,
+);
 
 class DataVersion extends Notifier<int> {
   @override
@@ -31,5 +32,4 @@ class DataVersion extends Notifier<int> {
   void bump() => state++;
 }
 
-final dataVersionProvider =
-    NotifierProvider<DataVersion, int>(DataVersion.new);
+final dataVersionProvider = NotifierProvider<DataVersion, int>(DataVersion.new);

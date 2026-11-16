@@ -23,15 +23,18 @@ class AuthFailure implements AppException {
         return const AuthFailure('Kata sandi terlalu lemah.');
       case 'too-many-requests':
         return const AuthFailure(
-            'Terlalu banyak percobaan. Coba lagi beberapa menit lagi.');
+          'Terlalu banyak percobaan. Coba lagi beberapa menit lagi.',
+        );
       case 'network-request-failed':
         return const AuthFailure('Tidak ada koneksi internet.');
       case 'operation-not-allowed':
         return const AuthFailure(
-            'Login Email/Password belum diaktifkan di Firebase Console.');
+          'Login Email/Password belum diaktifkan di Firebase Console.',
+        );
       case 'requires-recent-login':
         return const AuthFailure(
-            'Demi keamanan, keluar lalu masuk lagi, kemudian ulangi.');
+          'Demi keamanan, keluar lalu masuk lagi, kemudian ulangi.',
+        );
       case 'permission-denied':
         return const AuthFailure('Akses ditolak oleh aturan keamanan.');
       default:

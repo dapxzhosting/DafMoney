@@ -79,8 +79,11 @@ Future<void> duplicateWithUndo(
 
   final result = await actions.duplicate(t);
   if (result.error != null || result.id == null) {
-    _show(messenger, result.error ?? 'Gagal menggandakan transaksi.',
-        error: true);
+    _show(
+      messenger,
+      result.error ?? 'Gagal menggandakan transaksi.',
+      error: true,
+    );
     return;
   }
 

@@ -25,13 +25,13 @@ class SkeletonBox extends StatelessWidget {
     final base = color ?? cs.onSurface.withValues(alpha: dark ? 0.10 : 0.07);
 
     return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: base,
-        borderRadius: BorderRadius.circular(radius),
-      ),
-    )
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: base,
+            borderRadius: BorderRadius.circular(radius),
+          ),
+        )
         .animate(onPlay: (c) => c.repeat())
         .shimmer(
           duration: 1300.ms,

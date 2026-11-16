@@ -38,8 +38,8 @@ class SettingsPage extends ConsumerWidget {
     final name = (profile?.name.trim().isNotEmpty ?? false)
         ? profile!.name.trim()
         : ((user?.displayName?.trim().isNotEmpty ?? false)
-            ? user!.displayName!.trim()
-            : 'Pengguna');
+              ? user!.displayName!.trim()
+              : 'Pengguna');
     final initial = profile?.initialBalance ?? 0;
 
     return Scaffold(
@@ -68,184 +68,228 @@ class SettingsPage extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: tt.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w700)),
+                        Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: tt.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                         const SizedBox(height: 2),
-                        Text(user?.email ?? '',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: tt.bodySmall
-                                ?.copyWith(color: cs.onSurfaceVariant)),
+                        Text(
+                          user?.email ?? '',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: tt.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            Icon(Icons.verified_rounded,
-                                size: 14, color: cs.primary),
+                            Icon(
+                              Icons.verified_rounded,
+                              size: 14,
+                              color: cs.primary,
+                            ),
                             const SizedBox(width: 4),
-                            Text('Email terverifikasi',
-                                style: tt.labelSmall
-                                    ?.copyWith(color: cs.primary)),
+                            Text(
+                              'Email terverifikasi',
+                              style: tt.labelSmall?.copyWith(color: cs.primary),
+                            ),
                           ],
                         ),
                       ],
                     ),
                   ),
                   IconButton.filledTonal(
-                    onPressed: () =>
-                        showSettingsSheet(context, EditNameSheet(initial: name)),
+                    onPressed: () => showSettingsSheet(
+                      context,
+                      EditNameSheet(initial: name),
+                    ),
                     icon: const Icon(Icons.edit_rounded, size: 20),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 22),
-          _Group(title: 'Keuangan', children: [
-            _Tile(
-              icon: Icons.account_balance_wallet_rounded,
-              title: 'Saldo awal',
-              subtitle: Fmt.rupiah(initial),
-              onTap: () => showSettingsSheet(
-                  context, InitialBalanceSheet(current: initial)),
-            ),
-            _Tile(
-              icon: Icons.account_balance_rounded,
-              title: 'Kelola dompet',
-              subtitle: 'Tunai, rekening bank, dompet digital',
-              onTap: () => context.push(AppRoutes.wallets),
-            ),
-            _Tile(
-              icon: Icons.category_rounded,
-              title: 'Kelola kategori',
-              subtitle: 'Tambah, ubah, atau hapus kategori',
-              onTap: () => context.push(AppRoutes.categories),
-            ),
-          ]),
-          _Group(title: 'Tampilan', children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Tema',
-                      style: tt.titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: SegmentedButton<ThemeMode>(
-                      showSelectedIcon: false,
-                      segments: const [
-                        ButtonSegment(
-                          value: ThemeMode.system,
-                          icon: Icon(Icons.brightness_auto_rounded),
-                          label: Text('Sistem'),
-                        ),
-                        ButtonSegment(
-                          value: ThemeMode.light,
-                          icon: Icon(Icons.light_mode_rounded),
-                          label: Text('Terang'),
-                        ),
-                        ButtonSegment(
-                          value: ThemeMode.dark,
-                          icon: Icon(Icons.dark_mode_rounded),
-                          label: Text('Gelap'),
-                        ),
-                      ],
-                      selected: {mode},
-                      onSelectionChanged: (s) => ref
-                          .read(themeModeProvider.notifier)
-                          .setMode(s.first),
+          const SizedBox(height: 24),
+          _Group(
+            title: 'Keuangan',
+            children: [
+              _Tile(
+                icon: Icons.account_balance_wallet_rounded,
+                title: 'Saldo awal',
+                subtitle: Fmt.rupiah(initial),
+                onTap: () => showSettingsSheet(
+                  context,
+                  InitialBalanceSheet(current: initial),
+                ),
+              ),
+              _Tile(
+                icon: Icons.account_balance_rounded,
+                title: 'Kelola dompet',
+                subtitle: 'Tunai, rekening bank, dompet digital',
+                onTap: () => context.go(AppRoutes.wallets),
+              ),
+              _Tile(
+                icon: Icons.category_rounded,
+                title: 'Kelola kategori',
+                subtitle: 'Tambah, ubah, atau hapus kategori',
+                onTap: () => context.push(AppRoutes.categories),
+              ),
+            ],
+          ),
+          _Group(
+            title: 'Tampilan',
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Tema',
+                      style: tt.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: SegmentedButton<ThemeMode>(
+                        showSelectedIcon: false,
+                        segments: const [
+                          ButtonSegment(
+                            value: ThemeMode.system,
+                            icon: Icon(Icons.brightness_auto_rounded),
+                            label: Text('Sistem'),
+                          ),
+                          ButtonSegment(
+                            value: ThemeMode.light,
+                            icon: Icon(Icons.light_mode_rounded),
+                            label: Text('Terang'),
+                          ),
+                          ButtonSegment(
+                            value: ThemeMode.dark,
+                            icon: Icon(Icons.dark_mode_rounded),
+                            label: Text('Gelap'),
+                          ),
+                        ],
+                        selected: {mode},
+                        onSelectionChanged: (s) => ref
+                            .read(themeModeProvider.notifier)
+                            .setMode(s.first),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          _Group(
+            title: 'Keamanan',
+            children: [
+              _Tile(
+                icon: Icons.lock_reset_rounded,
+                title: 'Ubah kata sandi',
+                onTap: () =>
+                    showSettingsSheet(context, const ChangePasswordSheet()),
+              ),
+            ],
+          ),
+          _Group(
+            title: 'Data',
+            children: [
+              _Tile(
+                icon: Icons.file_download_outlined,
+                title: 'Salin semua transaksi (CSV)',
+                subtitle: 'Tempel ke Excel atau Google Sheets',
+                onTap: () => _run(
+                  context,
+                  actions.copyAllCsv,
+                  'Semua transaksi disalin sebagai CSV.',
+                ),
+              ),
+              _Tile(
+                icon: Icons.delete_sweep_rounded,
+                title: 'Hapus semua transaksi',
+                subtitle: 'Kategori dan anggaran tetap ada',
+                danger: true,
+                onTap: () async {
+                  final ok = await confirmDialog(
+                    context,
+                    title: 'Hapus semua transaksi?',
+                    message: 'Seluruh riwayat transaksi akan dihapus permanen dan tidak bisa dikembalikan.',
+                    confirmLabel: 'Hapus semua',
+                    destructive: true,
+                  );
+                  if (!ok || !context.mounted) return;
+                  await _run(
+                    context,
+                    actions.deleteAllTransactions,
+                    'Semua transaksi dihapus.',
+                  );
+                },
+              ),
+            ],
+          ),
+          _Group(
+            title: 'Akun',
+            children: [
+              _Tile(
+                icon: Icons.logout_rounded,
+                title: 'Keluar',
+                onTap: () async {
+                  final ok = await confirmDialog(
+                    context,
+                    title: 'Keluar dari akun?',
+                    message: 'Anda perlu masuk lagi untuk mengakses data.',
+                    confirmLabel: 'Keluar',
+                    destructive: true,
+                  );
+                  if (ok) {
+                    await ref.read(authControllerProvider.notifier).signOut();
+                  }
+                },
+              ),
+              _Tile(
+                icon: Icons.person_remove_rounded,
+                title: 'Hapus akun',
+                subtitle: 'Hapus akun dan semua datanya',
+                danger: true,
+                onTap: () =>
+                    showSettingsSheet(context, const DeleteAccountSheet()),
+              ),
+            ],
+          ),
+          _Group(
+            title: 'Tentang',
+            children: [
+              _Tile(
+                icon: Icons.info_outline_rounded,
+                title: 'Tentang ${AppConstants.appName}',
+                subtitle: 'Versi ${AppConstants.appVersion}',
+                onTap: () => showAboutDialog(
+                  context: context,
+                  applicationName: AppConstants.appName,
+                  applicationVersion: AppConstants.appVersion,
+                  applicationIcon: Icon(
+                    Icons.savings_rounded,
+                    size: 40,
+                    color: cs.primary,
                   ),
-                ],
+                  children: const [
+                    SizedBox(height: 12),
+                    Text(
+                      'Aplikasi pencatat keuangan pribadi. Data Anda tersimpan di akun Firebase milik Anda sendiri dan hanya bisa diakses oleh Anda.',
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ]),
-          _Group(title: 'Keamanan', children: [
-            _Tile(
-              icon: Icons.lock_reset_rounded,
-              title: 'Ubah kata sandi',
-              onTap: () =>
-                  showSettingsSheet(context, const ChangePasswordSheet()),
-            ),
-          ]),
-          _Group(title: 'Data', children: [
-            _Tile(
-              icon: Icons.file_download_outlined,
-              title: 'Salin semua transaksi (CSV)',
-              subtitle: 'Tempel ke Excel atau Google Sheets',
-              onTap: () => _run(context, actions.copyAllCsv,
-                  'Semua transaksi disalin sebagai CSV.'),
-            ),
-            _Tile(
-              icon: Icons.delete_sweep_rounded,
-              title: 'Hapus semua transaksi',
-              subtitle: 'Kategori dan anggaran tetap ada',
-              danger: true,
-              onTap: () async {
-                final ok = await confirmDialog(
-                  context,
-                  title: 'Hapus semua transaksi?',
-                  message:
-                      'Seluruh riwayat transaksi akan dihapus permanen dan tidak bisa dikembalikan.',
-                  confirmLabel: 'Hapus semua',
-                  destructive: true,
-                );
-                if (!ok || !context.mounted) return;
-                await _run(context, actions.deleteAllTransactions,
-                    'Semua transaksi dihapus.');
-              },
-            ),
-          ]),
-          _Group(title: 'Akun', children: [
-            _Tile(
-              icon: Icons.logout_rounded,
-              title: 'Keluar',
-              onTap: () async {
-                final ok = await confirmDialog(
-                  context,
-                  title: 'Keluar dari akun?',
-                  message: 'Anda perlu masuk lagi untuk mengakses data.',
-                  confirmLabel: 'Keluar',
-                  destructive: true,
-                );
-                if (ok) {
-                  await ref.read(authControllerProvider.notifier).signOut();
-                }
-              },
-            ),
-            _Tile(
-              icon: Icons.person_remove_rounded,
-              title: 'Hapus akun',
-              subtitle: 'Hapus akun dan semua datanya',
-              danger: true,
-              onTap: () =>
-                  showSettingsSheet(context, const DeleteAccountSheet()),
-            ),
-          ]),
-          _Group(title: 'Tentang', children: [
-            _Tile(
-              icon: Icons.info_outline_rounded,
-              title: 'Tentang ${AppConstants.appName}',
-              subtitle: 'Versi ${AppConstants.appVersion}',
-              onTap: () => showAboutDialog(
-                context: context,
-                applicationName: AppConstants.appName,
-                applicationVersion: AppConstants.appVersion,
-                applicationIcon: Icon(Icons.savings_rounded,
-                    size: 40, color: cs.primary),
-                children: const [
-                  SizedBox(height: 12),
-                  Text(
-                      'Aplikasi pencatat keuangan pribadi. Data Anda tersimpan di akun Firebase milik Anda sendiri dan hanya bisa diakses oleh Anda.'),
-                ],
-              ),
-            ),
-          ]),
+            ],
+          ),
         ],
       ),
     );
@@ -272,7 +316,9 @@ class _Group extends StatelessWidget {
             child: Text(
               title,
               style: tt.labelLarge?.copyWith(
-                  color: cs.onSurfaceVariant, fontWeight: FontWeight.w700),
+                color: cs.onSurfaceVariant,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
           Card(

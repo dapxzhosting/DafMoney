@@ -71,7 +71,8 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
     final dayNet = <DateTime, int>{};
     for (final t in list) {
       final k = dateOnly(t.date);
-      dayNet[k] = (dayNet[k] ?? 0) +
+      dayNet[k] =
+          (dayNet[k] ?? 0) +
           (t.type == EntryType.income ? t.amount : -t.amount);
     }
     final rows = <_Row>[];
@@ -139,7 +140,11 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               children: [
-                for (final f in <EntryType?>[null, EntryType.expense, EntryType.income])
+                for (final f in <EntryType?>[
+                  null,
+                  EntryType.expense,
+                  EntryType.income,
+                ])
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: ChoiceChip(
@@ -188,15 +193,19 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                     final row = rows[i];
                     if (row is _HeaderRow) {
                       return Padding(
-                        padding: EdgeInsets.only(top: i == 0 ? 0 : 14, bottom: 8),
+                        padding: EdgeInsets.only(
+                          top: i == 0 ? 0 : 14,
+                          bottom: 8,
+                        ),
                         child: Row(
                           children: [
                             Expanded(
                               child: Text(
                                 Fmt.dayHeader(row.date),
                                 style: tt.labelLarge?.copyWith(
-                                    color: cs.onSurfaceVariant,
-                                    fontWeight: FontWeight.w700),
+                                  color: cs.onSurfaceVariant,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
                             Text(
@@ -227,13 +236,18 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.copy_rounded,
-                                  color: cs.onPrimaryContainer),
+                              Icon(
+                                Icons.copy_rounded,
+                                color: cs.onPrimaryContainer,
+                              ),
                               const SizedBox(width: 8),
-                              Text('Gandakan',
-                                  style: tt.labelLarge?.copyWith(
-                                      color: cs.onPrimaryContainer,
-                                      fontWeight: FontWeight.w700)),
+                              Text(
+                                'Gandakan',
+                                style: tt.labelLarge?.copyWith(
+                                  color: cs.onPrimaryContainer,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -261,9 +275,8 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                           transaction: t,
                           categories: cats,
                           wallets: wallets,
-                          onTap: () => context.push(
-                              AppRoutes.transactionForm,
-                              extra: t),
+                          onTap: () =>
+                              context.push(AppRoutes.transactionForm, extra: t),
                         ),
                       ),
                     );

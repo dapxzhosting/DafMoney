@@ -30,8 +30,9 @@ final walletsInitialSumProvider = Provider<int>((ref) {
 });
 
 /// Pemasukan dan pengeluaran per dompet. Kunci '' = transaksi tanpa dompet.
-final walletTotalsProvider =
-    StreamProvider.autoDispose<Map<String, Balance>>((ref) {
+final walletTotalsProvider = StreamProvider.autoDispose<Map<String, Balance>>((
+  ref,
+) {
   final uid = ref.watch(uidProvider);
   if (uid == null) return Stream.value(const <String, Balance>{});
   return ref.watch(transactionRepositoryProvider).watchTotalsByWallet(uid);
@@ -43,7 +44,8 @@ class WalletActions {
   final Ref _ref;
 
   String get _uid =>
-      _ref.read(uidProvider) ?? (throw const AppException('Sesi berakhir. Masuk lagi.'));
+      _ref.read(uidProvider) ??
+      (throw const AppException('Sesi berakhir. Masuk lagi.'));
 
   WalletRepository get _repo => _ref.read(walletRepositoryProvider);
 
@@ -52,12 +54,15 @@ class WalletActions {
     required String iconKey,
     required int colorValue,
     required int initialBalance,
-  }) =>
-      runGuarded(() => _repo.add(_uid,
-          name: name,
-          iconKey: iconKey,
-          colorValue: colorValue,
-          initialBalance: initialBalance));
+  }) => runGuarded(
+    () => _repo.add(
+      _uid,
+      name: name,
+      iconKey: iconKey,
+      colorValue: colorValue,
+      initialBalance: initialBalance,
+    ),
+  );
 
   Future<String?> update(
     String id, {
@@ -65,18 +70,23 @@ class WalletActions {
     required String iconKey,
     required int colorValue,
     required int initialBalance,
-  }) =>
-      runGuarded(() => _repo.update(_uid, id,
-          name: name,
-          iconKey: iconKey,
-          colorValue: colorValue,
-          initialBalance: initialBalance));
+  }) => runGuarded(
+    () => _repo.update(
+      _uid,
+      id,
+      name: name,
+      iconKey: iconKey,
+      colorValue: colorValue,
+      initialBalance: initialBalance,
+    ),
+  );
 
   Future<String?> delete(String id) => runGuarded(() async {
-        await _repo.delete(_uid, id);
-        _ref.read(dataVersionProvider.notifier).bump();
-      });
+    await _repo.delete(_uid, id);
+    _ref.read(dataVersionProvider.notifier).bump();
+  });
 }
 
-final walletActionsProvider =
-    Provider<WalletActions>((ref) => WalletActions(ref));
+final walletActionsProvider = Provider<WalletActions>(
+  (ref) => WalletActions(ref),
+);

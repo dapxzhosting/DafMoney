@@ -15,8 +15,7 @@ class ForgotPasswordPage extends ConsumerStatefulWidget {
   const ForgotPasswordPage({super.key});
 
   @override
-  ConsumerState<ForgotPasswordPage> createState() =>
-      _ForgotPasswordPageState();
+  ConsumerState<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
 class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
@@ -58,9 +57,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
         children: [
           PrimaryButton(
             label: 'Kembali ke halaman masuk',
-            onPressed: () => context.canPop()
-                ? context.pop()
-                : context.go(AppRoutes.login),
+            onPressed: () =>
+                context.canPop() ? context.pop() : context.go(AppRoutes.login),
           ),
           const SizedBox(height: 12),
           TextButton(
@@ -75,8 +73,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
       canGoBack: true,
       icon: Icons.lock_reset_rounded,
       title: 'Lupa kata sandi?',
-      subtitle:
-          'Masukkan email akun Anda. Kami akan mengirim tautan untuk membuat kata sandi baru.',
+      subtitle: 'Masukkan email akun Anda. Kami akan mengirim tautan untuk membuat kata sandi baru.',
       children: [
         Form(
           key: _form,
@@ -91,13 +88,18 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
             onSubmitted: (_) => _submit(),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         PrimaryButton(
-            label: 'Kirim tautan reset', loading: loading, onPressed: _submit),
+          label: 'Kirim tautan reset',
+          loading: loading,
+          onPressed: _submit,
+        ),
         const SizedBox(height: 8),
-        Icon(Icons.shield_outlined, size: 0, color: cs.primary)
-            .animate()
-            .fadeIn(),
+        Icon(
+          Icons.shield_outlined,
+          size: 0,
+          color: cs.primary,
+        ).animate().fadeIn(),
       ],
     );
   }

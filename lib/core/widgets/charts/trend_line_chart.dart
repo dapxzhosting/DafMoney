@@ -14,18 +14,15 @@ class TrendLineChart extends StatelessWidget {
   final List<DayTotal> data;
 
   LineChartBarData _line(List<FlSpot> spots, Color color) => LineChartBarData(
-        spots: spots,
-        isCurved: true,
-        curveSmoothness: 0.2,
-        preventCurveOverShooting: true,
-        color: color,
-        barWidth: 3,
-        dotData: const FlDotData(show: false),
-        belowBarData: BarAreaData(
-          show: true,
-          color: color.withValues(alpha: 0.10),
-        ),
-      );
+    spots: spots,
+    isCurved: true,
+    curveSmoothness: 0.2,
+    preventCurveOverShooting: true,
+    color: color,
+    barWidth: 3,
+    dotData: const FlDotData(show: false),
+    belowBarData: BarAreaData(show: true, color: color.withValues(alpha: 0.10)),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +36,12 @@ class TrendLineChart extends StatelessWidget {
     final step = max(1, (n / 6).ceil()).toDouble();
 
     final income = [
-      for (var i = 0; i < n; i++) FlSpot(i.toDouble(), data[i].income.toDouble())
+      for (var i = 0; i < n; i++)
+        FlSpot(i.toDouble(), data[i].income.toDouble()),
     ];
     final expense = [
-      for (var i = 0; i < n; i++) FlSpot(i.toDouble(), data[i].expense.toDouble())
+      for (var i = 0; i < n; i++)
+        FlSpot(i.toDouble(), data[i].expense.toDouble()),
     ];
 
     return Column(
@@ -67,11 +66,14 @@ class TrendLineChart extends StatelessWidget {
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
                 leftTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false)),
+                  sideTitles: SideTitles(showTitles: false),
+                ),
                 rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false)),
+                  sideTitles: SideTitles(showTitles: false),
+                ),
                 topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false)),
+                  sideTitles: SideTitles(showTitles: false),
+                ),
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
@@ -84,8 +86,9 @@ class TrendLineChart extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 8),
                         child: Text(
                           '${data[i].day.day}',
-                          style: tt.labelSmall
-                              ?.copyWith(color: cs.onSurfaceVariant),
+                          style: tt.labelSmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
                         ),
                       );
                     },

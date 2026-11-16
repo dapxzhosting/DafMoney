@@ -43,11 +43,14 @@ class MonthBarChart extends StatelessWidget {
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
                 leftTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false)),
+                  sideTitles: SideTitles(showTitles: false),
+                ),
                 rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false)),
+                  sideTitles: SideTitles(showTitles: false),
+                ),
                 topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false)),
+                  sideTitles: SideTitles(showTitles: false),
+                ),
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
@@ -61,8 +64,9 @@ class MonthBarChart extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 8),
                         child: Text(
                           Fmt.monthShort(data[i].month),
-                          style: tt.labelSmall
-                              ?.copyWith(color: cs.onSurfaceVariant),
+                          style: tt.labelSmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
                         ),
                       );
                     },
@@ -74,13 +78,13 @@ class MonthBarChart extends StatelessWidget {
                   getTooltipColor: (_) => cs.inverseSurface,
                   getTooltipItem: (group, groupIndex, rod, rodIndex) =>
                       BarTooltipItem(
-                    Fmt.rupiah(rod.toY),
-                    TextStyle(
-                      color: cs.onInverseSurface,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12,
-                    ),
-                  ),
+                        Fmt.rupiah(rod.toY),
+                        TextStyle(
+                          color: cs.onInverseSurface,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                        ),
+                      ),
                 ),
               ),
               barGroups: [

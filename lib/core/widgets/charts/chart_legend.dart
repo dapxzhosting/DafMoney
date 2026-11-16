@@ -11,17 +11,17 @@ class ChartLegend extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
 
     Widget item(Color c, String label) => Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(color: c, shape: BoxShape.circle),
-            ),
-            const SizedBox(width: 6),
-            Text(label, style: tt.labelMedium),
-          ],
-        );
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(color: c, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 6),
+        Text(label, style: tt.labelMedium),
+      ],
+    );
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

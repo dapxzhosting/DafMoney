@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/categories/presentation/providers/category_providers.dart';
+import '../theme/app_spacing.dart';
 
 class MainShell extends ConsumerWidget {
   const MainShell({super.key, required this.shell});
@@ -24,17 +25,17 @@ class MainShell extends ConsumerWidget {
     NavigationDestination(
       icon: Icon(Icons.account_balance_wallet_outlined),
       selectedIcon: Icon(Icons.account_balance_wallet_rounded),
+      label: 'Dompet',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.pie_chart_outline_rounded),
+      selectedIcon: Icon(Icons.pie_chart_rounded),
       label: 'Anggaran',
     ),
     NavigationDestination(
       icon: Icon(Icons.insert_chart_outlined_rounded),
       selectedIcon: Icon(Icons.insert_chart_rounded),
       label: 'Laporan',
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.settings_outlined),
-      selectedIcon: Icon(Icons.settings_rounded),
-      label: 'Pengaturan',
     ),
   ];
 
@@ -43,7 +44,14 @@ class MainShell extends ConsumerWidget {
     ref.watch(categorySeedProvider);
 
     return Scaffold(
-      body: shell,
+      // Batasi lebar konten di tablet / layar lebar agar kartu tidak melar.
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: Gap.maxContentWidth),
+          child: shell,
+        ),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: shell.currentIndex,
         destinations: _destinations,

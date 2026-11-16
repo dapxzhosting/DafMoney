@@ -11,15 +11,17 @@ class NotificationService {
   static Future<void> init() async {
     tz.initializeTimeZones();
 
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const initSettings = InitializationSettings(android: androidSettings);
 
     await _plugin.initialize(initSettings);
 
-    final androidPlugin =
-        _plugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (androidPlugin != null) {
       await androidPlugin.requestNotificationsPermission();
     }
@@ -48,7 +50,8 @@ class NotificationService {
       'Sudah mencatat pengeluaran Anda hari ini? Buka DafMoney sekarang.',
       tz.TZDateTime.from(scheduledDate, tz.local),
       details,
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,      uiLocalNotificationDateInterpretation:
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
@@ -61,7 +64,8 @@ class NotificationService {
     const androidDetails = AndroidNotificationDetails(
       'budget_alert_channel',
       'Peringatan Anggaran',
-      channelDescription: 'Pemberitahuan saat penggunaan anggaran mendekati limit',
+      channelDescription:
+          'Pemberitahuan saat penggunaan anggaran mendekati limit',
       importance: Importance.high,
       priority: Priority.high,
     );

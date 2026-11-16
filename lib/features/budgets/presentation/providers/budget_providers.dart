@@ -13,8 +13,7 @@ final budgetRepositoryProvider = Provider<BudgetRepository>(
   (ref) => BudgetRepository(ref.watch(firestoreProvider)),
 );
 
-final monthBudgetsProvider =
-    StreamProvider.autoDispose<List<Budget>>((ref) {
+final monthBudgetsProvider = StreamProvider.autoDispose<List<Budget>>((ref) {
   final uid = ref.watch(uidProvider);
   final month = ref.watch(selectedMonthProvider);
   if (uid == null) return Stream.value(const <Budget>[]);
@@ -23,28 +22,31 @@ final monthBudgetsProvider =
 
 final budgetProgressProvider =
     Provider.autoDispose<AsyncValue<List<BudgetProgress>>>((ref) {
-  final budgets = ref.watch(monthBudgetsProvider);
-  final txns = ref.watch(monthTransactionsProvider);
+      final budgets = ref.watch(monthBudgetsProvider);
+      final txns = ref.watch(monthTransactionsProvider);
 
-  if (budgets.hasError && !budgets.hasValue) {
-    return AsyncError(budgets.error!, budgets.stackTrace ?? StackTrace.current);
-  }
-  if (txns.hasError && !txns.hasValue) {
-    return AsyncError(txns.error!, txns.stackTrace ?? StackTrace.current);
-  }
-  if (!budgets.hasValue || !txns.hasValue) return const AsyncLoading();
+      if (budgets.hasError && !budgets.hasValue) {
+        return AsyncError(
+          budgets.error!,
+          budgets.stackTrace ?? StackTrace.current,
+        );
+      }
+      if (txns.hasError && !txns.hasValue) {
+        return AsyncError(txns.error!, txns.stackTrace ?? StackTrace.current);
+      }
+      if (!budgets.hasValue || !txns.hasValue) return const AsyncLoading();
 
-  final spent = <String, int>{};
-  for (final t in txns.requireValue) {
-    if (t.type != EntryType.expense) continue;
-    spent[t.categoryId] = (spent[t.categoryId] ?? 0) + t.amount;
-  }
-  final list = [
-    for (final b in budgets.requireValue)
-      BudgetProgress(b, spent[b.categoryId] ?? 0),
-  ]..sort((a, b) => b.ratio.compareTo(a.ratio));
-  return AsyncData(list);
-});
+      final spent = <String, int>{};
+      for (final t in txns.requireValue) {
+        if (t.type != EntryType.expense) continue;
+        spent[t.categoryId] = (spent[t.categoryId] ?? 0) + t.amount;
+      }
+      final list = [
+        for (final b in budgets.requireValue)
+          BudgetProgress(b, spent[b.categoryId] ?? 0),
+      ]..sort((a, b) => b.ratio.compareTo(a.ratio));
+      return AsyncData(list);
+    });
 
 class BudgetActions {
   BudgetActions(this._ref);
@@ -52,7 +54,8 @@ class BudgetActions {
   final Ref _ref;
 
   String get _uid =>
-      _ref.read(uidProvider) ?? (throw const AppException('Sesi berakhir. Masuk lagi.'));
+      _ref.read(uidProvider) ??
+      (throw const AppException('Sesi berakhir. Masuk lagi.'));
 
   BudgetRepository get _repo => _ref.read(budgetRepositoryProvider);
 
@@ -60,20 +63,26 @@ class BudgetActions {
     required String categoryId,
     required DateTime month,
     required int amount,
-  }) =>
-      runGuarded(() => _repo.upsert(_uid,
-          categoryId: categoryId, month: monthKey(month), amount: amount));
+  }) => runGuarded(
+    () => _repo.upsert(
+      _uid,
+      categoryId: categoryId,
+      month: monthKey(month),
+      amount: amount,
+    ),
+  );
 
   Future<String?> delete(String id) => runGuarded(() => _repo.delete(_uid, id));
 
   Future<String?> copyFromPreviousMonth(DateTime month) => runGuarded(
-        () => _repo.copyMonth(
-          _uid,
-          from: monthKey(DateTime(month.year, month.month - 1)),
-          to: monthKey(month),
-        ),
-      );
+    () => _repo.copyMonth(
+      _uid,
+      from: monthKey(DateTime(month.year, month.month - 1)),
+      to: monthKey(month),
+    ),
+  );
 }
 
-final budgetActionsProvider =
-    Provider<BudgetActions>((ref) => BudgetActions(ref));
+final budgetActionsProvider = Provider<BudgetActions>(
+  (ref) => BudgetActions(ref),
+);

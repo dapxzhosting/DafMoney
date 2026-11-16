@@ -64,7 +64,10 @@ List<CategoryTotal> byCategory(List<MoneyTransaction> txns, EntryType type) {
 }
 
 List<MonthTotal> byMonth(
-    List<MoneyTransaction> txns, DateTime firstMonth, int count) {
+  List<MoneyTransaction> txns,
+  DateTime firstMonth,
+  int count,
+) {
   final inc = List<int>.filled(count, 0);
   final exp = List<int>.filled(count, 0);
   for (final t in txns) {
@@ -79,7 +82,11 @@ List<MonthTotal> byMonth(
   }
   return [
     for (var i = 0; i < count; i++)
-      MonthTotal(DateTime(firstMonth.year, firstMonth.month + i), inc[i], exp[i]),
+      MonthTotal(
+        DateTime(firstMonth.year, firstMonth.month + i),
+        inc[i],
+        exp[i],
+      ),
   ];
 }
 
@@ -99,7 +106,11 @@ List<DayTotal> byDay(List<MoneyTransaction> txns, DateRange range) {
   }
   return [
     for (var i = 0; i < n; i++)
-      DayTotal(DateTime(start.year, start.month, start.day + i), inc[i], exp[i]),
+      DayTotal(
+        DateTime(start.year, start.month, start.day + i),
+        inc[i],
+        exp[i],
+      ),
   ];
 }
 
@@ -109,13 +120,15 @@ String buildCsv(List<MoneyTransaction> txns, Map<String, Category> cats) {
   final sorted = [...txns]..sort((a, b) => a.date.compareTo(b.date));
   final sb = StringBuffer('Tanggal,Jenis,Kategori,Jumlah,Catatan\n');
   for (final t in sorted) {
-    sb.writeln([
-      df.format(t.date),
-      t.type.label,
-      esc(cats[t.categoryId]?.name ?? 'Tanpa kategori'),
-      t.amount,
-      esc(t.note),
-    ].join(','));
+    sb.writeln(
+      [
+        df.format(t.date),
+        t.type.label,
+        esc(cats[t.categoryId]?.name ?? 'Tanpa kategori'),
+        t.amount,
+        esc(t.note),
+      ].join(','),
+    );
   }
   return sb.toString();
 }

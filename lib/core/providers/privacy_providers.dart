@@ -18,5 +18,6 @@ class HideBalanceNotifier extends Notifier<bool> {
   }
 }
 
-final hideBalanceProvider =
-    NotifierProvider<HideBalanceNotifier, bool>(HideBalanceNotifier.new);
+final hideBalanceProvider = NotifierProvider<HideBalanceNotifier, bool>(
+  HideBalanceNotifier.new,
+);

@@ -11,13 +11,14 @@ abstract class AppTheme {
   static ThemeData _build(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
 
-    final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.brand,
-      brightness: brightness,
-    ).copyWith(
-      surface: isDark ? const Color(0xFF0F1412) : const Color(0xFFF8FAF9),
-      error: isDark ? const Color(0xFFFF7A80) : AppColors.expense,
-    );
+    final scheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.brand,
+          brightness: brightness,
+        ).copyWith(
+          surface: isDark ? const Color(0xFF0F1412) : const Color(0xFFF8FAF9),
+          error: isDark ? const Color(0xFFFF7A80) : AppColors.expense,
+        );
 
     final base = ThemeData(brightness: brightness, colorScheme: scheme);
     final textTheme = GoogleFonts.plusJakartaSansTextTheme(base.textTheme);
@@ -55,8 +56,10 @@ abstract class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: isDark ? const Color(0xFF171E1B) : Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 18,
+        ),
         border: OutlineInputBorder(
           borderRadius: radius,
           borderSide: BorderSide(color: scheme.outlineVariant),
@@ -107,10 +110,12 @@ abstract class AppTheme {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(builders: {
-        TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
-        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-      }),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
     );
   }
 }

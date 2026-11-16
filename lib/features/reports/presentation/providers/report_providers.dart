@@ -31,7 +31,10 @@ class ReportFilter extends Equatable {
       case ReportPeriod.lastMonth:
         return DateRange.month(DateTime(n.year, n.month - 1));
       case ReportPeriod.last3Months:
-        return DateRange(DateTime(n.year, n.month - 2), DateTime(n.year, n.month + 1));
+        return DateRange(
+          DateTime(n.year, n.month - 2),
+          DateTime(n.year, n.month + 1),
+        );
       case ReportPeriod.thisYear:
         return DateRange(DateTime(n.year), DateTime(n.year + 1));
       case ReportPeriod.custom:
@@ -59,10 +62,11 @@ class ReportFilterNotifier extends Notifier<ReportFilter> {
 
 final reportFilterProvider =
     NotifierProvider<ReportFilterNotifier, ReportFilter>(
-        ReportFilterNotifier.new);
+      ReportFilterNotifier.new,
+    );
 
 final reportTransactionsProvider =
     Provider.autoDispose<AsyncValue<List<MoneyTransaction>>>((ref) {
-  final range = ref.watch(reportFilterProvider).range;
-  return ref.watch(transactionsByRangeProvider(range));
-});
+      final range = ref.watch(reportFilterProvider).range;
+      return ref.watch(transactionsByRangeProvider(range));
+    });

@@ -28,19 +28,18 @@ class MoneyTransaction extends Equatable {
   final bool hasReceipt;
 
   @override
-  List<Object?> get props =>
-      [
-        id,
-        type,
-        amount,
-        categoryId,
-        note,
-        date,
-        createdAt,
-        walletId,
-        recurringId,
-        hasReceipt,
-      ];
+  List<Object?> get props => [
+    id,
+    type,
+    amount,
+    categoryId,
+    note,
+    date,
+    createdAt,
+    walletId,
+    recurringId,
+    hasReceipt,
+  ];
 }
 
 class Balance {

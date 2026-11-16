@@ -123,8 +123,9 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
       if (!mounted) return;
       if (bytes.length > ReceiptRepository.maxBytes) {
         context.showSnack(
-            'Foto terlalu besar. Coba ambil ulang dengan resolusi lebih kecil.',
-            error: true);
+          'Foto terlalu besar. Coba ambil ulang dengan resolusi lebih kecil.',
+          error: true,
+        );
         return;
       }
       setState(() {
@@ -133,8 +134,10 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
       });
     } catch (_) {
       if (!mounted) return;
-      context.showSnack('Tidak bisa mengambil foto. Periksa izin kamera atau galeri.',
-          error: true);
+      context.showSnack(
+        'Tidak bisa mengambil foto. Periksa izin kamera atau galeri.',
+        error: true,
+      );
     }
   }
 
@@ -205,7 +208,8 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     final keepReceipt = hadReceipt && !_removeReceipt && _newReceipt == null;
 
     final err = _editing
-        ? await actions.update(widget.initial!.id,
+        ? await actions.update(
+            widget.initial!.id,
             type: _type,
             amount: amount,
             categoryId: _categoryId!,
@@ -214,7 +218,8 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
             walletId: walletId,
             newReceipt: _newReceipt,
             keepReceipt: keepReceipt,
-            hadReceipt: hadReceipt)
+            hadReceipt: hadReceipt,
+          )
         : await actions.add(
             type: _type,
             amount: amount,
@@ -222,7 +227,8 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
             note: note,
             date: _date,
             walletId: walletId,
-            receipt: _newReceipt);
+            receipt: _newReceipt,
+          );
 
     if (!mounted) return;
     setState(() => _saving = false);
@@ -317,7 +323,9 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
             Icon(Icons.receipt_long_rounded, color: cs.primary),
             const SizedBox(height: 6),
             Text(
-              failed ? 'Foto gagal dimuat. Ketuk untuk ganti.' : 'Tambah foto struk',
+              failed
+                  ? 'Foto gagal dimuat. Ketuk untuk ganti.'
+                  : 'Tambah foto struk',
               style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
             ),
           ],
@@ -383,14 +391,17 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                 onSelectionChanged: (s) => setState(() {
                   _type = s.first;
                   final stillValid = cats.any(
-                      (c) => c.id == _categoryId && c.type == _type);
+                    (c) => c.id == _categoryId && c.type == _type,
+                  );
                   if (!stillValid) _categoryId = null;
                 }),
               ),
             ),
             const SizedBox(height: 24),
-            Text('Jumlah',
-                style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
+            Text(
+              'Jumlah',
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
             const SizedBox(height: 8),
             TextFormField(
               controller: _amount,
@@ -399,8 +410,10 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                 FilteringTextInputFormatter.digitsOnly,
                 ThousandsFormatter(),
               ],
-              style: tt.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.w800, color: accent),
+              style: tt.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: accent,
+              ),
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (v) {
                 final n = parseAmount(v ?? '');
@@ -413,9 +426,11 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
               ),
             ),
             const SizedBox(height: 24),
-            Text('Kategori',
-                style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
-            const SizedBox(height: 10),
+            Text(
+              'Kategori',
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
+            const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -448,13 +463,17 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
             if (_categoryError != null)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text(_categoryError!,
-                    style: tt.bodySmall?.copyWith(color: cs.error)),
+                child: Text(
+                  _categoryError!,
+                  style: tt.bodySmall?.copyWith(color: cs.error),
+                ),
               ),
             const SizedBox(height: 24),
-            Text('Dompet',
-                style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
-            const SizedBox(height: 10),
+            Text(
+              'Dompet',
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
+            const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -471,16 +490,19 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                   ),
                 ActionChip(
                   avatar: Icon(
-                      wallets.isEmpty ? Icons.add_rounded : Icons.tune_rounded,
-                      size: 18),
+                    wallets.isEmpty ? Icons.add_rounded : Icons.tune_rounded,
+                    size: 18,
+                  ),
                   label: Text(wallets.isEmpty ? 'Tambah dompet' : 'Kelola'),
                   onPressed: () => context.push(AppRoutes.wallets),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-            Text('Tanggal',
-                style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
+            Text(
+              'Tanggal',
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
             const SizedBox(height: 8),
             InkWell(
               borderRadius: BorderRadius.circular(16),
@@ -493,8 +515,10 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
               ),
             ),
             const SizedBox(height: 24),
-            Text('Catatan (opsional)',
-                style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
+            Text(
+              'Catatan (opsional)',
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
             const SizedBox(height: 8),
             TextFormField(
               controller: _note,
@@ -507,8 +531,10 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
               ),
             ),
             const SizedBox(height: 24),
-            Text('Foto struk (opsional)',
-                style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
+            Text(
+              'Foto struk (opsional)',
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
             const SizedBox(height: 8),
             _buildReceipt(context),
           ],

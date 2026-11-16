@@ -41,13 +41,12 @@ class FinanceColors extends ThemeExtension<FinanceColors> {
     Color? expense,
     Color? warning,
     Color? surfaceMuted,
-  }) =>
-      FinanceColors(
-        income: income ?? this.income,
-        expense: expense ?? this.expense,
-        warning: warning ?? this.warning,
-        surfaceMuted: surfaceMuted ?? this.surfaceMuted,
-      );
+  }) => FinanceColors(
+    income: income ?? this.income,
+    expense: expense ?? this.expense,
+    warning: warning ?? this.warning,
+    surfaceMuted: surfaceMuted ?? this.surfaceMuted,
+  );
 
   @override
   FinanceColors lerp(ThemeExtension<FinanceColors>? other, double t) {

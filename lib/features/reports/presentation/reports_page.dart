@@ -43,7 +43,9 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
       ),
     );
     if (picked != null) {
-      ref.read(reportFilterProvider.notifier).setCustom(picked.start, picked.end);
+      ref
+          .read(reportFilterProvider.notifier)
+          .setCustom(picked.start, picked.end);
     }
   }
 
@@ -56,7 +58,9 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
     final csv = buildCsv(txns, ref.read(categoryMapProvider));
     await Clipboard.setData(ClipboardData(text: csv));
     if (!mounted) return;
-    context.showSnack('${txns.length} transaksi disalin sebagai CSV. Tempel ke Excel/Sheets.');
+    context.showSnack(
+      '${txns.length} transaksi disalin sebagai CSV. Tempel ke Excel/Sheets.',
+    );
   }
 
   @override
@@ -111,7 +115,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
             '${Fmt.dateShort(range.start)} – ${Fmt.dateShort(lastDay)}',
             style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           AsyncView<List<MoneyTransaction>>(
             value: txAsync,
             loading: const SkeletonList(padding: EdgeInsets.zero, count: 4),
@@ -129,14 +133,17 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
               }
               final summary = summarize(all);
               final fin = context.finance;
-              final months = (lastDay.year - range.start.year) * 12 +
+              final months =
+                  (lastDay.year - range.start.year) * 12 +
                   lastDay.month -
                   range.start.month +
                   1;
               final breakdown = byCategory(all, _breakdownType);
               final slices = buildSlices(breakdown, cats);
-              final breakdownTotal =
-                  breakdown.fold<int>(0, (s, e) => s + e.total);
+              final breakdownTotal = breakdown.fold<int>(
+                0,
+                (s, e) => s + e.total,
+              );
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,7 +155,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                       _Stat('Pengeluaran', summary.expense, fin.expense),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -158,9 +165,12 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Selisih',
-                                    style: tt.labelMedium?.copyWith(
-                                        color: cs.onSurfaceVariant)),
+                                Text(
+                                  'Selisih',
+                                  style: tt.labelMedium?.copyWith(
+                                    color: cs.onSurfaceVariant,
+                                  ),
+                                ),
                                 const SizedBox(height: 4),
                                 Text(
                                   '${summary.net >= 0 ? '+' : '-'}${Fmt.rupiah(summary.net.abs())}',
@@ -178,14 +188,18 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text('Rasio tabungan',
-                                    style: tt.labelMedium?.copyWith(
-                                        color: cs.onSurfaceVariant)),
+                                Text(
+                                  'Rasio tabungan',
+                                  style: tt.labelMedium?.copyWith(
+                                    color: cs.onSurfaceVariant,
+                                  ),
+                                ),
                                 const SizedBox(height: 4),
                                 Text(
                                   Fmt.percent(summary.savingsRate),
                                   style: tt.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.w800),
+                                    fontWeight: FontWeight.w800,
+                                  ),
                                 ),
                               ],
                             ),
@@ -217,11 +231,13 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                             showSelectedIcon: false,
                             segments: const [
                               ButtonSegment(
-                                  value: EntryType.expense,
-                                  label: Text('Pengeluaran')),
+                                value: EntryType.expense,
+                                label: Text('Pengeluaran'),
+                              ),
                               ButtonSegment(
-                                  value: EntryType.income,
-                                  label: Text('Pemasukan')),
+                                value: EntryType.income,
+                                label: Text('Pemasukan'),
+                              ),
                             ],
                             selected: {_breakdownType},
                             onSelectionChanged: (s) =>
@@ -234,8 +250,9 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             child: Text(
                               'Tidak ada ${_breakdownType.label.toLowerCase()} pada periode ini.',
-                              style: tt.bodyMedium
-                                  ?.copyWith(color: cs.onSurfaceVariant),
+                              style: tt.bodyMedium?.copyWith(
+                                color: cs.onSurfaceVariant,
+                              ),
                             ),
                           )
                         else ...[
@@ -283,15 +300,21 @@ class _Stat extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: tt.labelMedium?.copyWith(color: cs.onSurfaceVariant)),
+              Text(
+                label,
+                style: tt.labelMedium?.copyWith(color: cs.onSurfaceVariant),
+              ),
               const SizedBox(height: 4),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
-                child: Text(Fmt.rupiah(value),
-                    style: tt.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w800, color: color)),
+                child: Text(
+                  Fmt.rupiah(value),
+                  style: tt.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: color,
+                  ),
+                ),
               ),
             ],
           ),
@@ -315,12 +338,12 @@ class _Section extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w800)),
-            const SizedBox(height: 14),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 12),
             child,
           ],
         ),
@@ -339,7 +362,10 @@ class _BreakdownRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
-    final look = resolveCategory(ref.watch(categoryMapProvider), total.categoryId);
+    final look = resolveCategory(
+      ref.watch(categoryMapProvider),
+      total.categoryId,
+    );
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -350,18 +376,22 @@ class _BreakdownRow extends ConsumerWidget {
               CategoryAvatar(icon: look.icon, color: look.color, size: 36),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(look.name,
-                    style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+                child: Text(
+                  look.name,
+                  style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(Fmt.rupiah(total.total),
-                      style: tt.bodyMedium
-                          ?.copyWith(fontWeight: FontWeight.w700)),
-                  Text(Fmt.percent(percent),
-                      style: tt.labelSmall
-                          ?.copyWith(color: cs.onSurfaceVariant)),
+                  Text(
+                    Fmt.rupiah(total.total),
+                    style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    Fmt.percent(percent),
+                    style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
                 ],
               ),
             ],

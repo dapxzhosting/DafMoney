@@ -30,8 +30,7 @@ class CategoryRepository {
   Stream<List<Category>> watch(String uid) {
     return _col(uid).snapshots().map((snap) {
       final list = snap.docs.map(_fromDoc).toList();
-      list.sort(
-          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+      list.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
       return list;
     });
   }
@@ -59,11 +58,9 @@ class CategoryRepository {
     required String iconKey,
     required int colorValue,
   }) {
-    return _col(uid).doc(id).update({
-      'name': name,
-      'icon': iconKey,
-      'color': colorValue,
-    });
+    return _col(uid)
+        .doc(id)
+        .update({'name': name, 'icon': iconKey, 'color': colorValue});
   }
 
   Future<void> delete(String uid, String id) async {
@@ -74,7 +71,8 @@ class CategoryRepository {
         .get();
     if (used.docs.isNotEmpty) {
       throw const AppException(
-          'Kategori masih dipakai oleh transaksi. Pindahkan atau hapus transaksinya dulu.');
+        'Kategori masih dipakai oleh transaksi. Pindahkan atau hapus transaksinya dulu.',
+      );
     }
     final budgets = await _user(uid)
         .collection('budgets')

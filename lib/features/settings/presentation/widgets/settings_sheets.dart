@@ -32,21 +32,31 @@ class _Frame extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     return Padding(
       padding: EdgeInsets.fromLTRB(
-          20, 0, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
+        20,
+        0,
+        20,
+        20 + MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+            Text(
+              title,
+              style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+            ),
             if (subtitle != null) ...[
               const SizedBox(height: 6),
-              Text(subtitle!,
-                  style: tt.bodyMedium?.copyWith(
-                      color: cs.onSurfaceVariant, height: 1.45)),
+              Text(
+                subtitle!,
+                style: tt.bodyMedium?.copyWith(
+                  color: cs.onSurfaceVariant,
+                  height: 1.45,
+                ),
+              ),
             ],
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             ...children,
           ],
         ),
@@ -66,8 +76,9 @@ class EditNameSheet extends ConsumerStatefulWidget {
 
 class _EditNameSheetState extends ConsumerState<EditNameSheet> {
   final _form = GlobalKey<FormState>();
-  late final TextEditingController _name =
-      TextEditingController(text: widget.initial);
+  late final TextEditingController _name = TextEditingController(
+    text: widget.initial,
+  );
   bool _saving = false;
 
   @override
@@ -79,8 +90,9 @@ class _EditNameSheetState extends ConsumerState<EditNameSheet> {
   Future<void> _save() async {
     if (!_form.currentState!.validate()) return;
     setState(() => _saving = true);
-    final err =
-        await ref.read(settingsActionsProvider).updateName(_name.text.trim());
+    final err = await ref
+        .read(settingsActionsProvider)
+        .updateName(_name.text.trim());
     if (!mounted) return;
     setState(() => _saving = false);
     if (err != null) {
@@ -107,7 +119,7 @@ class _EditNameSheetState extends ConsumerState<EditNameSheet> {
             onSubmitted: (_) => _save(),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         PrimaryButton(label: 'Simpan', loading: _saving, onPressed: _save),
       ],
     );
@@ -141,7 +153,9 @@ class _InitialBalanceSheetState extends ConsumerState<InitialBalanceSheet> {
   Future<void> _save() async {
     final value = _amount.text.isEmpty ? 0 : (parseAmount(_amount.text) ?? 0);
     setState(() => _saving = true);
-    final err = await ref.read(settingsActionsProvider).setInitialBalance(value);
+    final err = await ref
+        .read(settingsActionsProvider)
+        .setInitialBalance(value);
     if (!mounted) return;
     setState(() => _saving = false);
     if (err != null) {
@@ -157,8 +171,7 @@ class _InitialBalanceSheetState extends ConsumerState<InitialBalanceSheet> {
     final tt = Theme.of(context).textTheme;
     return _Frame(
       title: 'Saldo awal',
-      subtitle:
-          'Uang yang sudah Anda miliki sebelum mulai mencatat. Jumlah ini ditambahkan ke total saldo di Beranda.',
+      subtitle: 'Uang yang sudah Anda miliki sebelum mulai mencatat. Jumlah ini ditambahkan ke total saldo di Beranda.',
       children: [
         TextField(
           controller: _amount,
@@ -170,7 +183,7 @@ class _InitialBalanceSheetState extends ConsumerState<InitialBalanceSheet> {
           style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           decoration: const InputDecoration(prefixText: 'Rp ', hintText: '0'),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         PrimaryButton(label: 'Simpan', loading: _saving, onPressed: _save),
       ],
     );
@@ -234,7 +247,7 @@ class _ChangePasswordSheetState extends ConsumerState<ChangePasswordSheet> {
                 textInputAction: TextInputAction.next,
                 validator: Validators.passwordRequired,
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
               AppTextField(
                 controller: _next,
                 label: 'Kata sandi baru',
@@ -250,7 +263,7 @@ class _ChangePasswordSheetState extends ConsumerState<ChangePasswordSheet> {
                   return null;
                 },
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
               AppTextField(
                 controller: _confirm,
                 label: 'Konfirmasi kata sandi baru',
@@ -263,7 +276,7 @@ class _ChangePasswordSheetState extends ConsumerState<ChangePasswordSheet> {
             ],
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         PrimaryButton(label: 'Simpan', loading: _saving, onPressed: _save),
       ],
     );
@@ -292,8 +305,9 @@ class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
     if (!_form.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     setState(() => _deleting = true);
-    final err =
-        await ref.read(settingsActionsProvider).deleteAccount(_password.text);
+    final err = await ref
+        .read(settingsActionsProvider)
+        .deleteAccount(_password.text);
     if (!mounted) return;
     setState(() => _deleting = false);
     if (err != null) {
@@ -308,8 +322,7 @@ class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
     final cs = Theme.of(context).colorScheme;
     return _Frame(
       title: 'Hapus akun',
-      subtitle:
-          'Akun beserta semua transaksi, kategori, dan anggaran akan dihapus PERMANEN dan tidak bisa dikembalikan. Masukkan kata sandi untuk melanjutkan.',
+      subtitle: 'Akun beserta semua transaksi, kategori, dan anggaran akan dihapus PERMANEN dan tidak bisa dikembalikan. Masukkan kata sandi untuk melanjutkan.',
       children: [
         Form(
           key: _form,
@@ -323,7 +336,7 @@ class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
             onSubmitted: (_) => _delete(),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         FilledButton(
           style: FilledButton.styleFrom(
             backgroundColor: cs.error,
@@ -335,7 +348,9 @@ class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
                   height: 22,
                   width: 22,
                   child: CircularProgressIndicator(
-                      strokeWidth: 2.5, color: cs.onError),
+                    strokeWidth: 2.5,
+                    color: cs.onError,
+                  ),
                 )
               : const Text('Hapus akun permanen'),
         ),

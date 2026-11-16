@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_spacing.dart';
+
+/// Empty state beririsan ilustrasi: ikon besar dengan latar lembut berlapis.
 class EmptyState extends StatelessWidget {
   const EmptyState({
     super.key,
@@ -22,28 +25,74 @@ class EmptyState extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(Gap.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: cs.primaryContainer,
-                shape: BoxShape.circle,
+            SizedBox(
+              width: 150,
+              height: 130,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 130,
+                    height: 130,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: cs.primaryContainer.withValues(alpha: 0.35),
+                    ),
+                  ),
+                  Container(
+                    width: 94,
+                    height: 94,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: cs.primaryContainer.withValues(alpha: 0.7),
+                    ),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 14,
+                    child: Container(
+                      width: 14,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: cs.tertiaryContainer,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    left: 12,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: cs.secondaryContainer,
+                      ),
+                    ),
+                  ),
+                  Icon(icon, size: 48, color: cs.onPrimaryContainer),
+                ],
               ),
-              child: Icon(icon, size: 32, color: cs.onPrimaryContainer),
             ),
-            const SizedBox(height: 18),
-            Text(title,
-                textAlign: TextAlign.center,
-                style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 6),
-            Text(message,
-                textAlign: TextAlign.center,
-                style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant)),
+            const SizedBox(height: Gap.md),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+            ),
             if (actionLabel != null) ...[
-              const SizedBox(height: 18),
+              const SizedBox(height: Gap.md),
               SizedBox(
                 width: 220,
                 child: FilledButton.tonal(

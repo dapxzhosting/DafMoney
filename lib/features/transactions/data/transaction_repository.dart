@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/models/entry_type.dart';
@@ -54,13 +55,13 @@ class TransactionRepository {
         .orderBy('date', descending: true)
         .snapshots()
         .map((snap) {
-      final list = snap.docs.map(_fromDoc).toList();
-      list.sort((a, b) {
-        final c = b.date.compareTo(a.date);
-        return c != 0 ? c : b.createdAt.compareTo(a.createdAt);
-      });
-      return list;
-    });
+          final list = snap.docs.map(_fromDoc).toList();
+          list.sort((a, b) {
+            final c = b.date.compareTo(a.date);
+            return c != 0 ? c : b.createdAt.compareTo(a.createdAt);
+          });
+          return list;
+        });
   }
 
   /// Mengembalikan id dokumen baru (dipakai untuk menyimpan foto struk).
@@ -76,17 +77,19 @@ class TransactionRepository {
     bool hasReceipt = false,
   }) async {
     final ref = _col(uid).doc();
-    await writeSafe(() => ref.set({
-          'type': type.name,
-          'amount': amount,
-          'categoryId': categoryId,
-          'note': note,
-          'date': Timestamp.fromDate(dateOnly(date)),
-          'createdAt': FieldValue.serverTimestamp(),
-          if (walletId != null) 'walletId': walletId,
-          if (recurringId != null) 'recurringId': recurringId,
-          if (hasReceipt) 'hasReceipt': true,
-        }));
+    await writeSafe(
+      () => ref.set({
+        'type': type.name,
+        'amount': amount,
+        'categoryId': categoryId,
+        'note': note,
+        'date': Timestamp.fromDate(dateOnly(date)),
+        'createdAt': FieldValue.serverTimestamp(),
+        if (walletId != null) 'walletId': walletId,
+        if (recurringId != null) 'recurringId': recurringId,
+        if (hasReceipt) 'hasReceipt': true,
+      }),
+    );
     return ref.id;
   }
 
@@ -102,33 +105,40 @@ class TransactionRepository {
     String? recurringId,
     bool hasReceipt = false,
   }) {
-    return writeSafe(() => _col(uid).doc(id).update({
-          'type': type.name,
-          'amount': amount,
-          'categoryId': categoryId,
-          'note': note,
-          'date': Timestamp.fromDate(dateOnly(date)),
-          'walletId': walletId ?? FieldValue.delete(),
-          'hasReceipt': hasReceipt ? true : FieldValue.delete(),
-          if (recurringId != null) 'recurringId': recurringId,
-        }));
+    return writeSafe(
+      () => _col(uid).doc(id).update({
+        'type': type.name,
+        'amount': amount,
+        'categoryId': categoryId,
+        'note': note,
+        'date': Timestamp.fromDate(dateOnly(date)),
+        'walletId': walletId ?? FieldValue.delete(),
+        'hasReceipt': hasReceipt ? true : FieldValue.delete(),
+        if (recurringId != null) 'recurringId': recurringId,
+      }),
+    );
   }
 
   /// Mengembalikan transaksi yang baru dihapus, dengan id yang sama.
   /// createdAt dibuat ulang oleh server (aturan Firestore mewajibkannya).
-  Future<void> restore(String uid, MoneyTransaction t,
-      {required bool hasReceipt}) {
-    return writeSafe(() => _col(uid).doc(t.id).set({
-          'type': t.type.name,
-          'amount': t.amount,
-          'categoryId': t.categoryId,
-          'note': t.note,
-          'date': Timestamp.fromDate(dateOnly(t.date)),
-          'createdAt': FieldValue.serverTimestamp(),
-          if (t.walletId != null) 'walletId': t.walletId,
-          if (t.recurringId != null) 'recurringId': t.recurringId,
-          if (hasReceipt) 'hasReceipt': true,
-        }));
+  Future<void> restore(
+    String uid,
+    MoneyTransaction t, {
+    required bool hasReceipt,
+  }) {
+    return writeSafe(
+      () => _col(uid).doc(t.id).set({
+        'type': t.type.name,
+        'amount': t.amount,
+        'categoryId': t.categoryId,
+        'note': t.note,
+        'date': Timestamp.fromDate(dateOnly(t.date)),
+        'createdAt': FieldValue.serverTimestamp(),
+        if (t.walletId != null) 'walletId': t.walletId,
+        if (t.recurringId != null) 'recurringId': t.recurringId,
+        if (hasReceipt) 'hasReceipt': true,
+      }),
+    );
   }
 
   /// Menghapus transaksi beserta foto struknya (jika ada).

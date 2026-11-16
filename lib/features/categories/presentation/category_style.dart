@@ -41,9 +41,19 @@ abstract class CategoryIcons {
 
 abstract class CategoryPalette {
   static const List<int> colors = [
-    0xFFEF4444, 0xFFF97316, 0xFFF59E0B, 0xFF84CC16, 0xFF22C55E,
-    0xFF14B8A6, 0xFF06B6D4, 0xFF3B82F6, 0xFF6366F1, 0xFF8B5CF6,
-    0xFFD946EF, 0xFFEC4899, 0xFF78716C,
+    0xFFEF4444,
+    0xFFF97316,
+    0xFFF59E0B,
+    0xFF84CC16,
+    0xFF22C55E,
+    0xFF14B8A6,
+    0xFF06B6D4,
+    0xFF3B82F6,
+    0xFF6366F1,
+    0xFF8B5CF6,
+    0xFFD946EF,
+    0xFFEC4899,
+    0xFF78716C,
   ];
 }
 
@@ -64,7 +74,10 @@ CategoryLook resolveCategory(Map<String, Category> map, String id) {
   final c = map[id];
   if (c == null) {
     return const CategoryLook(
-        'Tanpa kategori', Icons.help_outline_rounded, Color(0xFF9CA3AF));
+      'Tanpa kategori',
+      Icons.help_outline_rounded,
+      Color(0xFF9CA3AF),
+    );
   }
   return CategoryLook(c.name, c.icon, c.color);
 }

@@ -46,13 +46,15 @@ class WalletRepository {
     required int colorValue,
     required int initialBalance,
   }) {
-    return writeSafe(() => _col(uid).add({
-          'name': name,
-          'icon': iconKey,
-          'color': colorValue,
-          'initialBalance': initialBalance,
-          'createdAt': FieldValue.serverTimestamp(),
-        }));
+    return writeSafe(
+      () => _col(uid).add({
+        'name': name,
+        'icon': iconKey,
+        'color': colorValue,
+        'initialBalance': initialBalance,
+        'createdAt': FieldValue.serverTimestamp(),
+      }),
+    );
   }
 
   Future<void> update(
@@ -63,12 +65,14 @@ class WalletRepository {
     required int colorValue,
     required int initialBalance,
   }) {
-    return writeSafe(() => _col(uid).doc(id).update({
-          'name': name,
-          'icon': iconKey,
-          'color': colorValue,
-          'initialBalance': initialBalance,
-        }));
+    return writeSafe(
+      () => _col(uid).doc(id).update({
+        'name': name,
+        'icon': iconKey,
+        'color': colorValue,
+        'initialBalance': initialBalance,
+      }),
+    );
   }
 
   /// Menghapus dompet. Transaksi yang memakai dompet ini tidak dihapus,
@@ -76,8 +80,10 @@ class WalletRepository {
   Future<void> delete(String uid, String id) async {
     final txCol = _user(uid).collection('transactions');
     while (true) {
-      final snap =
-          await txCol.where('walletId', isEqualTo: id).limit(400).get();
+      final snap = await txCol
+          .where('walletId', isEqualTo: id)
+          .limit(400)
+          .get();
       if (snap.docs.isEmpty) break;
       final batch = _db.batch();
       for (final d in snap.docs) {

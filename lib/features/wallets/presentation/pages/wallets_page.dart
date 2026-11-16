@@ -38,7 +38,8 @@ class WalletsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wallets = ref.watch(walletsProvider);
-    final totals = ref.watch(walletTotalsProvider).valueOrNull ??
+    final totals =
+        ref.watch(walletTotalsProvider).valueOrNull ??
         const <String, Balance>{};
     final all = ref.watch(balanceProvider).valueOrNull ?? Balance.zero;
     final profileInitial =
@@ -62,8 +63,7 @@ class WalletsPage extends ConsumerWidget {
             return EmptyState(
               icon: Icons.account_balance_wallet_rounded,
               title: 'Belum ada dompet',
-              message:
-                  'Pisahkan saldo Anda, mis. Tunai, rekening bank, atau dompet digital.',
+              message: 'Pisahkan saldo Anda, mis. Tunai, rekening bank, atau dompet digital.',
               actionLabel: 'Tambah dompet',
               onAction: () => showWalletSheet(context),
             );
@@ -80,7 +80,7 @@ class WalletsPage extends ConsumerWidget {
                   onTap: () => showWalletSheet(context, initial: w),
                   onDelete: () => _delete(context, ref, w),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
               ],
               if (unassigned != null && (unassigned.total != 0))
                 Padding(
@@ -113,13 +113,17 @@ class _TotalCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Total saldo',
-              style: tt.labelLarge?.copyWith(color: cs.onPrimaryContainer)),
+          Text(
+            'Total saldo',
+            style: tt.labelLarge?.copyWith(color: cs.onPrimaryContainer),
+          ),
           const SizedBox(height: 6),
           AnimatedAmount(
             value: total,
             style: tt.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800, color: cs.onPrimaryContainer),
+              fontWeight: FontWeight.w800,
+              color: cs.onPrimaryContainer,
+            ),
           ),
         ],
       ),
@@ -159,11 +163,14 @@ class _WalletCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(wallet.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: tt.titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w700)),
+                    Text(
+                      wallet.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: tt.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     const SizedBox(height: 2),
                     AnimatedAmount(
                       value: balance,
@@ -202,26 +209,31 @@ class _UnassignedCard extends StatelessWidget {
         child: Row(
           children: [
             CategoryAvatar(
-                icon: Icons.help_outline_rounded,
-                color: const Color(0xFF9CA3AF)),
+              icon: Icons.help_outline_rounded,
+              color: const Color(0xFF9CA3AF),
+            ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Tanpa dompet',
-                      style: tt.titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    'Tanpa dompet',
+                    style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                  ),
                   const SizedBox(height: 2),
-                  Text('Selisih transaksi yang belum dikaitkan ke dompet',
-                      style: tt.bodySmall
-                          ?.copyWith(color: cs.onSurfaceVariant)),
+                  Text(
+                    'Selisih transaksi yang belum dikaitkan ke dompet',
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
-            Text(Fmt.rupiah(net),
-                style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+            Text(
+              Fmt.rupiah(net),
+              style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+            ),
           ],
         ),
       ),

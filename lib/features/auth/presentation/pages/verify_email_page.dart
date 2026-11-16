@@ -65,8 +65,9 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage>
   }
 
   Future<void> _resend() async {
-    final ok =
-        await ref.read(authControllerProvider.notifier).resendVerification();
+    final ok = await ref
+        .read(authControllerProvider.notifier)
+        .resendVerification();
     if (!mounted) return;
     if (ok) {
       setState(() => _cooldown = _cooldownSeconds);

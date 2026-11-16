@@ -66,7 +66,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   autofillHints: const [AutofillHints.email],
                   validator: Validators.email,
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
                 AppTextField(
                   controller: _password,
                   label: 'Kata sandi',
@@ -90,12 +90,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ),
         const SizedBox(height: 8),
         PrimaryButton(label: 'Masuk', loading: loading, onPressed: _submit),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Belum punya akun?',
-                style: TextStyle(color: cs.onSurfaceVariant)),
+            Text(
+              'Belum punya akun?',
+              style: TextStyle(color: cs.onSurfaceVariant),
+            ),
             TextButton(
               onPressed: () => context.push(AppRoutes.register),
               child: const Text('Daftar'),

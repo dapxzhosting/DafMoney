@@ -46,30 +46,33 @@ class _SplashPageState extends ConsumerState<SplashPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 84,
-                height: 84,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [cs.primary, cs.tertiary],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(26),
-                  boxShadow: [
-                    BoxShadow(
-                      color: cs.primary.withValues(alpha: 0.35),
-                      blurRadius: 28,
-                      offset: const Offset(0, 12),
+                    width: 84,
+                    height: 84,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [cs.primary, cs.tertiary],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(26),
+                      boxShadow: [
+                        BoxShadow(
+                          color: cs.primary.withValues(alpha: 0.35),
+                          blurRadius: 28,
+                          offset: const Offset(0, 12),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child:
-                    Icon(Icons.savings_rounded, size: 42, color: cs.onPrimary),
-              )
+                    child: Icon(
+                      Icons.savings_rounded,
+                      size: 42,
+                      color: cs.onPrimary,
+                    ),
+                  )
                   .animate()
                   .scale(duration: 600.ms, curve: Curves.easeOutBack)
                   .fadeIn(),
-              const SizedBox(height: 22),
+              const SizedBox(height: 24),
               Text(
                 AppConstants.appName,
                 style: tt.headlineSmall?.copyWith(
@@ -80,9 +83,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
               if (_slow || auth.hasError) ...[
                 const SizedBox(height: 28),
                 Text(
-                  auth.hasError
-                      ? 'Gagal memuat sesi: ${auth.error}'
-                      : 'Memuat lebih lama dari biasanya. Periksa koneksi internet Anda.',
+                  auth.hasError ? 'Gagal memuat sesi: ${auth.error}' : 'Memuat lebih lama dari biasanya. Periksa koneksi internet Anda.',
                   textAlign: TextAlign.center,
                   style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
                 ),

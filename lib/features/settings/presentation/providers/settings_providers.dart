@@ -28,16 +28,17 @@ class SettingsActions {
   final Ref _ref;
 
   String get _uid =>
-      _ref.read(uidProvider) ?? (throw const AppException('Sesi berakhir. Masuk lagi.'));
+      _ref.read(uidProvider) ??
+      (throw const AppException('Sesi berakhir. Masuk lagi.'));
 
   SettingsRepository get _repo => _ref.read(settingsRepositoryProvider);
 
   AuthRepository get _auth => _ref.read(authRepositoryProvider);
 
   Future<String?> updateName(String name) => runGuarded(() async {
-        await _repo.updateName(_uid, name);
-        await _auth.updateDisplayName(name);
-      });
+    await _repo.updateName(_uid, name);
+    await _auth.updateDisplayName(name);
+  });
 
   Future<String?> setInitialBalance(int value) =>
       runGuarded(() => _repo.setInitialBalance(_uid, value));
@@ -49,26 +50,26 @@ class SettingsActions {
       runGuarded(() => _repo.deleteAllTransactions(_uid));
 
   Future<String?> copyAllCsv() => runGuarded(() async {
-        final txns =
-            await _ref.read(transactionRepositoryProvider).fetchAll(_uid);
-        if (txns.isEmpty) {
-          throw const AppException('Belum ada transaksi untuk diekspor.');
-        }
-        final csv = buildCsv(txns, _ref.read(categoryMapProvider));
-        await Clipboard.setData(ClipboardData(text: csv));
-      });
+    final txns = await _ref.read(transactionRepositoryProvider).fetchAll(_uid);
+    if (txns.isEmpty) {
+      throw const AppException('Belum ada transaksi untuk diekspor.');
+    }
+    final csv = buildCsv(txns, _ref.read(categoryMapProvider));
+    await Clipboard.setData(ClipboardData(text: csv));
+  });
 
   Future<String?> deleteAccount(String password) => runGuarded(() async {
-        final uid = _uid;
-        await _auth.reauthenticate(password);
-        await _repo.deleteAllData(uid);
-        try {
-          await _auth.deleteCurrentUser();
-        } catch (e) {
-          throw AppException('Gagal menghapus akun: $e');
-        }
-      });
+    final uid = _uid;
+    await _auth.reauthenticate(password);
+    await _repo.deleteAllData(uid);
+    try {
+      await _auth.deleteCurrentUser();
+    } catch (e) {
+      throw AppException('Gagal menghapus akun: $e');
+    }
+  });
 }
 
-final settingsActionsProvider =
-    Provider<SettingsActions>((ref) => SettingsActions(ref));
+final settingsActionsProvider = Provider<SettingsActions>(
+  (ref) => SettingsActions(ref),
+);

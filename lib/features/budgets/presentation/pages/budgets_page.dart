@@ -31,7 +31,11 @@ Color budgetColor(BuildContext context, BudgetStatus s) {
 class BudgetsPage extends ConsumerWidget {
   const BudgetsPage({super.key});
 
-  void _openAdd(BuildContext context, WidgetRef ref, List<BudgetProgress> current) {
+  void _openAdd(
+    BuildContext context,
+    WidgetRef ref,
+    List<BudgetProgress> current,
+  ) {
     final month = ref.read(selectedMonthProvider);
     final cats = ref.read(categoriesProvider).valueOrNull ?? const [];
     final used = current.map((p) => p.budget.categoryId).toSet();
@@ -40,8 +44,9 @@ class BudgetsPage extends ConsumerWidget {
         .toList();
     if (choices.isEmpty) {
       context.showSnack(
-          'Semua kategori pengeluaran sudah punya anggaran bulan ini.',
-          error: true);
+        'Semua kategori pengeluaran sudah punya anggaran bulan ini.',
+        error: true,
+      );
       return;
     }
     showBudgetSheet(context, month: month, choices: choices);
@@ -49,11 +54,14 @@ class BudgetsPage extends ConsumerWidget {
 
   Future<void> _copy(BuildContext context, WidgetRef ref) async {
     final month = ref.read(selectedMonthProvider);
-    final err =
-        await ref.read(budgetActionsProvider).copyFromPreviousMonth(month);
+    final err = await ref
+        .read(budgetActionsProvider)
+        .copyFromPreviousMonth(month);
     if (!context.mounted) return;
-    context.showSnack(err ?? 'Anggaran bulan lalu berhasil disalin.',
-        error: err != null);
+    context.showSnack(
+      err ?? 'Anggaran bulan lalu berhasil disalin.',
+      error: err != null,
+    );
   }
 
   @override
@@ -87,7 +95,7 @@ class BudgetsPage extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       EmptyState(
-                        icon: Icons.account_balance_wallet_rounded,
+                        icon: Icons.pie_chart_rounded,
                         title: 'Belum ada anggaran',
                         message:
                             'Atur batas pengeluaran per kategori untuk ${Fmt.monthYear(month)}.',
@@ -102,14 +110,19 @@ class BudgetsPage extends ConsumerWidget {
                   );
                 }
 
-                final totalBudget =
-                    list.fold<int>(0, (s, p) => s + p.budget.amount);
+                final totalBudget = list.fold<int>(
+                  0,
+                  (s, p) => s + p.budget.amount,
+                );
                 final totalSpent = list.fold<int>(0, (s, p) => s + p.spent);
-                final overall =
-                    totalBudget == 0 ? 0.0 : totalSpent / totalBudget;
+                final overall = totalBudget == 0
+                    ? 0.0
+                    : totalSpent / totalBudget;
                 final overallStatus = overall >= 1
                     ? BudgetStatus.over
-                    : (overall >= 0.8 ? BudgetStatus.warning : BudgetStatus.safe);
+                    : (overall >= 0.8
+                          ? BudgetStatus.warning
+                          : BudgetStatus.safe);
                 final overallColor = budgetColor(context, overallStatus);
 
                 return ListView(
@@ -121,14 +134,18 @@ class BudgetsPage extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Total terpakai',
-                                style: tt.labelLarge
-                                    ?.copyWith(color: cs.onSurfaceVariant)),
+                            Text(
+                              'Total terpakai',
+                              style: tt.labelLarge?.copyWith(
+                                color: cs.onSurfaceVariant,
+                              ),
+                            ),
                             const SizedBox(height: 4),
                             Text(
                               '${Fmt.rupiah(totalSpent)} / ${Fmt.rupiah(totalBudget)}',
-                              style: tt.titleLarge
-                                  ?.copyWith(fontWeight: FontWeight.w800),
+                              style: tt.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                             const SizedBox(height: 12),
                             _Bar(value: overall, color: overallColor),
@@ -138,14 +155,15 @@ class BudgetsPage extends ConsumerWidget {
                                   ? 'Sisa ${Fmt.rupiah(totalBudget - totalSpent)}'
                                   : 'Melebihi ${Fmt.rupiah(totalSpent - totalBudget)}',
                               style: tt.bodySmall?.copyWith(
-                                  color: overallColor,
-                                  fontWeight: FontWeight.w700),
+                                color: overallColor,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                     for (final p in list)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 10),
@@ -228,21 +246,27 @@ class _BudgetCard extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(look.name,
-                            style: tt.titleSmall
-                                ?.copyWith(fontWeight: FontWeight.w700)),
+                        Text(
+                          look.name,
+                          style: tt.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                         Text(
                           '${Fmt.rupiah(progress.spent)} dari ${Fmt.rupiah(progress.budget.amount)}',
-                          style: tt.bodySmall
-                              ?.copyWith(color: cs.onSurfaceVariant),
+                          style: tt.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   Text(
                     Fmt.percent(progress.ratio),
-                    style: tt.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w800, color: color),
+                    style: tt.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: color,
+                    ),
                   ),
                 ],
               ),
@@ -255,8 +279,10 @@ class _BudgetCard extends ConsumerWidget {
                   over
                       ? 'Melebihi ${Fmt.rupiah(-progress.remaining)}'
                       : 'Sisa ${Fmt.rupiah(progress.remaining)}',
-                  style: tt.bodySmall
-                      ?.copyWith(color: color, fontWeight: FontWeight.w700),
+                  style: tt.bodySmall?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],

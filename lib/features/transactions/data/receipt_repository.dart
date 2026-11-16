@@ -22,16 +22,19 @@ class ReceiptRepository {
   static void ensureSize(Uint8List bytes) {
     if (bytes.length > maxBytes) {
       throw const AppException(
-          'Foto struk terlalu besar. Coba ambil ulang dengan resolusi lebih kecil.');
+        'Foto struk terlalu besar. Coba ambil ulang dengan resolusi lebih kecil.',
+      );
     }
   }
 
   Future<void> save(String uid, String transactionId, Uint8List bytes) {
     ensureSize(bytes);
-    return writeSafe(() => _col(uid).doc(transactionId).set({
-          'data': Blob(bytes),
-          'updatedAt': FieldValue.serverTimestamp(),
-        }));
+    return writeSafe(
+      () => _col(uid).doc(transactionId).set({
+        'data': Blob(bytes),
+        'updatedAt': FieldValue.serverTimestamp(),
+      }),
+    );
   }
 
   Future<Uint8List?> fetch(String uid, String transactionId) async {

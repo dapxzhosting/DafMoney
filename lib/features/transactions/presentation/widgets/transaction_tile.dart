@@ -54,30 +54,39 @@ class TransactionTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(look.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: tt.titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w700)),
+                    Text(
+                      look.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: tt.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     const SizedBox(height: 2),
-                    Text(subtitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: tt.bodySmall
-                            ?.copyWith(color: cs.onSurfaceVariant)),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                    ),
                   ],
                 ),
               ),
               const SizedBox(width: 8),
               if (transaction.hasReceipt) ...[
-                Icon(Icons.attach_file_rounded,
-                    size: 16, color: cs.onSurfaceVariant),
+                Icon(
+                  Icons.attach_file_rounded,
+                  size: 16,
+                  color: cs.onSurfaceVariant,
+                ),
                 const SizedBox(width: 4),
               ],
               Text(
                 '${isIncome ? '+' : '-'}${Fmt.rupiah(transaction.amount)}',
                 style: tt.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800, color: amountColor),
+                  fontWeight: FontWeight.w800,
+                  color: amountColor,
+                ),
               ),
             ],
           ),

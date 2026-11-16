@@ -80,12 +80,15 @@ class _WalletFormSheetState extends ConsumerState<WalletFormSheet> {
             name: name,
             iconKey: _iconKey,
             colorValue: _colorValue,
-            initialBalance: balance)
-        : await actions.update(widget.initial!.id,
+            initialBalance: balance,
+          )
+        : await actions.update(
+            widget.initial!.id,
             name: name,
             iconKey: _iconKey,
             colorValue: _colorValue,
-            initialBalance: balance);
+            initialBalance: balance,
+          );
     if (!mounted) return;
     setState(() => _saving = false);
     if (err != null) {
@@ -104,7 +107,11 @@ class _WalletFormSheetState extends ConsumerState<WalletFormSheet> {
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
-          20, 0, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
+        20,
+        0,
+        20,
+        20 + MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -114,11 +121,14 @@ class _WalletFormSheetState extends ConsumerState<WalletFormSheet> {
               editing ? 'Ubah dompet' : 'Dompet baru',
               style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
             Row(
               children: [
                 CategoryAvatar(
-                    icon: CategoryIcons.byKey(_iconKey), color: color, size: 52),
+                  icon: CategoryIcons.byKey(_iconKey),
+                  color: color,
+                  size: 52,
+                ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: TextField(
@@ -147,10 +157,12 @@ class _WalletFormSheetState extends ConsumerState<WalletFormSheet> {
                 hintText: '0',
               ),
             ),
-            const SizedBox(height: 20),
-            Text('Ikon',
-                style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
+            Text(
+              'Ikon',
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
+            const SizedBox(height: 8),
             Wrap(
               spacing: 10,
               runSpacing: 10,
@@ -173,18 +185,21 @@ class _WalletFormSheetState extends ConsumerState<WalletFormSheet> {
                           width: key == _iconKey ? 1.8 : 1,
                         ),
                       ),
-                      child: Icon(CategoryIcons.byKey(key),
-                          size: 22,
-                          color:
-                              key == _iconKey ? color : cs.onSurfaceVariant),
+                      child: Icon(
+                        CategoryIcons.byKey(key),
+                        size: 22,
+                        color: key == _iconKey ? color : cs.onSurfaceVariant,
+                      ),
                     ),
                   ),
               ],
             ),
-            const SizedBox(height: 20),
-            Text('Warna',
-                style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
+            Text(
+              'Warna',
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
+            const SizedBox(height: 8),
             Wrap(
               spacing: 12,
               runSpacing: 12,
@@ -207,8 +222,11 @@ class _WalletFormSheetState extends ConsumerState<WalletFormSheet> {
                         ),
                       ),
                       child: v == _colorValue
-                          ? const Icon(Icons.check_rounded,
-                              size: 18, color: Colors.white)
+                          ? const Icon(
+                              Icons.check_rounded,
+                              size: 18,
+                              color: Colors.white,
+                            )
                           : null,
                     ),
                   ),

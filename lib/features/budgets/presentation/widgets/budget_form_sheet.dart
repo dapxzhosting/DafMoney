@@ -90,8 +90,9 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
       _error = null;
       _saving = true;
     });
-    final err = await ref.read(budgetActionsProvider).save(
-        categoryId: _categoryId!, month: widget.month, amount: amount);
+    final err = await ref
+        .read(budgetActionsProvider)
+        .save(categoryId: _categoryId!, month: widget.month, amount: amount);
     if (!mounted) return;
     setState(() => _saving = false);
     if (err != null) {
@@ -110,7 +111,9 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
       destructive: true,
     );
     if (!ok || !mounted) return;
-    final err = await ref.read(budgetActionsProvider).delete(widget.existing!.id);
+    final err = await ref
+        .read(budgetActionsProvider)
+        .delete(widget.existing!.id);
     if (!mounted) return;
     if (err != null) {
       context.showSnack(err, error: true);
@@ -127,7 +130,11 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
-          20, 0, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
+        20,
+        0,
+        20,
+        20 + MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -148,19 +155,25 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
                   ),
               ],
             ),
-            Text(Fmt.monthYear(widget.month),
-                style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant)),
-            const SizedBox(height: 20),
-            Text('Kategori',
-                style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
-            const SizedBox(height: 10),
+            Text(
+              Fmt.monthYear(widget.month),
+              style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Kategori',
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
+            const SizedBox(height: 8),
             if (_editing && cat != null)
               Row(
                 children: [
                   CategoryAvatar(icon: cat.icon, color: cat.color, size: 40),
                   const SizedBox(width: 12),
-                  Text(cat.name,
-                      style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    cat.name,
+                    style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                  ),
                 ],
               )
             else
@@ -177,9 +190,11 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
                     ),
                 ],
               ),
-            const SizedBox(height: 20),
-            Text('Batas anggaran',
-                style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
+            const SizedBox(height: 16),
+            Text(
+              'Batas anggaran',
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: _amount,

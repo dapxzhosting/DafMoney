@@ -51,8 +51,10 @@ class AuthRepository {
 
       try {
         await user.updateDisplayName(cleanName);
-        await _createProfile(user, cleanName)
-            .timeout(const Duration(seconds: 8));
+        await _createProfile(
+          user,
+          cleanName,
+        ).timeout(const Duration(seconds: 8));
       } catch (_) {}
     });
   }
@@ -103,7 +105,11 @@ class AuthRepository {
         EmailAuthProvider.credential(email: email, password: password),
       );
     } on FirebaseAuthException catch (e) {
-      const wrong = {'wrong-password', 'invalid-credential', 'invalid-login-credentials'};
+      const wrong = {
+        'wrong-password',
+        'invalid-credential',
+        'invalid-login-credentials',
+      };
       if (wrong.contains(e.code)) {
         throw const AuthFailure('Kata sandi saat ini salah.');
       }
@@ -111,7 +117,8 @@ class AuthRepository {
     }
   }
 
-  Future<void> reauthenticate(String password) => _guard(() => _reauth(password));
+  Future<void> reauthenticate(String password) =>
+      _guard(() => _reauth(password));
 
   Future<void> changePassword({required String current, required String next}) {
     return _guard(() async {

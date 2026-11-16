@@ -7,8 +7,9 @@ import '../providers/shared_prefs_provider.dart';
 class ThemeModeNotifier extends Notifier<ThemeMode> {
   @override
   ThemeMode build() {
-    final saved =
-        ref.read(sharedPrefsProvider).getString(AppConstants.themeModeKey);
+    final saved = ref
+        .read(sharedPrefsProvider)
+        .getString(AppConstants.themeModeKey);
     return ThemeMode.values.firstWhere(
       (m) => m.name == saved,
       orElse: () => ThemeMode.system,
@@ -23,5 +24,6 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
   }
 }
 
-final themeModeProvider =
-    NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
+final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(
+  ThemeModeNotifier.new,
+);

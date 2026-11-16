@@ -46,8 +46,11 @@ class BudgetRepository {
 
   Future<void> delete(String uid, String id) => _col(uid).doc(id).delete();
 
-  Future<void> copyMonth(String uid,
-      {required String from, required String to}) async {
+  Future<void> copyMonth(
+    String uid, {
+    required String from,
+    required String to,
+  }) async {
     final src = await _col(uid).where('month', isEqualTo: from).get();
     if (src.docs.isEmpty) {
       throw const AppException('Tidak ada anggaran di bulan sebelumnya.');

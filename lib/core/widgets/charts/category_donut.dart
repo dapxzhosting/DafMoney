@@ -79,12 +79,17 @@ class CategoryDonut extends StatelessWidget {
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(centerLabel,
-                      style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant)),
+                  Text(
+                    centerLabel,
+                    style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
                   const SizedBox(height: 2),
-                  Text(Fmt.rupiahCompact(total),
-                      style: tt.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w800)),
+                  Text(
+                    Fmt.rupiahCompact(total),
+                    style: tt.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -99,20 +104,26 @@ class CategoryDonut extends StatelessWidget {
                 Container(
                   width: 10,
                   height: 10,
-                  decoration:
-                      BoxDecoration(color: s.color, shape: BoxShape.circle),
+                  decoration: BoxDecoration(
+                    color: s.color,
+                    shape: BoxShape.circle,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(s.label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: tt.bodyMedium),
+                  child: Text(
+                    s.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: tt.bodyMedium,
+                  ),
                 ),
                 Text(
                   total == 0 ? '0%' : Fmt.percent(s.value / total),
                   style: tt.bodyMedium?.copyWith(
-                      color: cs.onSurfaceVariant, fontWeight: FontWeight.w600),
+                    color: cs.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),

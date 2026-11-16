@@ -58,9 +58,13 @@ class _CategoriesPageState extends ConsumerState<CategoriesPage> {
                 showSelectedIcon: false,
                 segments: const [
                   ButtonSegment(
-                      value: EntryType.expense, label: Text('Pengeluaran')),
+                    value: EntryType.expense,
+                    label: Text('Pengeluaran'),
+                  ),
                   ButtonSegment(
-                      value: EntryType.income, label: Text('Pemasukan')),
+                    value: EntryType.income,
+                    label: Text('Pemasukan'),
+                  ),
                 ],
                 selected: {_type},
                 onSelectionChanged: (s) => setState(() => _type = s.first),
@@ -77,7 +81,8 @@ class _CategoriesPageState extends ConsumerState<CategoriesPage> {
                   return EmptyState(
                     icon: Icons.category_rounded,
                     title: 'Belum ada kategori',
-                    message: 'Tambahkan kategori ${_type.label.toLowerCase()} pertama Anda.',
+                    message:
+                        'Tambahkan kategori ${_type.label.toLowerCase()} pertama Anda.',
                     actionLabel: 'Tambah kategori',
                     onAction: () => showCategorySheet(context, type: _type),
                   );
@@ -85,17 +90,22 @@ class _CategoriesPageState extends ConsumerState<CategoriesPage> {
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
                   itemCount: list.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemBuilder: (_, i) {
                     final c = list[i];
                     return Card(
                       child: InkWell(
                         borderRadius: BorderRadius.circular(20),
-                        onTap: () => showCategorySheet(context,
-                            type: c.type, initial: c),
+                        onTap: () => showCategorySheet(
+                          context,
+                          type: c.type,
+                          initial: c,
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 10),
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
                           child: Row(
                             children: [
                               CategoryAvatar(icon: c.icon, color: c.color),
@@ -103,17 +113,16 @@ class _CategoriesPageState extends ConsumerState<CategoriesPage> {
                               Expanded(
                                 child: Text(
                                   c.name,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
+                                  style: Theme.of(context).textTheme.titleSmall
                                       ?.copyWith(fontWeight: FontWeight.w700),
                                 ),
                               ),
                               IconButton(
                                 onPressed: () => _delete(c),
-                                icon: Icon(Icons.delete_outline_rounded,
-                                    color:
-                                        Theme.of(context).colorScheme.error),
+                                icon: Icon(
+                                  Icons.delete_outline_rounded,
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
                               ),
                             ],
                           ),
