@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:quick_actions/quick_actions.dart';
 
+import '../models/entry_type.dart';
 import '../router/app_routes.dart';
 
 class QuickActionsService {
@@ -23,9 +24,13 @@ class QuickActionsService {
     ]);
 
     _actions.initialize((String shortcutType) {
-      if (shortcutType == 'action_expense' || shortcutType == 'action_income') {
-        router.push(AppRoutes.transactionForm);
-      }
+      final type = switch (shortcutType) {
+        'action_income' => EntryType.income,
+        'action_expense' => EntryType.expense,
+        _ => null,
+      };
+      if (type == null) return;
+      router.push('${AppRoutes.transactionForm}?type=${type.name}');
     });
   }
 }

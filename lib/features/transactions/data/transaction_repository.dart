@@ -114,6 +114,23 @@ class TransactionRepository {
         }));
   }
 
+  /// Mengembalikan transaksi yang baru dihapus, dengan id yang sama.
+  /// createdAt dibuat ulang oleh server (aturan Firestore mewajibkannya).
+  Future<void> restore(String uid, MoneyTransaction t,
+      {required bool hasReceipt}) {
+    return writeSafe(() => _col(uid).doc(t.id).set({
+          'type': t.type.name,
+          'amount': t.amount,
+          'categoryId': t.categoryId,
+          'note': t.note,
+          'date': Timestamp.fromDate(dateOnly(t.date)),
+          'createdAt': FieldValue.serverTimestamp(),
+          if (t.walletId != null) 'walletId': t.walletId,
+          if (t.recurringId != null) 'recurringId': t.recurringId,
+          if (hasReceipt) 'hasReceipt': true,
+        }));
+  }
+
   /// Menghapus transaksi beserta foto struknya (jika ada).
   Future<void> delete(String uid, String id) {
     final user = _db.collection('users').doc(uid);

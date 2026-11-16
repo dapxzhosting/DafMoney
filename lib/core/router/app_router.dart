@@ -8,6 +8,7 @@ import '../../features/categories/presentation/pages/categories_page.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/reports/presentation/reports_page.dart';
 import '../../features/transactions/domain/money_transaction.dart';
+import '../models/entry_type.dart';
 import '../../features/transactions/presentation/pages/transaction_form_page.dart';
 import '../../features/transactions/presentation/pages/transactions_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
@@ -86,8 +87,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.transactionForm,
-        builder: (_, state) =>
-            TransactionFormPage(initial: state.extra as MoneyTransaction?),
+        builder: (_, state) => TransactionFormPage(
+          initial: state.extra as MoneyTransaction?,
+          initialType: EntryType.values
+              .asNameMap()[state.uri.queryParameters['type']],
+        ),
       ),
       GoRoute(
         path: AppRoutes.categories,

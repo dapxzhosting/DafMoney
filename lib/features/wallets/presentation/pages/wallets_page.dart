@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/snackbar.dart';
+import '../../../../core/widgets/animated_amount.dart';
 import '../../../../core/widgets/async_view.dart';
 import '../../../../core/widgets/category_avatar.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
@@ -115,8 +116,8 @@ class _TotalCard extends StatelessWidget {
           Text('Total saldo',
               style: tt.labelLarge?.copyWith(color: cs.onPrimaryContainer)),
           const SizedBox(height: 6),
-          Text(
-            Fmt.rupiah(total),
+          AnimatedAmount(
+            value: total,
             style: tt.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w800, color: cs.onPrimaryContainer),
           ),
@@ -164,8 +165,8 @@ class _WalletCard extends StatelessWidget {
                         style: tt.titleSmall
                             ?.copyWith(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 2),
-                    Text(
-                      Fmt.rupiah(balance),
+                    AnimatedAmount(
+                      value: balance,
                       style: tt.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                         color: balance < 0 ? fin.expense : cs.onSurfaceVariant,

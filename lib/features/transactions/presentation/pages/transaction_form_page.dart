@@ -13,7 +13,6 @@ import '../../../../core/utils/amount_formatter.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/snackbar.dart';
-import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../categories/presentation/category_style.dart';
 import '../../../categories/presentation/providers/category_providers.dart';
@@ -23,11 +22,15 @@ import '../../../wallets/presentation/wallet_style.dart';
 import '../../data/receipt_repository.dart';
 import '../../domain/money_transaction.dart';
 import '../providers/transaction_providers.dart';
+import '../transaction_undo.dart';
 
 class TransactionFormPage extends ConsumerStatefulWidget {
-  const TransactionFormPage({super.key, this.initial});
+  const TransactionFormPage({super.key, this.initial, this.initialType});
 
   final MoneyTransaction? initial;
+
+  /// Jenis awal untuk transaksi baru (mis. dari shortcut ikon aplikasi).
+  final EntryType? initialType;
 
   @override
   ConsumerState<TransactionFormPage> createState() =>
@@ -59,7 +62,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
   void initState() {
     super.initState();
     final i = widget.initial;
-    _type = i?.type ?? EntryType.expense;
+    _type = i?.type ?? widget.initialType ?? EntryType.expense;
     _date = i?.date ?? dateOnly(DateTime.now());
     if (i != null) {
       _amount.text = ThousandsFormatter.format(i.amount.toString());
@@ -231,22 +234,8 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
   }
 
   Future<void> _delete() async {
-    final ok = await confirmDialog(
-      context,
-      title: 'Hapus transaksi?',
-      message: 'Transaksi ini akan dihapus permanen.',
-      confirmLabel: 'Hapus',
-      destructive: true,
-    );
-    if (!ok || !mounted) return;
-    final err =
-        await ref.read(transactionActionsProvider).delete(widget.initial!.id);
-    if (!mounted) return;
-    if (err != null) {
-      context.showSnack(err, error: true);
-      return;
-    }
-    context.pop();
+    final ok = await deleteWithUndo(context, ref, widget.initial!);
+    if (ok && mounted) context.pop();
   }
 
   Widget _buildReceipt(BuildContext context) {

@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,9 +10,7 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../../core/utils/formatters.dart';
-import '../../../../core/utils/snackbar.dart';
 import '../../../../core/widgets/async_view.dart';
-import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/month_selector.dart';
 import '../../../categories/presentation/category_style.dart';
@@ -17,6 +18,7 @@ import '../../../categories/presentation/providers/category_providers.dart';
 import '../../../wallets/presentation/providers/wallet_providers.dart';
 import '../../domain/money_transaction.dart';
 import '../providers/transaction_providers.dart';
+import '../transaction_undo.dart';
 import '../widgets/transaction_tile.dart';
 
 sealed class _Row {}
@@ -52,15 +54,17 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
   }
 
   Future<void> _delete(MoneyTransaction t) async {
+    // Sembunyikan dulu supaya terasa instan, lalu hapus di server.
     setState(() => _hidden.add(t.id));
-    final err = await ref.read(transactionActionsProvider).delete(t.id);
-    if (!mounted) return;
-    if (err != null) {
-      setState(() => _hidden.remove(t.id));
-      context.showSnack(err, error: true);
-    } else {
-      context.showSnack('Transaksi dihapus.');
-    }
+    final ok = await deleteWithUndo(
+      context,
+      ref,
+      t,
+      onUndone: () {
+        if (mounted) setState(() => _hidden.remove(t.id));
+      },
+    );
+    if (!ok && mounted) setState(() => _hidden.remove(t.id));
   }
 
   List<_Row> _buildRows(List<MoneyTransaction> list) {
@@ -211,8 +215,30 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Dismissible(
                         key: ValueKey(t.id),
-                        direction: DismissDirection.endToStart,
+                        direction: DismissDirection.horizontal,
+                        // Geser ke kanan: gandakan.
                         background: Container(
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.only(left: 22),
+                          decoration: BoxDecoration(
+                            color: cs.primaryContainer,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.copy_rounded,
+                                  color: cs.onPrimaryContainer),
+                              const SizedBox(width: 8),
+                              Text('Gandakan',
+                                  style: tt.labelLarge?.copyWith(
+                                      color: cs.onPrimaryContainer,
+                                      fontWeight: FontWeight.w700)),
+                            ],
+                          ),
+                        ),
+                        // Geser ke kiri: hapus (bisa dibatalkan).
+                        secondaryBackground: Container(
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(right: 22),
                           decoration: BoxDecoration(
@@ -221,13 +247,15 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                           ),
                           child: Icon(Icons.delete_rounded, color: cs.onError),
                         ),
-                        confirmDismiss: (_) => confirmDialog(
-                          context,
-                          title: 'Hapus transaksi?',
-                          message: 'Transaksi ini akan dihapus permanen.',
-                          confirmLabel: 'Hapus',
-                          destructive: true,
-                        ),
+                        confirmDismiss: (direction) async {
+                          if (direction == DismissDirection.startToEnd) {
+                            // Jangan tunggu: kartu langsung kembali ke posisi.
+                            unawaited(duplicateWithUndo(context, ref, t));
+                            return false;
+                          }
+                          HapticFeedback.mediumImpact();
+                          return true;
+                        },
                         onDismissed: (_) => _delete(t),
                         child: TransactionTile(
                           transaction: t,

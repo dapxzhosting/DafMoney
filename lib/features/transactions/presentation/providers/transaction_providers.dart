@@ -120,6 +120,39 @@ class TransactionActions {
         await _repo.delete(_uid, id);
         _bump();
       });
+
+  /// Foto struk untuk disimpan sementara sebelum transaksi dihapus.
+  Future<Uint8List?> receiptBytes(String id) async {
+    try {
+      return await _receipts.fetch(_uid, id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Mengembalikan transaksi yang baru dihapus (beserta foto struknya).
+  Future<String?> restore(MoneyTransaction t, {Uint8List? receipt}) =>
+      runGuarded(() async {
+        await _repo.restore(_uid, t, hasReceipt: receipt != null);
+        if (receipt != null) await _receipts.save(_uid, t.id, receipt);
+        _bump();
+      });
+
+  /// Menggandakan transaksi dengan tanggal hari ini (foto struk tidak ikut).
+  Future<({String? error, String? id})> duplicate(MoneyTransaction t) async {
+    String? newId;
+    final err = await runGuarded(() async {
+      newId = await _repo.add(_uid,
+          type: t.type,
+          amount: t.amount,
+          categoryId: t.categoryId,
+          note: t.note,
+          date: DateTime.now(),
+          walletId: t.walletId);
+      _bump();
+    });
+    return (error: err, id: newId);
+  }
 }
 
 final transactionActionsProvider =

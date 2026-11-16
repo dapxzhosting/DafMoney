@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,16 +7,19 @@ import 'package:go_router/go_router.dart';
 import '../../../core/error/app_exception.dart';
 import '../../../core/models/entry_type.dart';
 import '../../../core/providers/firebase_providers.dart';
+import '../../../core/providers/privacy_providers.dart';
 import '../../../core/providers/session_providers.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/services/widget_service.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/animated_amount.dart';
 import '../../../core/widgets/async_view.dart';
 import '../../../core/widgets/category_avatar.dart';
 import '../../../core/widgets/charts/category_donut.dart';
 import '../../../core/widgets/charts/month_bar_chart.dart';
 import '../../../core/widgets/month_selector.dart';
+import '../../../core/widgets/skeleton.dart';
 import '../../budgets/domain/budget.dart';
 import '../../budgets/presentation/pages/budgets_page.dart';
 import '../../budgets/presentation/providers/budget_providers.dart';
@@ -104,6 +108,7 @@ class DashboardPage extends ConsumerWidget {
               const SizedBox(height: 16),
               AsyncView<List<MoneyTransaction>>(
                 value: txAsync,
+                loading: const SkeletonList(padding: EdgeInsets.zero, count: 3),
                 onRetry: () => ref.invalidate(transactionsByRangeProvider),
                 data: (all) {
                   final range = DateRange.month(month);
@@ -237,7 +242,7 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _BalanceCard extends StatelessWidget {
+class _BalanceCard extends ConsumerWidget {
   const _BalanceCard({
     required this.total,
     required this.income,
@@ -251,50 +256,53 @@ class _BalanceCard extends StatelessWidget {
   final String? error;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final hidden = ref.watch(hideBalanceProvider);
 
     Widget pill(IconData icon, String label, int value) => Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.16),
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.22),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 16, color: Colors.white),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.16),
+              borderRadius: BorderRadius.circular(18),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(label,
-                      style: tt.labelSmall?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.85))),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(Fmt.rupiah(value),
-                        style: tt.titleSmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800)),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.22),
+                    shape: BoxShape.circle,
                   ),
-                ],
-              ),
+                  child: Icon(icon, size: 16, color: Colors.white),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(label,
+                          style: tt.labelSmall?.copyWith(
+                              color: Colors.white.withValues(alpha: 0.85))),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: AnimatedAmount(
+                          value: value,
+                          style: tt.titleSmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        );
 
     return Container(
       padding: const EdgeInsets.all(22),
@@ -316,29 +324,54 @@ class _BalanceCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Total saldo',
-              style: tt.bodyMedium
-                  ?.copyWith(color: Colors.white.withValues(alpha: 0.85))),
-          const SizedBox(height: 6),
-          if (total == null)
-            Text('—',
-                style: tt.headlineMedium?.copyWith(
-                    color: Colors.white, fontWeight: FontWeight.w800))
-          else
-            TweenAnimationBuilder<double>(
-              tween: Tween<double>(begin: 0, end: total!.toDouble()),
-              duration: const Duration(milliseconds: 800),
-              curve: Curves.easeOutCubic,
-              builder: (_, v, __) => FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  Fmt.rupiah(v.round()),
-                  style: tt.headlineMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
+          Row(
+            children: [
+              Expanded(
+                child: Text('Total saldo',
+                    style: tt.bodyMedium?.copyWith(
+                        color: Colors.white.withValues(alpha: 0.85))),
+              ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                tooltip: hidden ? 'Tampilkan saldo' : 'Sembunyikan saldo',
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  ref.read(hideBalanceProvider.notifier).toggle();
+                },
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder: (child, animation) =>
+                      FadeTransition(opacity: animation, child: child),
+                  child: Icon(
+                    hidden
+                        ? Icons.visibility_off_rounded
+                        : Icons.visibility_rounded,
+                    key: ValueKey(hidden),
+                    size: 20,
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 2),
+          if (total == null)
+            SkeletonBox(
+              width: 190,
+              height: 36,
+              radius: 12,
+              color: Colors.white.withValues(alpha: 0.22),
+            )
+          else
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: AnimatedAmount(
+                value: total!,
+                style: tt.headlineMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
                 ),
               ),
             ),

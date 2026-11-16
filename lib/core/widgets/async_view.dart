@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../error/app_exception.dart';
+import 'skeleton.dart';
 
 class AsyncView<T> extends StatelessWidget {
   const AsyncView({
@@ -9,11 +10,15 @@ class AsyncView<T> extends StatelessWidget {
     required this.value,
     required this.data,
     this.onRetry,
+    this.loading,
   });
 
   final AsyncValue<T> value;
   final Widget Function(T data) data;
   final VoidCallback? onRetry;
+
+  /// Tampilan saat memuat. Bawaan: kerangka daftar dengan kilau.
+  final Widget? loading;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +26,7 @@ class AsyncView<T> extends StatelessWidget {
     if (value.hasError) {
       return ErrorState(message: errorText(value.error!), onRetry: onRetry);
     }
-    return const Center(child: CircularProgressIndicator());
+    return loading ?? const SkeletonList();
   }
 }
 

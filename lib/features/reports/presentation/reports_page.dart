@@ -8,6 +8,7 @@ import '../../../core/utils/date_utils.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/snackbar.dart';
 import '../../../core/widgets/async_view.dart';
+import '../../../core/widgets/skeleton.dart';
 import '../../../core/widgets/category_avatar.dart';
 import '../../../core/widgets/charts/category_donut.dart';
 import '../../../core/widgets/charts/month_bar_chart.dart';
@@ -113,6 +114,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
           const SizedBox(height: 14),
           AsyncView<List<MoneyTransaction>>(
             value: txAsync,
+            loading: const SkeletonList(padding: EdgeInsets.zero, count: 4),
             onRetry: () => ref.invalidate(transactionsByRangeProvider),
             data: (all) {
               if (all.isEmpty) {
