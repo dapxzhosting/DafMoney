@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/theme/appearance_provider.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/snackbar.dart';
@@ -33,6 +34,8 @@ class SettingsPage extends ConsumerWidget {
     final user = ref.watch(authStateProvider).valueOrNull;
     final profile = ref.watch(userProfileProvider).valueOrNull;
     final mode = ref.watch(themeModeProvider);
+    final accent = ref.watch(accentProvider);
+    final amoled = ref.watch(amoledProvider);
     final actions = ref.read(settingsActionsProvider);
 
     final name = (profile?.name.trim().isNotEmpty ?? false)
@@ -182,6 +185,50 @@ class SettingsPage extends ConsumerWidget {
                             .read(themeModeProvider.notifier)
                             .setMode(s.first),
                       ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Warna aksen',
+                      style: tt.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: [
+                        _AccentDot(
+                          selected: accent == null,
+                          onTap: () =>
+                              ref.read(accentProvider.notifier).set(null),
+                          child: Icon(
+                            Icons.auto_awesome_rounded,
+                            size: 20,
+                            color: cs.onSurfaceVariant,
+                          ),
+                          color: cs.surfaceContainerHighest,
+                          tooltip: 'Otomatis',
+                        ),
+                        for (final c in AccentOptions.colors)
+                          _AccentDot(
+                            selected: accent?.toARGB32() == c.toARGB32(),
+                            onTap: () =>
+                                ref.read(accentProvider.notifier).set(c),
+                            color: c,
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('Mode AMOLED'),
+                      subtitle: const Text(
+                        'Latar hitam pekat saat tema gelap aktif',
+                      ),
+                      value: amoled,
+                      onChanged: (v) =>
+                          ref.read(amoledProvider.notifier).set(v),
                     ),
                   ],
                 ),
@@ -377,6 +424,58 @@ class _Tile extends StatelessWidget {
       ),
       subtitle: subtitle == null ? null : Text(subtitle!),
       trailing: Icon(Icons.chevron_right_rounded, color: cs.onSurfaceVariant),
+    );
+  }
+}
+
+class _AccentDot extends StatelessWidget {
+  const _AccentDot({
+    required this.selected,
+    required this.onTap,
+    required this.color,
+    this.child,
+    this.tooltip,
+  });
+
+  final bool selected;
+  final VoidCallback onTap;
+  final Color color;
+  final Widget? child;
+  final String? tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Tooltip(
+      message: tooltip ?? '',
+      child: InkResponse(
+        onTap: onTap,
+        radius: 28,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color,
+            border: Border.all(
+              color: selected ? cs.onSurface : Colors.transparent,
+              width: 2.5,
+            ),
+          ),
+          child: selected
+              ? Icon(
+                  Icons.check_rounded,
+                  size: 20,
+                  color:
+                      ThemeData.estimateBrightnessForColor(color) ==
+                          Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
+                )
+              : child,
+        ),
+      ),
     );
   }
 }

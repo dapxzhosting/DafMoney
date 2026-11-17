@@ -5,18 +5,28 @@ import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 abstract class AppTheme {
-  static ThemeData get light => _build(Brightness.light);
-  static ThemeData get dark => _build(Brightness.dark);
+  static ThemeData light({Color? seed}) =>
+      _build(Brightness.light, seed: seed, amoled: false);
 
-  static ThemeData _build(Brightness brightness) {
+  static ThemeData dark({Color? seed, bool amoled = false}) =>
+      _build(Brightness.dark, seed: seed, amoled: amoled);
+
+  static ThemeData _build(
+    Brightness brightness, {
+    Color? seed,
+    required bool amoled,
+  }) {
     final isDark = brightness == Brightness.dark;
+    final black = isDark && amoled;
 
     final scheme =
         ColorScheme.fromSeed(
-          seedColor: AppColors.brand,
+          seedColor: seed ?? AppColors.brand,
           brightness: brightness,
         ).copyWith(
-          surface: isDark ? const Color(0xFF0F1412) : const Color(0xFFF8FAF9),
+          surface: black
+              ? Colors.black
+              : (isDark ? const Color(0xFF0F1412) : const Color(0xFFF8FAF9)),
           error: isDark ? const Color(0xFFFF7A80) : AppColors.expense,
         );
 
@@ -43,7 +53,9 @@ abstract class AppTheme {
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        color: isDark ? const Color(0xFF171E1B) : Colors.white,
+        color: black
+            ? const Color(0xFF0B0B0B)
+            : (isDark ? const Color(0xFF171E1B) : Colors.white),
         surfaceTintColor: Colors.transparent,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
@@ -55,7 +67,9 @@ abstract class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? const Color(0xFF171E1B) : Colors.white,
+        fillColor: black
+            ? const Color(0xFF0B0B0B)
+            : (isDark ? const Color(0xFF171E1B) : Colors.white),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 18,
@@ -99,7 +113,9 @@ abstract class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         height: 68,
         elevation: 0,
-        backgroundColor: isDark ? const Color(0xFF131A17) : Colors.white,
+        backgroundColor: black
+            ? Colors.black
+            : (isDark ? const Color(0xFF131A17) : Colors.white),
         surfaceTintColor: Colors.transparent,
         indicatorColor: scheme.primaryContainer,
         labelTextStyle: WidgetStatePropertyAll(

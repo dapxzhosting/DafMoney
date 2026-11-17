@@ -8,6 +8,7 @@ import 'core/router/app_router.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/quick_actions_service.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/appearance_provider.dart';
 import 'core/theme/theme_provider.dart';
 
 class DafMoneyApp extends ConsumerStatefulWidget {
@@ -35,18 +36,27 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp> {
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final accent = ref.watch(accentProvider);
+    final amoled = ref.watch(amoledProvider);
+    final lightTheme = AppTheme.light(seed: accent);
+    final darkTheme = AppTheme.dark(seed: accent, amoled: amoled);
 
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         return MaterialApp.router(
           title: AppConstants.appName,
           debugShowCheckedModeBanner: false,
-          theme: lightDynamic != null
-              ? AppTheme.light.copyWith(colorScheme: lightDynamic)
-              : AppTheme.light,
-          darkTheme: darkDynamic != null
-              ? AppTheme.dark.copyWith(colorScheme: darkDynamic)
-              : AppTheme.dark,
+          // Warna aksen pilihan pengguna mengalahkan warna dinamis sistem.
+          theme: accent == null && lightDynamic != null
+              ? lightTheme.copyWith(colorScheme: lightDynamic)
+              : lightTheme,
+          darkTheme: accent == null && darkDynamic != null
+              ? darkTheme.copyWith(
+                  colorScheme: amoled
+                      ? darkDynamic.copyWith(surface: Colors.black)
+                      : darkDynamic,
+                )
+              : darkTheme,
           themeMode: themeMode,
           themeAnimationDuration: const Duration(milliseconds: 350),
           themeAnimationCurve: Curves.easeInOut,

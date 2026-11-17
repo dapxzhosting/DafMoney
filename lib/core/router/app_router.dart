@@ -17,7 +17,9 @@ import '../../features/auth/presentation/pages/verify_email_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
 import '../../features/wallets/presentation/pages/wallets_page.dart';
 import '../../features/splash/presentation/splash_page.dart';
+import '../../features/onboarding/presentation/onboarding_page.dart';
 import '../providers/firebase_providers.dart';
+import '../providers/onboarding_provider.dart';
 import '../widgets/main_shell.dart';
 import 'app_routes.dart';
 
@@ -25,6 +27,7 @@ class _RouterRefresh extends ChangeNotifier {
   _RouterRefresh(this._ref) {
     _ref.listen(authStateProvider, (_, __) => notifyListeners());
     _ref.listen(authTickProvider, (_, __) => notifyListeners());
+    _ref.listen(onboardingDoneProvider, (_, __) => notifyListeners());
   }
 
   final Ref _ref;
@@ -47,7 +50,13 @@ class _RouterRefresh extends ChangeNotifier {
       return loc == AppRoutes.verifyEmail ? null : AppRoutes.verifyEmail;
     }
 
-    if (loc == AppRoutes.splash ||
+    // Pengguna yang belum pernah melihat onboarding diarahkan ke sana dulu.
+    if (!_ref.read(onboardingDoneProvider)) {
+      return loc == AppRoutes.onboarding ? null : AppRoutes.onboarding;
+    }
+
+    if (loc == AppRoutes.onboarding ||
+        loc == AppRoutes.splash ||
         loc == AppRoutes.verifyEmail ||
         AppRoutes.authRoutes.contains(loc)) {
       return AppRoutes.dashboard;
@@ -74,6 +83,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.forgotPassword,
         builder: (_, __) => const ForgotPasswordPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.onboarding,
+        builder: (_, __) => const OnboardingPage(),
       ),
       GoRoute(
         path: AppRoutes.verifyEmail,

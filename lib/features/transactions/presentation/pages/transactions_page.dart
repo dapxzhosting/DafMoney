@@ -12,6 +12,7 @@ import '../../../../core/utils/date_utils.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/async_view.dart';
 import '../../../../core/widgets/empty_state.dart';
+import '../../../../core/widgets/fab_scroll.dart';
 import '../../../../core/widgets/month_selector.dart';
 import '../../../categories/presentation/category_style.dart';
 import '../../../categories/presentation/providers/category_providers.dart';
@@ -96,196 +97,211 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
     final cats = ref.watch(categoryMapProvider);
     final wallets = ref.watch(walletMapProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: _searching
-            ? TextField(
-                controller: _search,
-                autofocus: true,
-                onChanged: (_) => setState(() {}),
-                decoration: const InputDecoration(
-                  hintText: 'Cari catatan atau kategori',
-                  filled: false,
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  contentPadding: EdgeInsets.zero,
-                ),
-              )
-            : const Text('Transaksi'),
-        actions: [
-          IconButton(
-            onPressed: () => setState(() {
-              _searching = !_searching;
-              if (!_searching) _search.clear();
-            }),
-            icon: Icon(_searching ? Icons.close_rounded : Icons.search_rounded),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRoutes.transactionForm),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Transaksi'),
-      ),
-      body: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 12),
-            child: MonthSelector(),
-          ),
-          SizedBox(
-            height: 40,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              children: [
-                for (final f in <EntryType?>[
-                  null,
-                  EntryType.expense,
-                  EntryType.income,
-                ])
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(f == null ? 'Semua' : f.label),
-                      selected: _filter == f,
-                      onSelected: (_) => setState(() => _filter = f),
-                    ),
+    return FabScroll(
+      builder: (context, fabExtended, onScroll) => Scaffold(
+        appBar: AppBar(
+          title: _searching
+              ? TextField(
+                  controller: _search,
+                  autofocus: true,
+                  onChanged: (_) => setState(() {}),
+                  decoration: const InputDecoration(
+                    hintText: 'Cari catatan atau kategori',
+                    filled: false,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
                   ),
-              ],
+                )
+              : const Text('Transaksi'),
+          actions: [
+            IconButton(
+              onPressed: () => setState(() {
+                _searching = !_searching;
+                if (!_searching) _search.clear();
+              }),
+              icon: Icon(
+                _searching ? Icons.close_rounded : Icons.search_rounded,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: AsyncView<List<MoneyTransaction>>(
-              value: txAsync,
-              data: (all) {
-                final q = _search.text.trim().toLowerCase();
-                final list = all.where((t) {
-                  if (_hidden.contains(t.id)) return false;
-                  if (_filter != null && t.type != _filter) return false;
-                  if (q.isEmpty) return true;
-                  final name = resolveCategory(cats, t.categoryId).name;
-                  return t.note.toLowerCase().contains(q) ||
-                      name.toLowerCase().contains(q);
-                }).toList();
-
-                if (list.isEmpty) {
-                  return EmptyState(
-                    icon: Icons.receipt_long_rounded,
-                    title: all.isEmpty
-                        ? 'Belum ada transaksi'
-                        : 'Tidak ada hasil',
-                    message: all.isEmpty
-                        ? 'Catat pemasukan atau pengeluaran pertama Anda di bulan ini.'
-                        : 'Coba ubah filter atau kata kunci pencarian.',
-                    actionLabel: all.isEmpty ? 'Tambah transaksi' : null,
-                    onAction: () => context.push(AppRoutes.transactionForm),
-                  );
-                }
-
-                final rows = _buildRows(list);
-                return ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 100),
-                  itemCount: rows.length,
-                  itemBuilder: (_, i) {
-                    final row = rows[i];
-                    if (row is _HeaderRow) {
-                      return Padding(
-                        padding: EdgeInsets.only(
-                          top: i == 0 ? 0 : 14,
-                          bottom: 8,
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                Fmt.dayHeader(row.date),
-                                style: tt.labelLarge?.copyWith(
-                                  color: cs.onSurfaceVariant,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '${row.net >= 0 ? '+' : '-'}${Fmt.rupiah(row.net.abs())}',
-                              style: tt.labelMedium?.copyWith(
-                                color: row.net >= 0 ? fin.income : fin.expense,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    final t = (row as _ItemRow).tx;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Dismissible(
-                        key: ValueKey(t.id),
-                        direction: DismissDirection.horizontal,
-                        // Geser ke kanan: gandakan.
-                        background: Container(
-                          alignment: Alignment.centerLeft,
-                          padding: const EdgeInsets.only(left: 22),
-                          decoration: BoxDecoration(
-                            color: cs.primaryContainer,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.copy_rounded,
-                                color: cs.onPrimaryContainer,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Gandakan',
-                                style: tt.labelLarge?.copyWith(
-                                  color: cs.onPrimaryContainer,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Geser ke kiri: hapus (bisa dibatalkan).
-                        secondaryBackground: Container(
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 22),
-                          decoration: BoxDecoration(
-                            color: cs.error,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Icon(Icons.delete_rounded, color: cs.onError),
-                        ),
-                        confirmDismiss: (direction) async {
-                          if (direction == DismissDirection.startToEnd) {
-                            // Jangan tunggu: kartu langsung kembali ke posisi.
-                            unawaited(duplicateWithUndo(context, ref, t));
-                            return false;
-                          }
-                          HapticFeedback.mediumImpact();
-                          return true;
-                        },
-                        onDismissed: (_) => _delete(t),
-                        child: TransactionTile(
-                          transaction: t,
-                          categories: cats,
-                          wallets: wallets,
-                          onTap: () =>
-                              context.push(AppRoutes.transactionForm, extra: t),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          isExtended: fabExtended,
+          onPressed: () => context.push(AppRoutes.transactionForm),
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Transaksi'),
+        ),
+        body: NotificationListener<ScrollNotification>(
+          onNotification: onScroll,
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.fromLTRB(20, 0, 20, 12),
+                child: MonthSelector(),
+              ),
+              SizedBox(
+                height: 40,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  children: [
+                    for (final f in <EntryType?>[
+                      null,
+                      EntryType.expense,
+                      EntryType.income,
+                    ])
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ChoiceChip(
+                          label: Text(f == null ? 'Semua' : f.label),
+                          selected: _filter == f,
+                          onSelected: (_) => setState(() => _filter = f),
                         ),
                       ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: AsyncView<List<MoneyTransaction>>(
+                  value: txAsync,
+                  data: (all) {
+                    final q = _search.text.trim().toLowerCase();
+                    final list = all.where((t) {
+                      if (_hidden.contains(t.id)) return false;
+                      if (_filter != null && t.type != _filter) return false;
+                      if (q.isEmpty) return true;
+                      final name = resolveCategory(cats, t.categoryId).name;
+                      return t.note.toLowerCase().contains(q) ||
+                          name.toLowerCase().contains(q);
+                    }).toList();
+
+                    if (list.isEmpty) {
+                      return EmptyState(
+                        icon: Icons.receipt_long_rounded,
+                        title: all.isEmpty
+                            ? 'Belum ada transaksi'
+                            : 'Tidak ada hasil',
+                        message: all.isEmpty
+                            ? 'Catat pemasukan atau pengeluaran pertama Anda di bulan ini.'
+                            : 'Coba ubah filter atau kata kunci pencarian.',
+                        actionLabel: all.isEmpty ? 'Tambah transaksi' : null,
+                        onAction: () => context.push(AppRoutes.transactionForm),
+                      );
+                    }
+
+                    final rows = _buildRows(list);
+                    return ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(20, 4, 20, 100),
+                      itemCount: rows.length,
+                      itemBuilder: (_, i) {
+                        final row = rows[i];
+                        if (row is _HeaderRow) {
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              top: i == 0 ? 0 : 14,
+                              bottom: 8,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    Fmt.dayHeader(row.date),
+                                    style: tt.labelLarge?.copyWith(
+                                      color: cs.onSurfaceVariant,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  '${row.net >= 0 ? '+' : '-'}${Fmt.rupiah(row.net.abs())}',
+                                  style: tt.labelMedium?.copyWith(
+                                    color: row.net >= 0
+                                        ? fin.income
+                                        : fin.expense,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        final t = (row as _ItemRow).tx;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Dismissible(
+                            key: ValueKey(t.id),
+                            direction: DismissDirection.horizontal,
+                            // Geser ke kanan: gandakan.
+                            background: Container(
+                              alignment: Alignment.centerLeft,
+                              padding: const EdgeInsets.only(left: 22),
+                              decoration: BoxDecoration(
+                                color: cs.primaryContainer,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.copy_rounded,
+                                    color: cs.onPrimaryContainer,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Gandakan',
+                                    style: tt.labelLarge?.copyWith(
+                                      color: cs.onPrimaryContainer,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Geser ke kiri: hapus (bisa dibatalkan).
+                            secondaryBackground: Container(
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 22),
+                              decoration: BoxDecoration(
+                                color: cs.error,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Icon(
+                                Icons.delete_rounded,
+                                color: cs.onError,
+                              ),
+                            ),
+                            confirmDismiss: (direction) async {
+                              if (direction == DismissDirection.startToEnd) {
+                                // Jangan tunggu: kartu langsung kembali ke posisi.
+                                unawaited(duplicateWithUndo(context, ref, t));
+                                return false;
+                              }
+                              HapticFeedback.mediumImpact();
+                              return true;
+                            },
+                            onDismissed: (_) => _delete(t),
+                            child: TransactionTile(
+                              transaction: t,
+                              categories: cats,
+                              wallets: wallets,
+                              onTap: () => context.push(
+                                AppRoutes.transactionForm,
+                                extra: t,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
-                );
-              },
-            ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

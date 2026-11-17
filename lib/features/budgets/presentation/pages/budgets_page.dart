@@ -9,6 +9,7 @@ import '../../../../core/utils/snackbar.dart';
 import '../../../../core/widgets/async_view.dart';
 import '../../../../core/widgets/category_avatar.dart';
 import '../../../../core/widgets/empty_state.dart';
+import '../../../../core/widgets/fab_scroll.dart';
 import '../../../../core/widgets/month_selector.dart';
 import '../../../categories/presentation/category_style.dart';
 import '../../../categories/presentation/providers/category_providers.dart';
@@ -72,118 +73,124 @@ class BudgetsPage extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
     final cs = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Anggaran')),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () =>
-            _openAdd(context, ref, progress.valueOrNull ?? const []),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Anggaran'),
-      ),
-      body: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 12),
-            child: MonthSelector(),
-          ),
-          Expanded(
-            child: AsyncView<List<BudgetProgress>>(
-              value: progress,
-              data: (list) {
-                if (list.isEmpty) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      EmptyState(
-                        icon: Icons.pie_chart_rounded,
-                        title: 'Belum ada anggaran',
-                        message:
-                            'Atur batas pengeluaran per kategori untuk ${Fmt.monthYear(month)}.',
-                        actionLabel: 'Tambah anggaran',
-                        onAction: () => _openAdd(context, ref, list),
-                      ),
-                      TextButton(
-                        onPressed: () => _copy(context, ref),
-                        child: const Text('Salin dari bulan lalu'),
-                      ),
-                    ],
-                  );
-                }
+    return FabScroll(
+      builder: (context, fabExtended, onScroll) => Scaffold(
+        appBar: AppBar(title: const Text('Anggaran')),
+        floatingActionButton: FloatingActionButton.extended(
+          isExtended: fabExtended,
+          onPressed: () =>
+              _openAdd(context, ref, progress.valueOrNull ?? const []),
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Anggaran'),
+        ),
+        body: NotificationListener<ScrollNotification>(
+          onNotification: onScroll,
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.fromLTRB(20, 0, 20, 12),
+                child: MonthSelector(),
+              ),
+              Expanded(
+                child: AsyncView<List<BudgetProgress>>(
+                  value: progress,
+                  data: (list) {
+                    if (list.isEmpty) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          EmptyState(
+                            icon: Icons.pie_chart_rounded,
+                            title: 'Belum ada anggaran',
+                            message:
+                                'Atur batas pengeluaran per kategori untuk ${Fmt.monthYear(month)}.',
+                            actionLabel: 'Tambah anggaran',
+                            onAction: () => _openAdd(context, ref, list),
+                          ),
+                          TextButton(
+                            onPressed: () => _copy(context, ref),
+                            child: const Text('Salin dari bulan lalu'),
+                          ),
+                        ],
+                      );
+                    }
 
-                final totalBudget = list.fold<int>(
-                  0,
-                  (s, p) => s + p.budget.amount,
-                );
-                final totalSpent = list.fold<int>(0, (s, p) => s + p.spent);
-                final overall = totalBudget == 0
-                    ? 0.0
-                    : totalSpent / totalBudget;
-                final overallStatus = overall >= 1
-                    ? BudgetStatus.over
-                    : (overall >= 0.8
-                          ? BudgetStatus.warning
-                          : BudgetStatus.safe);
-                final overallColor = budgetColor(context, overallStatus);
+                    final totalBudget = list.fold<int>(
+                      0,
+                      (s, p) => s + p.budget.amount,
+                    );
+                    final totalSpent = list.fold<int>(0, (s, p) => s + p.spent);
+                    final overall = totalBudget == 0
+                        ? 0.0
+                        : totalSpent / totalBudget;
+                    final overallStatus = overall >= 1
+                        ? BudgetStatus.over
+                        : (overall >= 0.8
+                              ? BudgetStatus.warning
+                              : BudgetStatus.safe);
+                    final overallColor = budgetColor(context, overallStatus);
 
-                return ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                  children: [
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(18),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Total terpakai',
-                              style: tt.labelLarge?.copyWith(
-                                color: cs.onSurfaceVariant,
-                              ),
+                    return ListView(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                      children: [
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(18),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Total terpakai',
+                                  style: tt.labelLarge?.copyWith(
+                                    color: cs.onSurfaceVariant,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${Fmt.rupiah(totalSpent)} / ${Fmt.rupiah(totalBudget)}',
+                                  style: tt.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                _Bar(value: overall, color: overallColor),
+                                const SizedBox(height: 8),
+                                Text(
+                                  totalBudget - totalSpent >= 0
+                                      ? 'Sisa ${Fmt.rupiah(totalBudget - totalSpent)}'
+                                      : 'Melebihi ${Fmt.rupiah(totalSpent - totalBudget)}',
+                                  style: tt.bodySmall?.copyWith(
+                                    color: overallColor,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${Fmt.rupiah(totalSpent)} / ${Fmt.rupiah(totalBudget)}',
-                              style: tt.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            _Bar(value: overall, color: overallColor),
-                            const SizedBox(height: 8),
-                            Text(
-                              totalBudget - totalSpent >= 0
-                                  ? 'Sisa ${Fmt.rupiah(totalBudget - totalSpent)}'
-                                  : 'Melebihi ${Fmt.rupiah(totalSpent - totalBudget)}',
-                              style: tt.bodySmall?.copyWith(
-                                color: overallColor,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    for (final p in list)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: _BudgetCard(
-                          progress: p,
-                          onTap: () => showBudgetSheet(
-                            context,
-                            month: month,
-                            choices: const [],
-                            existing: p.budget,
-                            existingCategory: cats[p.budget.categoryId],
                           ),
                         ),
-                      ),
-                  ],
-                );
-              },
-            ),
+                        const SizedBox(height: 12),
+                        for (final p in list)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: _BudgetCard(
+                              progress: p,
+                              onTap: () => showBudgetSheet(
+                                context,
+                                month: month,
+                                choices: const [],
+                                existing: p.budget,
+                                existingCategory: cats[p.budget.categoryId],
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

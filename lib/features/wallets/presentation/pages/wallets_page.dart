@@ -9,6 +9,7 @@ import '../../../../core/widgets/async_view.dart';
 import '../../../../core/widgets/category_avatar.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/empty_state.dart';
+import '../../../../core/widgets/fab_scroll.dart';
 import '../../../settings/presentation/providers/settings_providers.dart';
 import '../../../transactions/domain/money_transaction.dart';
 import '../../../transactions/presentation/providers/transaction_providers.dart';
@@ -48,48 +49,54 @@ class WalletsPage extends ConsumerWidget {
     final totalBalance = all.total + profileInitial + walletsInitial;
     final unassigned = totals[''];
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Dompet')),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => showWalletSheet(context),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Dompet'),
-      ),
-      body: AsyncView<List<Wallet>>(
-        value: wallets,
-        onRetry: () => ref.invalidate(walletsProvider),
-        data: (list) {
-          if (list.isEmpty) {
-            return EmptyState(
-              icon: Icons.account_balance_wallet_rounded,
-              title: 'Belum ada dompet',
-              message: 'Pisahkan saldo Anda, mis. Tunai, rekening bank, atau dompet digital.',
-              actionLabel: 'Tambah dompet',
-              onAction: () => showWalletSheet(context),
-            );
-          }
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 100),
-            children: [
-              _TotalCard(total: totalBalance),
-              const SizedBox(height: 16),
-              for (final w in list) ...[
-                _WalletCard(
-                  wallet: w,
-                  balance: w.initialBalance + (totals[w.id]?.total ?? 0),
-                  onTap: () => showWalletSheet(context, initial: w),
-                  onDelete: () => _delete(context, ref, w),
-                ),
-                const SizedBox(height: 8),
-              ],
-              if (unassigned != null && (unassigned.total != 0))
-                Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: _UnassignedCard(net: unassigned.total),
-                ),
-            ],
-          );
-        },
+    return FabScroll(
+      builder: (context, fabExtended, onScroll) => Scaffold(
+        appBar: AppBar(title: const Text('Dompet')),
+        floatingActionButton: FloatingActionButton.extended(
+          isExtended: fabExtended,
+          onPressed: () => showWalletSheet(context),
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Dompet'),
+        ),
+        body: NotificationListener<ScrollNotification>(
+          onNotification: onScroll,
+          child: AsyncView<List<Wallet>>(
+            value: wallets,
+            onRetry: () => ref.invalidate(walletsProvider),
+            data: (list) {
+              if (list.isEmpty) {
+                return EmptyState(
+                  icon: Icons.account_balance_wallet_rounded,
+                  title: 'Belum ada dompet',
+                  message: 'Pisahkan saldo Anda, mis. Tunai, rekening bank, atau dompet digital.',
+                  actionLabel: 'Tambah dompet',
+                  onAction: () => showWalletSheet(context),
+                );
+              }
+              return ListView(
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 100),
+                children: [
+                  _TotalCard(total: totalBalance),
+                  const SizedBox(height: 16),
+                  for (final w in list) ...[
+                    _WalletCard(
+                      wallet: w,
+                      balance: w.initialBalance + (totals[w.id]?.total ?? 0),
+                      onTap: () => showWalletSheet(context, initial: w),
+                      onDelete: () => _delete(context, ref, w),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (unassigned != null && (unassigned.total != 0))
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: _UnassignedCard(net: unassigned.total),
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
       ),
     );
   }
