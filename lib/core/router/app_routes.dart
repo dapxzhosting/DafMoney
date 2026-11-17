@@ -16,5 +16,9 @@ abstract class AppRoutes {
   static const categories = '/categories';
   static const wallets = '/wallets';
 
+  /// Halaman dompet yang dibuka dengan push (mis. dari form transaksi),
+  /// terpisah dari tab Dompet di dalam shell.
+  static const walletManager = '/wallet-manager';
+
   static const authRoutes = {login, register, forgotPassword};
 }

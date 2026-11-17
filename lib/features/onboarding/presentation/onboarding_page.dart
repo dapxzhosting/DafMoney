@@ -188,32 +188,36 @@ class _SlideView extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Gap.lg),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _Illustration(slide: slide, active: active),
-          const SizedBox(height: Gap.lg),
-          Text(
-                slide.title,
-                textAlign: TextAlign.center,
-                style: tt.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.5,
-                ),
-              )
-              .animate(autoPlay: false, target: target)
-              .fadeIn(duration: 400.ms, delay: 150.ms)
-              .slideY(begin: 0.3, curve: Curves.easeOutCubic),
-          const SizedBox(height: Gap.sm),
-          Text(
-                slide.message,
-                textAlign: TextAlign.center,
-                style: tt.bodyLarge?.copyWith(color: cs.onSurfaceVariant),
-              )
-              .animate(autoPlay: false, target: target)
-              .fadeIn(duration: 400.ms, delay: 280.ms)
-              .slideY(begin: 0.3, curve: Curves.easeOutCubic),
-        ],
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _Illustration(slide: slide, active: active),
+              const SizedBox(height: Gap.lg),
+              Text(
+                    slide.title,
+                    textAlign: TextAlign.center,
+                    style: tt.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                    ),
+                  )
+                  .animate(autoPlay: false, target: target)
+                  .fadeIn(duration: 400.ms, delay: 150.ms)
+                  .slideY(begin: 0.3, curve: Curves.easeOutCubic),
+              const SizedBox(height: Gap.sm),
+              Text(
+                    slide.message,
+                    textAlign: TextAlign.center,
+                    style: tt.bodyLarge?.copyWith(color: cs.onSurfaceVariant),
+                  )
+                  .animate(autoPlay: false, target: target)
+                  .fadeIn(duration: 400.ms, delay: 280.ms)
+                  .slideY(begin: 0.3, curve: Curves.easeOutCubic),
+            ],
+          ),
+        ),
       ),
     );
   }

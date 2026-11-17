@@ -69,7 +69,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   static const _compactThreshold = 250.0;
 
   bool _onScroll(ScrollNotification n) {
-    if (n.depth != 0) return false;
+    if (n.depth != 0 || n.metrics.axis != Axis.vertical) return false;
     final pixels = n.metrics.pixels;
     final compact = pixels > _compactThreshold;
     if (compact != _compact) setState(() => _compact = compact);

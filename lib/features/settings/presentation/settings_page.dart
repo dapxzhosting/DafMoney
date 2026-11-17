@@ -446,36 +446,34 @@ class _AccentDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Tooltip(
-      message: tooltip ?? '',
-      child: InkResponse(
-        onTap: onTap,
-        radius: 28,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color,
-            border: Border.all(
-              color: selected ? cs.onSurface : Colors.transparent,
-              width: 2.5,
-            ),
+    final dot = InkResponse(
+      onTap: onTap,
+      radius: 28,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color,
+          border: Border.all(
+            color: selected ? cs.onSurface : Colors.transparent,
+            width: 2.5,
           ),
-          child: selected
-              ? Icon(
-                  Icons.check_rounded,
-                  size: 20,
-                  color:
-                      ThemeData.estimateBrightnessForColor(color) ==
-                          Brightness.dark
-                      ? Colors.white
-                      : Colors.black,
-                )
-              : child,
         ),
+        child: selected
+            ? Icon(
+                Icons.check_rounded,
+                size: 20,
+                color:
+                    ThemeData.estimateBrightnessForColor(color) ==
+                        Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
+              )
+            : child,
       ),
     );
+    return tooltip == null ? dot : Tooltip(message: tooltip!, child: dot);
   }
 }

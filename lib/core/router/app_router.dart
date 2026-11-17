@@ -105,6 +105,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const CategoriesPage(),
       ),
       GoRoute(
+        path: AppRoutes.walletManager,
+        builder: (_, __) => const WalletsPage(),
+      ),
+      GoRoute(
         path: AppRoutes.settings,
         builder: (_, __) => const SettingsPage(),
       ),

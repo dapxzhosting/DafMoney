@@ -23,7 +23,8 @@ class _FabScrollState extends State<FabScroll> {
   bool _extended = true;
 
   bool _onScroll(ScrollNotification n) {
-    if (n.depth != 0 || n is! ScrollUpdateNotification) return false;
+    if (n.depth != 0 || n.metrics.axis != Axis.vertical) return false;
+    if (n is! ScrollUpdateNotification) return false;
     final delta = n.scrollDelta ?? 0;
     final atTop = n.metrics.pixels < 48;
     if ((atTop || delta < -1) && !_extended) {

@@ -494,7 +494,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                     size: 18,
                   ),
                   label: Text(wallets.isEmpty ? 'Tambah dompet' : 'Kelola'),
-                  onPressed: () => context.push(AppRoutes.wallets),
+                  onPressed: () => context.push(AppRoutes.walletManager),
                 ),
               ],
             ),
