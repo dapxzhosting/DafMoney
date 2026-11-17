@@ -35,6 +35,11 @@ dependencies:
   local_auth: ^2.3.0
   image_picker: ^1.1.2
 
+  # Ekspor & bagikan laporan (PDF / gambar)
+  pdf: ^3.11.3
+  share_plus: ^10.1.4
+  path_provider: ^2.1.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
