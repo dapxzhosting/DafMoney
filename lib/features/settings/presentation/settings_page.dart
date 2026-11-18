@@ -6,6 +6,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/appearance_provider.dart';
+import 'widgets/reminder_section.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/snackbar.dart';
@@ -144,6 +145,7 @@ class SettingsPage extends ConsumerWidget {
               ),
             ],
           ),
+          const _Group(title: 'Pengingat', children: [ReminderSection()]),
           _Group(
             title: 'Tampilan',
             children: [

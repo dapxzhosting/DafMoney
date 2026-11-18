@@ -16,6 +16,7 @@ import '../../../core/widgets/charts/trend_line_chart.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../categories/presentation/category_style.dart';
 import '../../export/presentation/export_sheet.dart';
+import 'widgets/expense_heatmap.dart';
 import '../../categories/presentation/providers/category_providers.dart';
 import '../../transactions/domain/money_transaction.dart';
 import '../../transactions/presentation/providers/transaction_providers.dart';
@@ -227,6 +228,13 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                           ),
                   ),
                   const SizedBox(height: 16),
+                  if (range.days <= 93) ...[
+                    _Section(
+                      title: 'Kalender pengeluaran',
+                      child: ExpenseHeatmap(range: range, txns: all),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   _Section(
                     title: 'Rincian kategori',
                     child: Column(

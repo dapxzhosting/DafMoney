@@ -15,6 +15,7 @@ abstract class AppRoutes {
   static const transactionForm = '/transaction-form';
   static const categories = '/categories';
   static const wallets = '/wallets';
+  static const challenge = '/challenge';
 
   /// Halaman dompet yang dibuka dengan push (mis. dari form transaksi),
   /// terpisah dari tab Dompet di dalam shell.

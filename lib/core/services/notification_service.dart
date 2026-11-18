@@ -27,33 +27,54 @@ class NotificationService {
     }
   }
 
-  static Future<void> scheduleDailyReminder() async {
-    const androidDetails = AndroidNotificationDetails(
+  static const _reminderId = 1001;
+
+  static const _reminderDetails = NotificationDetails(
+    android: AndroidNotificationDetails(
       'daily_reminder_channel',
       'Pengingat Harian',
       channelDescription: 'Pengingat untuk mencatat pengeluaran harian',
       importance: Importance.defaultImportance,
       priority: Priority.high,
-    );
+    ),
+  );
 
-    const details = NotificationDetails(android: androidDetails);
-
+  /// Menjadwalkan pengingat harian pada [hour]:[minute]. Dengan [skipToday]
+  /// pengingat pertama baru berbunyi besok (mis. karena hari ini sudah
+  /// mencatat transaksi).
+  static Future<void> scheduleDailyReminder({
+    int hour = 20,
+    int minute = 0,
+    bool skipToday = false,
+  }) async {
     final now = DateTime.now();
-    var scheduledDate = DateTime(now.year, now.month, now.day, 20, 0);
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    var scheduledDate = DateTime(now.year, now.month, now.day, hour, minute);
+    if (skipToday || scheduledDate.isBefore(now)) {
+      scheduledDate = DateTime(now.year, now.month, now.day + 1, hour, minute);
     }
 
     await _plugin.zonedSchedule(
-      1001,
-      'Catat Keuangan Hari Ini 📝',
+      _reminderId,
+      'Catat Keuangan Hari Ini',
       'Sudah mencatat pengeluaran Anda hari ini? Buka DafMoney sekarang.',
       tz.TZDateTime.from(scheduledDate, tz.local),
-      details,
+      _reminderDetails,
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
+  static Future<void> cancelDailyReminder() => _plugin.cancel(_reminderId);
+
+  /// Notifikasi langsung untuk menguji pengaturan.
+  static Future<void> showTestReminder() {
+    return _plugin.show(
+      1002,
+      'Tes pengingat DafMoney',
+      'Pengingat harian aktif. Notifikasi seperti ini yang akan Anda terima.',
+      _reminderDetails,
     );
   }
 

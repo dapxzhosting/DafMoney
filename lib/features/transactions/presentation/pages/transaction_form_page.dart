@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/models/entry_type.dart';
+import '../../../../core/providers/reminder_provider.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/amount_formatter.dart';
@@ -20,8 +21,11 @@ import '../../../wallets/domain/wallet.dart';
 import '../../../wallets/presentation/providers/wallet_providers.dart';
 import '../../../wallets/presentation/wallet_style.dart';
 import '../../data/receipt_repository.dart';
+import '../../domain/category_suggester.dart';
 import '../../domain/money_transaction.dart';
+import '../providers/history_provider.dart';
 import '../providers/transaction_providers.dart';
+import '../widgets/category_suggestion_strip.dart';
 import '../transaction_undo.dart';
 
 class TransactionFormPage extends ConsumerStatefulWidget {
@@ -45,6 +49,9 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
   late DateTime _date;
   String? _categoryId;
   String? _categoryError;
+  bool _categoryTouched = false;
+  bool _autoPicked = false;
+  List<CategoryHint> _hints = const [];
   bool _saving = false;
 
   // Dompet: selama belum disentuh, transaksi baru memakai dompet pertama.
@@ -70,10 +77,62 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
       _categoryId = i.categoryId;
       _walletId = i.walletId;
     }
+    _note.addListener(_onNoteChanged);
+  }
+
+  /// Menebak kategori dari catatan; memilihnya otomatis untuk transaksi baru
+  /// selama pengguna belum memilih kategori sendiri.
+  void _onNoteChanged() {
+    final history = ref.read(recentHistoryProvider);
+    final cats = ref.read(categoriesProvider).valueOrNull ?? const [];
+    final valid = {
+      for (final c in cats)
+        if (c.type == _type) c.id,
+    };
+
+    final hints = [
+      for (final h in suggestCategories(
+        note: _note.text,
+        history: history,
+        type: _type,
+      ))
+        if (valid.contains(h.categoryId)) h,
+    ];
+
+    var changed = false;
+    if (!_editing && !_categoryTouched) {
+      final top = hints.isEmpty ? null : hints.first;
+      if (top != null && top.confidence >= 0.6 && top.score >= 0.9) {
+        if (_categoryId != top.categoryId) {
+          _categoryId = top.categoryId;
+          _categoryError = null;
+          _autoPicked = true;
+          changed = true;
+          HapticFeedback.selectionClick();
+        }
+      } else if (_autoPicked) {
+        _categoryId = null;
+        _autoPicked = false;
+        changed = true;
+      }
+    }
+
+    if (!mounted) return;
+    if (changed || hints.length != _hints.length || _hintsDiffer(hints)) {
+      setState(() => _hints = hints);
+    }
+  }
+
+  bool _hintsDiffer(List<CategoryHint> next) {
+    for (var i = 0; i < next.length; i++) {
+      if (next[i].categoryId != _hints[i].categoryId) return true;
+    }
+    return false;
   }
 
   @override
   void dispose() {
+    _note.removeListener(_onNoteChanged);
     _amount.dispose();
     _note.dispose();
     super.dispose();
@@ -236,6 +295,10 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
       context.showSnack(err, error: true);
       return;
     }
+    // Sudah mencatat hari ini: lewati pengingat hari ini.
+    if (!_editing && isSameDay(_date, DateTime.now())) {
+      ref.read(reminderProvider.notifier).onTransactionLogged();
+    }
     context.pop();
   }
 
@@ -340,6 +403,8 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     final tt = Theme.of(context).textTheme;
     final fin = context.finance;
     final accent = _type == EntryType.income ? fin.income : fin.expense;
+    // Dipantau selama form terbuka agar riwayat untuk saran kategori tetap ada.
+    ref.watch(recentHistoryProvider);
     final cats = ref.watch(categoriesProvider).valueOrNull ?? const [];
     final options = cats.where((c) => c.type == _type).toList();
     final wallets = ref.watch(walletsProvider).valueOrNull ?? const <Wallet>[];
@@ -394,6 +459,12 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                     (c) => c.id == _categoryId && c.type == _type,
                   );
                   if (!stillValid) _categoryId = null;
+                  _categoryTouched = false;
+                  _autoPicked = false;
+                  _hints = const [];
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) _onNoteChanged();
+                  });
                 }),
               ),
             ),
@@ -443,6 +514,8 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                     onSelected: (_) => setState(() {
                       _categoryId = c.id;
                       _categoryError = null;
+                      _categoryTouched = true;
+                      _autoPicked = false;
                     }),
                   ),
                 ActionChip(
@@ -529,6 +602,21 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                 hintText: 'Mis. makan siang bersama tim',
                 prefixIcon: Icon(Icons.notes_rounded),
               ),
+            ),
+            CategorySuggestionStrip(
+              hints: _hints,
+              options: options,
+              selectedId: _categoryId,
+              autoPicked: _autoPicked,
+              onPick: (c) {
+                HapticFeedback.selectionClick();
+                setState(() {
+                  _categoryId = c.id;
+                  _categoryError = null;
+                  _categoryTouched = true;
+                  _autoPicked = false;
+                });
+              },
             ),
             const SizedBox(height: 24),
             Text(

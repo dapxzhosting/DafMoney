@@ -32,6 +32,7 @@ import '../../budgets/presentation/pages/budgets_page.dart';
 import '../../budgets/presentation/providers/budget_providers.dart';
 import '../../categories/presentation/category_style.dart';
 import '../../categories/presentation/providers/category_providers.dart';
+import '../../challenge/presentation/challenge_card.dart';
 import '../../export/domain/export_builder.dart';
 import '../../export/domain/export_report.dart';
 import '../../insights/domain/insight_engine.dart';
@@ -262,6 +263,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         const SizedBox(height: Gap.lg),
                       ],
                       const _WalletStrip(),
+                      const SizedBox(height: Gap.lg),
+                      const ChallengeCard(),
                       const SizedBox(height: Gap.lg),
                       AsyncView<List<MoneyTransaction>>(
                         value: txAsync,

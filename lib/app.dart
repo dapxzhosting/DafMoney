@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/constants/app_constants.dart';
+import 'core/providers/reminder_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/quick_actions_service.dart';
@@ -25,7 +26,7 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp> {
     Future.microtask(() async {
       try {
         await NotificationService.init();
-        await NotificationService.scheduleDailyReminder();
+        await ref.read(reminderProvider.notifier).sync();
       } catch (_) {}
       final router = ref.read(routerProvider);
       QuickActionsService.init(router);

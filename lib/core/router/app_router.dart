@@ -17,6 +17,7 @@ import '../../features/auth/presentation/pages/verify_email_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
 import '../../features/wallets/presentation/pages/wallets_page.dart';
 import '../../features/splash/presentation/splash_page.dart';
+import '../../features/challenge/presentation/challenge_page.dart';
 import '../../features/onboarding/presentation/onboarding_page.dart';
 import '../providers/firebase_providers.dart';
 import '../providers/onboarding_provider.dart';
@@ -104,6 +105,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.categories,
         builder: (_, __) => const CategoriesPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.challenge,
+        builder: (_, __) => const ChallengePage(),
       ),
       GoRoute(
         path: AppRoutes.walletManager,
