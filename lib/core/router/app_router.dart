@@ -20,6 +20,7 @@ import '../../features/splash/presentation/splash_page.dart';
 import '../../features/onboarding/presentation/onboarding_page.dart';
 import '../providers/firebase_providers.dart';
 import '../providers/onboarding_provider.dart';
+import '../widgets/animated_branch_container.dart';
 import '../widgets/main_shell.dart';
 import 'app_routes.dart';
 
@@ -112,8 +113,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.settings,
         builder: (_, __) => const SettingsPage(),
       ),
-      StatefulShellRoute.indexedStack(
+      StatefulShellRoute(
         builder: (_, __, shell) => MainShell(shell: shell),
+        navigatorContainerBuilder: (context, shell, children) =>
+            FadeThroughBranches(
+              currentIndex: shell.currentIndex,
+              children: children,
+            ),
         branches: [
           StatefulShellBranch(
             routes: [

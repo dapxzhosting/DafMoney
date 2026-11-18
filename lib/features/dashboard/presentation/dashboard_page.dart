@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,11 +26,17 @@ import '../../../core/widgets/charts/month_bar_chart.dart';
 import '../../../core/widgets/month_selector.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/skeleton.dart';
+import '../../../core/widgets/speed_dial_fab.dart';
 import '../../budgets/domain/budget.dart';
 import '../../budgets/presentation/pages/budgets_page.dart';
 import '../../budgets/presentation/providers/budget_providers.dart';
 import '../../categories/presentation/category_style.dart';
 import '../../categories/presentation/providers/category_providers.dart';
+import '../../export/domain/export_builder.dart';
+import '../../export/domain/export_report.dart';
+import '../../insights/domain/insight_engine.dart';
+import '../../insights/presentation/insights_carousel.dart';
+import '../../insights/presentation/month_story_page.dart';
 import '../../reports/domain/report_calculator.dart';
 import '../../settings/presentation/providers/settings_providers.dart';
 import '../../transactions/domain/money_transaction.dart';
@@ -63,6 +70,7 @@ class DashboardPage extends ConsumerStatefulWidget {
 
 class _DashboardPageState extends ConsumerState<DashboardPage> {
   bool _fabExtended = true;
+  bool _dialOpen = false;
   bool _compact = false;
 
   /// Tinggi gulir kira-kira sampai kartu saldo keluar layar.
@@ -84,6 +92,27 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       }
     }
     return false;
+  }
+
+  void _closeDial() {
+    if (_dialOpen) setState(() => _dialOpen = false);
+  }
+
+  void _addTransaction(EntryType type) {
+    setState(() => _dialOpen = false);
+    context.push('${AppRoutes.transactionForm}?type=${type.name}');
+  }
+
+  void _openStory(List<MoneyTransaction> monthTxns) {
+    final month = ref.read(selectedMonthProvider);
+    final report = buildExportReport(
+      scope: ExportScope.month,
+      range: DateRange.month(month),
+      txns: monthTxns,
+      cats: ref.read(categoryMapProvider),
+      wallets: ref.read(walletMapProvider),
+    );
+    Navigator.of(context).push(MonthStoryPage.route(report));
   }
 
   /// Saldo kumulatif harian 7 hari terakhir untuk sparkline.
@@ -131,6 +160,17 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
     final totalBalance = (balance.valueOrNull?.total ?? 0) + initialBalance;
     final budgetList = budgets.valueOrNull ?? const <BudgetProgress>[];
+    final monthTxnsAll = allTxns == null
+        ? const <MoneyTransaction>[]
+        : allTxns.where((t) => monthRange.contains(t.date)).toList();
+    final insights = allTxns == null
+        ? const <Insight>[]
+        : buildInsights(
+            all: allTxns,
+            month: month,
+            cats: cats,
+            budgets: budgetList,
+          );
     final remainingBudget = budgetList.fold<int>(
       0,
       (sum, b) => sum + (b.remaining > 0 ? b.remaining : 0),
@@ -143,177 +183,242 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       );
     }
 
-    return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRoutes.transactionForm),
-        isExtended: _fabExtended,
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Transaksi'),
-      ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            RefreshIndicator(
-              onRefresh: () async {
-                ref.invalidate(balanceProvider);
-                await ref.read(balanceProvider.future);
-              },
-              child: NotificationListener<ScrollNotification>(
-                onNotification: _onScroll,
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(
-                    Gap.page,
-                    Gap.sm,
-                    Gap.page,
-                    110,
-                  ),
-                  children: [
-                    _Header(
-                      name: name,
-                      onAvatarTap: () => context.push(AppRoutes.settings),
-                    ),
-                    const SizedBox(height: Gap.md),
-                    const MonthSelector(),
-                    const SizedBox(height: Gap.md),
-                    _BalanceCard(
-                      total: balance.valueOrNull == null
-                          ? null
-                          : balance.valueOrNull!.total + initialBalance,
-                      income: monthSummary.income,
-                      expense: monthSummary.expense,
-                      sparkline: allTxns == null
-                          ? const <double>[]
-                          : _sparkline(allTxns),
-                      error: balance.hasError
-                          ? errorText(balance.error!)
-                          : null,
-                    ),
-                    const SizedBox(height: Gap.md),
-                    const _QuickActions(),
-                    const SizedBox(height: Gap.lg),
-                    const _WalletStrip(),
-                    const SizedBox(height: Gap.lg),
-                    AsyncView<List<MoneyTransaction>>(
-                      value: txAsync,
-                      loading: const SkeletonList(
-                        padding: EdgeInsets.zero,
-                        count: 3,
-                      ),
-                      onRetry: () =>
-                          ref.invalidate(transactionsByRangeProvider),
-                      data: (all) {
-                        final range = DateRange.month(month);
-                        final monthTxns = all
-                            .where((t) => range.contains(t.date))
-                            .toList();
-                        final slices = buildSlices(
-                          byCategory(monthTxns, EntryType.expense),
-                          cats,
-                        );
-                        final trend = byMonth(
-                          all,
-                          DateTime(month.year, month.month - 5),
-                          6,
-                        );
-                        final recent = monthTxns.take(5).toList();
-                        final topBudgets = budgetList.take(3).toList();
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children:
-                              <Widget>[
-                                    if (topBudgets.isNotEmpty) ...[
-                                      _SectionCard(
-                                        title: 'Anggaran bulan ini',
-                                        actionLabel: 'Lihat',
-                                        onAction: () =>
-                                            context.go(AppRoutes.budgets),
-                                        child: Column(
-                                          children: [
-                                            for (final p in topBudgets)
-                                              _BudgetRow(progress: p),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: Gap.lg),
-                                    ],
-                                    _SectionCard(
-                                      title: 'Transaksi terbaru',
-                                      actionLabel: 'Semua',
-                                      onAction: () =>
-                                          context.go(AppRoutes.transactions),
-                                      child: recent.isEmpty
-                                          ? const _Hint(
-                                              'Belum ada transaksi bulan ini.',
-                                            )
-                                          : Column(
-                                              children: [
-                                                for (final t in recent)
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                          bottom: Gap.xs,
-                                                        ),
-                                                    child: TransactionTile(
-                                                      transaction: t,
-                                                      categories: cats,
-                                                      wallets: wallets,
-                                                      showDate: true,
-                                                      onTap: () => context.push(
-                                                        AppRoutes
-                                                            .transactionForm,
-                                                        extra: t,
-                                                      ),
-                                                    ),
-                                                  ),
-                                              ],
-                                            ),
-                                    ),
-                                    const SizedBox(height: Gap.lg),
-                                    _SectionCard(
-                                      title: 'Pengeluaran per kategori',
-                                      child: slices.isEmpty
-                                          ? const _Hint(
-                                              'Belum ada pengeluaran bulan ini.',
-                                            )
-                                          : CategoryDonut(
-                                              slices: slices,
-                                              centerLabel: 'Total',
-                                            ),
-                                    ),
-                                    const SizedBox(height: Gap.lg),
-                                    _SectionCard(
-                                      title: 'Tren 6 bulan',
-                                      child: MonthBarChart(data: trend),
-                                    ),
-                                  ]
-                                  .animate(interval: 60.ms)
-                                  .fadeIn(duration: 350.ms)
-                                  .slideY(
-                                    begin: 0.04,
-                                    curve: Curves.easeOutCubic,
-                                  ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
+    return PopScope(
+      canPop: !_dialOpen,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _closeDial();
+      },
+      child: Scaffold(
+        floatingActionButton: SpeedDialFab(
+          open: _dialOpen,
+          extended: _fabExtended,
+          onToggle: () => setState(() => _dialOpen = !_dialOpen),
+          actions: [
+            SpeedDialAction(
+              icon: Icons.arrow_downward_rounded,
+              label: 'Pemasukan',
+              color: context.finance.income,
+              onTap: () => _addTransaction(EntryType.income),
             ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: _CompactBar(
-                visible: _compact,
-                name: name,
-                total: balance.valueOrNull == null ? null : totalBalance,
-                onAvatarTap: () => context.push(AppRoutes.settings),
-              ),
+            SpeedDialAction(
+              icon: Icons.arrow_upward_rounded,
+              label: 'Pengeluaran',
+              color: context.finance.expense,
+              onTap: () => _addTransaction(EntryType.expense),
             ),
           ],
         ),
+        body: SafeArea(
+          child: Stack(
+            children: [
+              RefreshIndicator(
+                onRefresh: () async {
+                  ref.invalidate(balanceProvider);
+                  await ref.read(balanceProvider.future);
+                },
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: _onScroll,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(
+                      Gap.page,
+                      Gap.sm,
+                      Gap.page,
+                      110,
+                    ),
+                    children: [
+                      _Header(
+                        name: name,
+                        onAvatarTap: () => context.push(AppRoutes.settings),
+                      ),
+                      const SizedBox(height: Gap.md),
+                      const MonthSelector(),
+                      const SizedBox(height: Gap.md),
+                      _BalanceCard(
+                        total: balance.valueOrNull == null
+                            ? null
+                            : balance.valueOrNull!.total + initialBalance,
+                        income: monthSummary.income,
+                        expense: monthSummary.expense,
+                        sparkline: allTxns == null
+                            ? const <double>[]
+                            : _sparkline(allTxns),
+                        error: balance.hasError
+                            ? errorText(balance.error!)
+                            : null,
+                      ),
+                      const SizedBox(height: Gap.md),
+                      const _QuickActions(),
+                      const SizedBox(height: Gap.lg),
+                      if (monthTxnsAll.isNotEmpty) ...[
+                        InsightsCarousel(
+                          insights: insights,
+                          storyTitle: 'Kilas ${Fmt.monthYear(month)}',
+                          onOpenStory: () => _openStory(monthTxnsAll),
+                        ),
+                        const SizedBox(height: Gap.lg),
+                      ],
+                      const _WalletStrip(),
+                      const SizedBox(height: Gap.lg),
+                      AsyncView<List<MoneyTransaction>>(
+                        value: txAsync,
+                        loading: const SkeletonList(
+                          padding: EdgeInsets.zero,
+                          count: 3,
+                        ),
+                        onRetry: () =>
+                            ref.invalidate(transactionsByRangeProvider),
+                        data: (all) {
+                          final range = DateRange.month(month);
+                          final monthTxns = all
+                              .where((t) => range.contains(t.date))
+                              .toList();
+                          final slices = buildSlices(
+                            byCategory(monthTxns, EntryType.expense),
+                            cats,
+                          );
+                          final trend = byMonth(
+                            all,
+                            DateTime(month.year, month.month - 5),
+                            6,
+                          );
+                          final recent = monthTxns.take(5).toList();
+                          final topBudgets = budgetList.take(3).toList();
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children:
+                                <Widget>[
+                                      if (topBudgets.isNotEmpty) ...[
+                                        _SectionCard(
+                                          title: 'Anggaran bulan ini',
+                                          actionLabel: 'Lihat',
+                                          onAction: () =>
+                                              context.go(AppRoutes.budgets),
+                                          child: Column(
+                                            children: [
+                                              for (final p in topBudgets)
+                                                _BudgetRow(progress: p),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: Gap.lg),
+                                      ],
+                                      _SectionCard(
+                                        title: 'Transaksi terbaru',
+                                        actionLabel: 'Semua',
+                                        onAction: () =>
+                                            context.go(AppRoutes.transactions),
+                                        child: recent.isEmpty
+                                            ? const _Hint(
+                                                'Belum ada transaksi bulan ini.',
+                                              )
+                                            : Column(
+                                                children: [
+                                                  for (final t in recent)
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                            bottom: Gap.xs,
+                                                          ),
+                                                      child: TransactionTile(
+                                                        transaction: t,
+                                                        categories: cats,
+                                                        wallets: wallets,
+                                                        showDate: true,
+                                                        onTap: () => context.push(
+                                                          AppRoutes
+                                                              .transactionForm,
+                                                          extra: t,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
+                                      ),
+                                      const SizedBox(height: Gap.lg),
+                                      _SectionCard(
+                                        title: 'Pengeluaran per kategori',
+                                        child: slices.isEmpty
+                                            ? const _Hint(
+                                                'Belum ada pengeluaran bulan ini.',
+                                              )
+                                            : CategoryDonut(
+                                                slices: slices,
+                                                centerLabel: 'Total',
+                                              ),
+                                      ),
+                                      const SizedBox(height: Gap.lg),
+                                      _SectionCard(
+                                        title: 'Tren 6 bulan',
+                                        child: MonthBarChart(data: trend),
+                                      ),
+                                    ]
+                                    .animate(interval: 60.ms)
+                                    .fadeIn(duration: 350.ms)
+                                    .slideY(
+                                      begin: 0.04,
+                                      curve: Curves.easeOutCubic,
+                                    ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: _CompactBar(
+                  visible: _compact,
+                  name: name,
+                  total: balance.valueOrNull == null ? null : totalBalance,
+                  onAvatarTap: () => context.push(AppRoutes.settings),
+                ),
+              ),
+              Positioned.fill(
+                child: _Scrim(visible: _dialOpen, onTap: _closeDial),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Latar buram di belakang speed-dial; ketuk untuk menutup.
+class _Scrim extends StatelessWidget {
+  const _Scrim({required this.visible, required this.onTap});
+
+  final bool visible;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return IgnorePointer(
+      ignoring: !visible,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 220),
+        child: visible
+            ? GestureDetector(
+                key: const ValueKey('scrim'),
+                behavior: HitTestBehavior.opaque,
+                onTap: onTap,
+                child: ClipRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                    child: ColoredBox(
+                      color: cs.scrim.withValues(alpha: 0.35),
+                      child: const SizedBox.expand(),
+                    ),
+                  ),
+                ),
+              )
+            : const SizedBox.shrink(key: ValueKey('no-scrim')),
       ),
     );
   }
@@ -1080,11 +1185,19 @@ class _BudgetRow extends ConsumerWidget {
           const SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(
-              value: progress.ratio.clamp(0.0, 1.0).toDouble(),
-              minHeight: 8,
-              color: color,
-              backgroundColor: cs.outlineVariant.withValues(alpha: 0.4),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(
+                begin: 0,
+                end: progress.ratio.clamp(0.0, 1.0).toDouble(),
+              ),
+              duration: const Duration(milliseconds: 900),
+              curve: Curves.easeOutCubic,
+              builder: (_, v, __) => LinearProgressIndicator(
+                value: v,
+                minHeight: 8,
+                color: color,
+                backgroundColor: cs.outlineVariant.withValues(alpha: 0.4),
+              ),
             ),
           ),
         ],
