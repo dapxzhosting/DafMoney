@@ -21,6 +21,7 @@ Future<void> showExportSheet(BuildContext context) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
+    useRootNavigator: true,
     showDragHandle: true,
     builder: (_) => const ExportSheet(),
   );

@@ -112,7 +112,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       cats: ref.read(categoryMapProvider),
       wallets: ref.read(walletMapProvider),
     );
-    Navigator.of(context).push(MonthStoryPage.route(report));
+    Navigator.of(
+      context,
+      rootNavigator: true,
+    ).push(MonthStoryPage.route(report));
   }
 
   /// Saldo kumulatif harian 7 hari terakhir untuk sparkline.

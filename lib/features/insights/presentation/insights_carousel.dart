@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/section_header.dart';
 import '../domain/insight_engine.dart';
 
 /// Carousel kartu wawasan. Kartu pertama selalu ajakan membuka "Kilas Bulan".
@@ -77,11 +78,7 @@ class _InsightsCarouselState extends State<InsightsCarousel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Wawasan',
-          style: Theme.of(context).textTheme.titleSmall
-              ?.copyWith(fontWeight: FontWeight.w800),
-        ),
+        const SectionHeader(title: 'Wawasan'),
         const SizedBox(height: Gap.xs),
         // Melebar ke tepi layar agar kartu berikutnya mengintip.
         Transform.translate(

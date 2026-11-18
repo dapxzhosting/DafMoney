@@ -466,7 +466,10 @@ class _PdfBuilder {
           pw.TableRow(
             children: [
               _cell(df.format(e.date), style: _s(8)),
-              _cell(_t(e.categoryName), style: _s(8)),
+              _cell(
+                _t(e.categoryName).isEmpty ? 'Tanpa nama' : _t(e.categoryName),
+                style: _s(8),
+              ),
               _cell(note(e.note), style: _s(8, color: _muted)),
               _cell(_t(e.walletName), style: _s(8, color: _muted)),
               _cell(
