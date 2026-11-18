@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_constants.dart';
+import '../../../core/providers/session_providers.dart';
 import '../../../core/providers/shared_prefs_provider.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../transactions/presentation/providers/history_provider.dart';
@@ -10,11 +11,19 @@ import '../domain/no_spend_challenge.dart';
 
 /// Tantangan aktif (tersimpan di perangkat). null = belum ada.
 class ChallengeNotifier extends Notifier<NoSpendChallenge?> {
+  /// Kunci penyimpanan per akun, agar tantangan tidak bocor antar pengguna
+  /// yang bergantian memakai perangkat yang sama.
+  String? get _key {
+    final uid = ref.read(uidProvider);
+    return uid == null ? null : '${AppConstants.challengeKey}_$uid';
+  }
+
   @override
   NoSpendChallenge? build() {
-    final raw = ref
-        .read(sharedPrefsProvider)
-        .getString(AppConstants.challengeKey);
+    ref.watch(uidProvider);
+    final key = _key;
+    if (key == null) return null;
+    final raw = ref.read(sharedPrefsProvider).getString(key);
     if (raw == null) return null;
     try {
       return NoSpendChallenge.fromJson(jsonDecode(raw) as Map<String, dynamic>);
@@ -25,11 +34,13 @@ class ChallengeNotifier extends Notifier<NoSpendChallenge?> {
 
   Future<void> _save(NoSpendChallenge? c) async {
     state = c;
+    final key = _key;
+    if (key == null) return;
     final prefs = ref.read(sharedPrefsProvider);
     if (c == null) {
-      await prefs.remove(AppConstants.challengeKey);
+      await prefs.remove(key);
     } else {
-      await prefs.setString(AppConstants.challengeKey, jsonEncode(c.toJson()));
+      await prefs.setString(key, jsonEncode(c.toJson()));
     }
   }
 

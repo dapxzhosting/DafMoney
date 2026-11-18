@@ -11,6 +11,7 @@ abstract class AppConstants {
   static const reminderMinuteKey = 'reminder_minute';
   static const reminderLastLoggedKey = 'reminder_last_logged';
   static const challengeKey = 'no_spend_challenge';
+  static const budgetAlertsKey = 'budget_alerts_enabled';
   static const currencyLocale = 'id_ID';
   static const currencySymbol = 'Rp ';
 }

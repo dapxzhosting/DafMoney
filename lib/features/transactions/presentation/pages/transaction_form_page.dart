@@ -15,6 +15,7 @@ import '../../../../core/utils/date_utils.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/snackbar.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../budgets/presentation/budget_alerts.dart';
 import '../../../categories/presentation/category_style.dart';
 import '../../../categories/presentation/providers/category_providers.dart';
 import '../../../wallets/domain/wallet.dart';
@@ -263,6 +264,11 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     HapticFeedback.mediumImpact();
     final note = _note.text.trim();
 
+    // Keadaan anggaran sebelum disimpan, untuk peringatan 80% / 100%.
+    final alertBefore = _type == EntryType.expense
+        ? BudgetAlerts.capture(ref, categoryId: _categoryId!, date: _date)
+        : null;
+
     final hadReceipt = _editing && widget.initial!.hasReceipt;
     final keepReceipt = hadReceipt && !_removeReceipt && _newReceipt == null;
 
@@ -294,6 +300,22 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     if (err != null) {
       context.showSnack(err, error: true);
       return;
+    }
+    if (alertBefore != null) {
+      final i = widget.initial;
+      // Saat mengubah transaksi yang kategori dan bulannya sama, anggaran
+      // sebelumnya sudah memuat nominal lama: hitung selisihnya saja.
+      final sameSlot =
+          _editing &&
+          i != null &&
+          i.type == EntryType.expense &&
+          i.categoryId == _categoryId &&
+          i.date.year == _date.year &&
+          i.date.month == _date.month;
+      BudgetAlerts.notifyIfCrossed(
+        alertBefore,
+        sameSlot ? amount - i.amount : amount,
+      );
     }
     // Sudah mencatat hari ini: lewati pengingat hari ini.
     if (!_editing && isSameDay(_date, DateTime.now())) {

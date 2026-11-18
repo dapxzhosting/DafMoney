@@ -13,6 +13,7 @@ class ReminderSection extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final state = ref.watch(reminderProvider);
     final notifier = ref.read(reminderProvider.notifier);
+    final budgetAlerts = ref.watch(budgetAlertsEnabledProvider);
 
     Widget icon(IconData i) => Container(
       padding: const EdgeInsets.all(9),
@@ -40,6 +41,23 @@ class ReminderSection extends ConsumerWidget {
           ),
           value: state.enabled,
           onChanged: notifier.setEnabled,
+        ),
+        const Divider(height: 1, indent: 64),
+        SwitchListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 4,
+          ),
+          secondary: icon(Icons.speed_rounded),
+          title: const Text(
+            'Peringatan anggaran',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+          subtitle: const Text(
+            'Notifikasi saat pengeluaran mencapai 80% dan 100% anggaran.',
+          ),
+          value: budgetAlerts,
+          onChanged: ref.read(budgetAlertsEnabledProvider.notifier).set,
         ),
         AnimatedSize(
           duration: const Duration(milliseconds: 280),

@@ -100,8 +100,13 @@ class _FilterSheetState extends State<_FilterSheet> {
   }
 
   TxFilter _build() {
-    final minV = parseAmount(_min.text);
-    final maxV = parseAmount(_max.text);
+    var minV = parseAmount(_min.text);
+    var maxV = parseAmount(_max.text);
+    if (minV != null && maxV != null && minV > maxV) {
+      final t = minV;
+      minV = maxV;
+      maxV = t;
+    }
     return TxFilter(
       categoryIds: _cats,
       walletIds: _wallets,

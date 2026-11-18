@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/app_constants.dart';
 import '../services/notification_service.dart';
 import '../utils/date_utils.dart';
+import 'session_providers.dart';
 import 'shared_prefs_provider.dart';
 
 class ReminderState {
@@ -54,7 +55,9 @@ class ReminderNotifier extends Notifier<ReminderState> {
   /// Menyelaraskan jadwal notifikasi dengan pengaturan saat ini.
   Future<void> sync() async {
     try {
-      if (!state.enabled) {
+      // Tanpa akun yang masuk, tidak ada yang perlu diingatkan.
+      final signedIn = ref.read(uidProvider) != null;
+      if (!state.enabled || !signedIn) {
         await NotificationService.cancelDailyReminder();
         return;
       }
@@ -106,3 +109,21 @@ class ReminderNotifier extends Notifier<ReminderState> {
 final reminderProvider = NotifierProvider<ReminderNotifier, ReminderState>(
   ReminderNotifier.new,
 );
+
+/// Apakah peringatan anggaran (80% dan 100%) dikirim sebagai notifikasi.
+class BudgetAlertsNotifier extends Notifier<bool> {
+  @override
+  bool build() =>
+      ref.read(sharedPrefsProvider).getBool(AppConstants.budgetAlertsKey) ??
+      true;
+
+  Future<void> set(bool value) async {
+    state = value;
+    await ref
+        .read(sharedPrefsProvider)
+        .setBool(AppConstants.budgetAlertsKey, value);
+  }
+}
+
+final budgetAlertsEnabledProvider =
+    NotifierProvider<BudgetAlertsNotifier, bool>(BudgetAlertsNotifier.new);

@@ -83,7 +83,17 @@ class TransactionActions {
       walletId: walletId,
       hasReceipt: receipt != null,
     );
-    if (receipt != null) await _receipts.save(_uid, id, receipt);
+    if (receipt != null) {
+      try {
+        await _receipts.save(_uid, id, receipt);
+      } catch (_) {
+        // Batalkan transaksinya agar mencoba ulang tidak membuat duplikat.
+        try {
+          await _repo.delete(_uid, id);
+        } catch (_) {}
+        rethrow;
+      }
+    }
     _bump();
   });
 
