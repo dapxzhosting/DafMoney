@@ -12,6 +12,8 @@ import 'core/services/quick_actions_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/appearance_provider.dart';
 import 'core/theme/theme_provider.dart';
+import 'core/providers/quick_entry_provider.dart';
+import 'core/services/quick_entry_service.dart';
 
 class DafMoneyApp extends ConsumerStatefulWidget {
   const DafMoneyApp({super.key});
@@ -28,6 +30,9 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp> {
     ref.listenManual(uidProvider, (prev, next) {
       if (prev != next) ref.read(reminderProvider.notifier).sync();
     });
+    ref.listenManual(uidProvider, (prev, next) {
+      if (prev != next) ref.read(quickEntryProvider.notifier).sync();
+    });
     Future.microtask(() async {
       try {
         await NotificationService.init();
@@ -35,6 +40,10 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp> {
       } catch (_) {}
       final router = ref.read(routerProvider);
       QuickActionsService.init(router);
+      try {
+        await QuickEntryService.init();
+        await ref.read(quickEntryProvider.notifier).sync();
+      } catch (_) {}
     });
   }
 

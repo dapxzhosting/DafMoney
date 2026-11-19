@@ -14,6 +14,7 @@ import '../../../core/widgets/confirm_dialog.dart';
 import '../../auth/presentation/providers/auth_providers.dart';
 import 'providers/settings_providers.dart';
 import 'widgets/settings_sheets.dart';
+import 'widgets/quick_entry_section.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -146,6 +147,7 @@ class SettingsPage extends ConsumerWidget {
             ],
           ),
           const _Group(title: 'Pengingat', children: [ReminderSection()]),
+          const _Group(title: 'Catat cepat', children: [QuickEntrySection()]),
           _Group(
             title: 'Tampilan',
             children: [
