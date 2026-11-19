@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'motion.dart';
+
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
     super.key,
@@ -15,7 +17,9 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return FilledButton(
+    return PressScale(
+      scale: 0.97,
+      child: FilledButton(
       onPressed: loading ? () {} : onPressed,
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
@@ -31,6 +35,7 @@ class PrimaryButton extends StatelessWidget {
               )
             : Text(label, key: const ValueKey('label')),
       ),
+    ),
     );
   }
 }

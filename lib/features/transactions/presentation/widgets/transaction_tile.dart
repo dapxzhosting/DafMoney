@@ -4,6 +4,7 @@ import '../../../../core/models/entry_type.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/category_avatar.dart';
+import '../../../../core/widgets/motion.dart';
 import '../../../categories/domain/category.dart';
 import '../../../categories/presentation/category_style.dart';
 import '../../../wallets/domain/wallet.dart';
@@ -40,7 +41,8 @@ class TransactionTile extends StatelessWidget {
     final walletName = wallets[transaction.walletId]?.name;
     final subtitle = walletName != null ? '$walletName · $base' : base;
 
-    return Card(
+    return PressScale(
+      child: Card(
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: onTap,
@@ -92,6 +94,7 @@ class TransactionTile extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

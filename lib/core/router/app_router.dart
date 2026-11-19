@@ -23,6 +23,7 @@ import '../providers/firebase_providers.dart';
 import '../providers/onboarding_provider.dart';
 import '../widgets/animated_branch_container.dart';
 import '../widgets/main_shell.dart';
+import '../widgets/motion.dart';
 import 'app_routes.dart';
 
 class _RouterRefresh extends ChangeNotifier {
@@ -96,27 +97,30 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.transactionForm,
-        builder: (_, state) => TransactionFormPage(
-          initial: state.extra as MoneyTransaction?,
-          initialType: EntryType.values
-              .asNameMap()[state.uri.queryParameters['type']],
+        pageBuilder: (_, state) => smoothPage(
+          state,
+          TransactionFormPage(
+            initial: state.extra as MoneyTransaction?,
+            initialType: EntryType.values
+                .asNameMap()[state.uri.queryParameters['type']],
+          ),
         ),
       ),
       GoRoute(
         path: AppRoutes.categories,
-        builder: (_, __) => const CategoriesPage(),
+        pageBuilder: (_, s) => smoothPage(s, const CategoriesPage()),
       ),
       GoRoute(
         path: AppRoutes.challenge,
-        builder: (_, __) => const ChallengePage(),
+        pageBuilder: (_, s) => smoothPage(s, const ChallengePage()),
       ),
       GoRoute(
         path: AppRoutes.walletManager,
-        builder: (_, __) => const WalletsPage(),
+        pageBuilder: (_, s) => smoothPage(s, const WalletsPage()),
       ),
       GoRoute(
         path: AppRoutes.settings,
-        builder: (_, __) => const SettingsPage(),
+        pageBuilder: (_, s) => smoothPage(s, const SettingsPage()),
       ),
       StatefulShellRoute(
         builder: (_, __, shell) => MainShell(shell: shell),
