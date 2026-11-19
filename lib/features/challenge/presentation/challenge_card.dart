@@ -59,7 +59,11 @@ class ChallengeCard extends ConsumerWidget {
                 ),
                 FilledButton.tonal(
                   onPressed: open,
+                  // Tema tombol aplikasi melebar penuh (minimumSize tak terhingga);
+                  // di dalam Row harus dibatasi agar teks tidak terjepit.
                   style: FilledButton.styleFrom(
+                    minimumSize: const Size(0, 38),
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
                     visualDensity: VisualDensity.compact,
                   ),
                   child: const Text('Mulai'),
