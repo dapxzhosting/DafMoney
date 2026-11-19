@@ -8,6 +8,7 @@ import '../../../../core/utils/snackbar.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/auth_scaffold.dart';
+import '../../../../core/widgets/motion.dart';
 
 class VerifyEmailPage extends ConsumerStatefulWidget {
   const VerifyEmailPage({super.key});
@@ -100,7 +101,7 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage>
         const SizedBox(height: 12),
         OutlinedButton(
           onPressed: (_cooldown > 0 || sending) ? null : _resend,
-          child: Text(
+          child: SwapText(
             _cooldown > 0
                 ? 'Kirim ulang email (${_cooldown}d)'
                 : 'Kirim ulang email',

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/onboarding_provider.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/motion.dart';
 
 class _Slide {
   const _Slide({
@@ -156,13 +157,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   padding: const EdgeInsets.all(Gap.page),
                   child: FilledButton(
                     onPressed: _next,
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 200),
-                      child: Text(
-                        _isLast ? 'Mulai sekarang' : 'Lanjut',
-                        key: ValueKey(_isLast),
-                      ),
-                    ),
+                    child: SwapText(_isLast ? 'Mulai sekarang' : 'Lanjut'),
                   ),
                 ),
               ],

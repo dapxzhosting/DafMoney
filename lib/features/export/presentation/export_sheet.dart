@@ -16,6 +16,7 @@ import '../data/pdf_exporter.dart';
 import '../domain/export_builder.dart';
 import '../domain/export_report.dart';
 import 'report_image_page.dart';
+import '../../../core/widgets/motion.dart';
 
 Future<void> showExportSheet(BuildContext context) {
   return showModalBottomSheet<void>(
@@ -365,7 +366,7 @@ class _ExportSheetState extends ConsumerState<ExportSheet> {
                             ? Icons.ios_share_rounded
                             : Icons.visibility_rounded,
                       ),
-                label: Text(
+                label: SwapText(
                   _busy
                       ? 'Menyiapkan...'
                       : (_format == _Format.pdf

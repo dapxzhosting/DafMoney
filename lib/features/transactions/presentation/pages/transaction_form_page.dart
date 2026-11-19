@@ -28,6 +28,7 @@ import '../providers/history_provider.dart';
 import '../providers/transaction_providers.dart';
 import '../widgets/category_suggestion_strip.dart';
 import '../transaction_undo.dart';
+import '../../../../core/widgets/motion.dart';
 
 class TransactionFormPage extends ConsumerStatefulWidget {
   const TransactionFormPage({super.key, this.initial, this.initialType});
@@ -588,7 +589,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                     wallets.isEmpty ? Icons.add_rounded : Icons.tune_rounded,
                     size: 18,
                   ),
-                  label: Text(wallets.isEmpty ? 'Tambah dompet' : 'Kelola'),
+                  label: SwapText(wallets.isEmpty ? 'Tambah dompet' : 'Kelola'),
                   onPressed: () => context.push(AppRoutes.walletManager),
                 ),
               ],

@@ -33,7 +33,7 @@ class PrimaryButton extends StatelessWidget {
                   color: cs.onPrimary,
                 ),
               )
-            : Text(label, key: const ValueKey('label')),
+            : SwapText(label, key: const ValueKey('label')),
       ),
     ),
     );

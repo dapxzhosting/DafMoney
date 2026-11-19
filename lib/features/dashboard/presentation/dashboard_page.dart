@@ -46,6 +46,7 @@ import '../../transactions/presentation/widgets/transaction_tile.dart';
 import '../../wallets/domain/wallet.dart';
 import '../../wallets/presentation/providers/wallet_providers.dart';
 import '../../wallets/presentation/wallet_style.dart';
+import '../../../core/widgets/motion.dart';
 
 final dashboardRangeProvider = Provider.autoDispose<DateRange>((ref) {
   final m = ref.watch(selectedMonthProvider);
@@ -639,7 +640,7 @@ class _WalletStrip extends ConsumerWidget {
           children: [
             Icon(Icons.add_rounded, color: cs.primary),
             const SizedBox(height: 4),
-            Text(
+            SwapText(
               wallets.isEmpty ? 'Tambah dompet' : 'Kelola',
               style: tt.labelMedium?.copyWith(
                 color: cs.primary,

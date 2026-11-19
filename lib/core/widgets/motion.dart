@@ -206,3 +206,51 @@ class _PressScaleState extends State<PressScale> {
     );
   }
 }
+
+/// Teks yang berganti dengan animasi: teks lama naik & memudar, teks baru
+/// naik dari bawah. Lebar ikut menyesuaikan dengan mulus (cocok untuk
+/// label tombol seperti "Transaksi" <-> "Tutup").
+class SwapText extends StatelessWidget {
+  const SwapText(
+    this.text, {
+    super.key,
+    this.style,
+    this.duration = const Duration(milliseconds: 280),
+  });
+
+  final String text;
+  final TextStyle? style;
+  final Duration duration;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSize(
+      duration: duration,
+      curve: Motion.enter,
+      alignment: Alignment.center,
+      child: AnimatedSwitcher(
+        duration: duration,
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
+        layoutBuilder: (current, previous) => Stack(
+          alignment: Alignment.center,
+          children: [...previous, if (current != null) current],
+        ),
+        transitionBuilder: (child, animation) {
+          final incoming = child.key == ValueKey(text);
+          final slide = Tween<Offset>(
+            begin: incoming ? const Offset(0, 0.6) : const Offset(0, -0.6),
+            end: Offset.zero,
+          ).animate(animation);
+          return ClipRect(
+            child: FadeTransition(
+              opacity: animation,
+              child: SlideTransition(position: slide, child: child),
+            ),
+          );
+        },
+        child: Text(text, key: ValueKey(text), style: style),
+      ),
+    );
+  }
+}

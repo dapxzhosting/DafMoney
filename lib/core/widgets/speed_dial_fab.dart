@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'motion.dart';
 
 class SpeedDialAction {
   const SpeedDialAction({
@@ -119,10 +120,7 @@ class SpeedDialFab extends StatelessWidget {
             curve: Curves.easeOutBack,
             child: const Icon(Icons.add_rounded),
           ),
-          label: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: Text(open ? 'Tutup' : label, key: ValueKey(open)),
-          ),
+          label: SwapText(open ? 'Tutup' : label),
         ),
       ],
     );

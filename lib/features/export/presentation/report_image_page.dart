@@ -10,6 +10,7 @@ import '../../../core/utils/snackbar.dart';
 import '../data/export_service.dart';
 import '../domain/export_report.dart';
 import 'report_image_card.dart';
+import '../../../core/widgets/motion.dart';
 
 /// Pratinjau kartu laporan + tombol bagikan / simpan sebagai gambar PNG.
 class ReportImagePage extends StatefulWidget {
@@ -125,7 +126,7 @@ class _ReportImagePageState extends State<ReportImagePage> {
                           ),
                         )
                       : const Icon(Icons.ios_share_rounded),
-                  label: Text(
+                  label: SwapText(
                     _busy ? 'Menyiapkan...' : 'Bagikan / simpan gambar',
                   ),
                 ),
