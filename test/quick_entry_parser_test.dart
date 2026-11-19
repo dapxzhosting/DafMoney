@@ -3,6 +3,7 @@ import 'package:daf_money/core/services/quick_entry_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  sharedTests();
   test('membaca nominal dengan akhiran', () {
     expect(parseQuickEntry('makan siang 25rb')!.amount, 25000);
     expect(parseQuickEntry('gaji 5jt')!.amount, 5000000);
@@ -22,6 +23,9 @@ void main() {
     expect(parseQuickEntry('25rb')!.note, 'Transaksi cepat');
     expect(parseQuickEntry('makan siang'), isNull);
     expect(parseQuickEntry('  '), isNull);
+    expect(parseQuickEntry('Magnum 1'), isNull);
+    expect(parseQuickEntry('Magnum 1 8rb')!.amount, 8000);
+    expect(parseQuickEntry('Magnum 1 8rb')!.note, 'Magnum 1');
   });
 
   test('menebak kategori', () {
@@ -30,5 +34,17 @@ void main() {
     expect(guessCategoryName('Parkir', EntryType.expense), 'transportasi');
     expect(guessCategoryName('Gaji bulanan', EntryType.income), 'gaji');
     expect(guessCategoryName('xyz', EntryType.expense), isNull);
+  });
+}
+
+void sharedTests() {
+  test('meringkas teks yang dibagikan', () {
+    expect(
+      summarizeSharedText('Transfer berhasil Rp 150.000 ke Budi'),
+      'Transfer berhasil 150000',
+    );
+    expect(summarizeSharedText('Rp 25.000,00'), 'Transaksi 25000');
+    expect(guessSharedType('Dana masuk Rp 50.000'), EntryType.income);
+    expect(guessSharedType('Pembayaran berhasil'), EntryType.expense);
   });
 }

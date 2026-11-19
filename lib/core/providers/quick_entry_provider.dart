@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/quick_entry_service.dart';
+import '../services/quick_templates.dart';
 import 'session_providers.dart';
 import 'shared_prefs_provider.dart';
 
@@ -26,6 +27,13 @@ class QuickEntryNotifier extends Notifier<bool> {
         await QuickEntryService.show();
       } else {
         await QuickEntryService.hide();
+      }
+      // Template widget mengikuti akun yang masuk (tidak tergantung saklar
+      // notifikasi).
+      if (signedIn) {
+        await QuickTemplates.refresh();
+      } else {
+        await QuickTemplates.clear();
       }
     } catch (_) {}
   }

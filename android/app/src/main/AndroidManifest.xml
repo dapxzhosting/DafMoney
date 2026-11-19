@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
         android:label="DafMoney"
@@ -46,6 +47,48 @@
                 android:resource="@xml/dafmoney_widget_info" />
         </receiver>
 
+        <!-- Layar mini "Catat cepat": tombol widget, Quick Settings Tile, menu Bagikan -->
+        <activity
+            android:name=".QuickAddActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:theme="@style/QuickAddTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+        </activity>
+
+        <!-- Quick Settings Tile "Catat transaksi" -->
+        <service
+            android:name=".QuickAddTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile_add"
+            android:label="Catat transaksi"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE"/>
+            </intent-filter>
+        </service>
+
+        <!-- Tombol widget yang jalan di latar belakang (home_widget) -->
+        <receiver
+            android:name="es.antonborri.home_widget.HomeWidgetBackgroundReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="es.antonborri.home_widget.action.BACKGROUND"/>
+            </intent-filter>
+        </receiver>
+        <service
+            android:name="es.antonborri.home_widget.HomeWidgetBackgroundService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
+
         <!-- Penerima flutter_local_notifications: tombol aksi & jadwal setelah restart -->
         <receiver
             android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver"
@@ -76,6 +119,9 @@
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService"/>
+        </intent>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>

@@ -13,6 +13,9 @@ final _amountRe = RegExp(
   caseSensitive: false,
 );
 
+/// Batas bawah untuk angka tanpa akhiran rb/jt/k agar dibaca sebagai rupiah.
+const _minPlainAmount = 1000;
+
 int? _value(String number, String? suffix) {
   final s = suffix?.toLowerCase();
   if (s == null) {
@@ -27,13 +30,18 @@ int? _value(String number, String? suffix) {
 
 /// Membaca teks bebas jadi catatan + nominal.
 /// Contoh: "makan siang 25rb", "gaji 5jt", "kopi 15.000", "bensin 1,5jt",
-/// "25000 parkir". Mengembalikan null bila tidak ada nominal.
+/// "25000 parkir". Angka polos di bawah 1000 tidak dianggap nominal.
+/// Mengembalikan null bila tidak ada nominal.
 QuickEntry? parseQuickEntry(String input) {
   var text = input.trim();
   if (text.isEmpty) return null;
   text = text.replaceAll(RegExp(r'\brp\.?\s*', caseSensitive: false), '');
 
-  final matches = _amountRe.allMatches(text).toList();
+  // Angka polos kecil (mis. "Magnum 1") dianggap jumlah/nomor, bukan rupiah.
+  final matches = _amountRe.allMatches(text).where((m) {
+    if (m.group(2) != null) return true;
+    return (_value(m.group(1)!, null) ?? 0) >= _minPlainAmount;
+  }).toList();
   if (matches.isEmpty) return null;
 
   RegExpMatch? best;
@@ -97,4 +105,45 @@ String? guessCategoryName(String note, EntryType type) {
     if (e.value.any(n.contains)) return e.key;
   }
   return null;
+}
+
+/// Menyederhanakan teks yang dibagikan dari aplikasi lain (m-banking,
+/// e-wallet) jadi satu kalimat singkat yang bisa dibaca [parseQuickEntry]:
+/// "<catatan singkat> <nominal terbesar>". Contoh: "Transfer berhasil
+/// Rp 150.000 ke Budi" -> "Transfer berhasil 150000".
+String summarizeSharedText(String text) {
+  final t = text.trim();
+  if (t.isEmpty) return '';
+  final rpRe = RegExp(r'rp\.?\s*([\d.,]+)', caseSensitive: false);
+
+  int? best;
+  for (final m in rpRe.allMatches(t)) {
+    var raw = m.group(1)!;
+    // Buang desimal ",00" / ".50" di akhir lalu semua pemisah ribuan.
+    raw = raw.replaceFirst(RegExp(r'[.,]\d{1,2}$'), '');
+    final v = int.tryParse(raw.replaceAll(RegExp(r'[.,]'), ''));
+    if (v != null && (best == null || v > best)) best = v;
+  }
+  if (best == null) {
+    return t.length > 60 ? t.substring(0, 60) : t;
+  }
+
+  var note = t
+      .split('\n')
+      .firstWhere((l) => l.trim().isNotEmpty, orElse: () => '')
+      .replaceAll(rpRe, '')
+      .replaceAll(RegExp(r'\d'), '')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
+  if (note.length > 28) note = note.substring(0, 28).trim();
+  if (note.isEmpty) note = 'Transaksi';
+  return '$note $best';
+}
+
+/// Menebak jenis dari teks yang dibagikan: kata seperti "diterima" / "dana
+/// masuk" berarti pemasukan, selain itu pengeluaran.
+EntryType guessSharedType(String text) {
+  final t = text.toLowerCase();
+  const incomeWords = ['diterima', 'dana masuk', 'menerima', 'uang masuk'];
+  return incomeWords.any(t.contains) ? EntryType.income : EntryType.expense;
 }

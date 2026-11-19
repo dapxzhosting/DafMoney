@@ -1,9 +1,13 @@
 package com.example.keuangan
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
+import android.net.Uri
+import android.view.View
 import android.widget.RemoteViews
+import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 
 class DafMoneyWidgetProvider : AppWidgetProvider() {
     override fun onUpdate(
@@ -18,8 +22,41 @@ class DafMoneyWidgetProvider : AppWidgetProvider() {
                 val remainingBudget = prefs.getString("remaining_budget", "Rp 0") ?: "Rp 0"
                 setTextViewText(R.id.total_balance, totalBalance)
                 setTextViewText(R.id.remaining_budget, remainingBudget)
+
+                // Tombol cepat: buka dialog "Catat cepat" (tanpa membuka app utama).
+                setOnClickPendingIntent(R.id.btn_expense, quickAdd(context, "expense", 1))
+                setOnClickPendingIntent(R.id.btn_income, quickAdd(context, "income", 2))
+
+                // Template favorit: satu ketukan langsung tersimpan di latar belakang.
+                val slots = listOf(R.id.tpl_1, R.id.tpl_2, R.id.tpl_3)
+                var any = false
+                slots.forEachIndexed { index, viewId ->
+                    val i = index + 1
+                    val note = prefs.getString("tpl_$i", "") ?: ""
+                    val label = prefs.getString("tpl_${i}_label", "") ?: ""
+                    if (note.isNotEmpty()) {
+                        any = true
+                        setViewVisibility(viewId, View.VISIBLE)
+                        setTextViewText(viewId, label.ifEmpty { note })
+                        setOnClickPendingIntent(
+                            viewId,
+                            HomeWidgetBackgroundIntent.getBroadcast(
+                                context, Uri.parse("dafmoney://template?i=$i")
+                            )
+                        )
+                    } else {
+                        setViewVisibility(viewId, View.GONE)
+                    }
+                }
+                setViewVisibility(R.id.tpl_row, if (any) View.VISIBLE else View.GONE)
             }
             appWidgetManager.updateAppWidget(widgetId, views)
         }
     }
+
+    private fun quickAdd(context: Context, type: String, code: Int): PendingIntent =
+        PendingIntent.getActivity(
+            context, code, QuickAddActivity.intentFor(context, type),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
 }

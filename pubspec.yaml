@@ -34,6 +34,7 @@ dependencies:
   dynamic_color: ^1.7.5
   local_auth: ^2.3.0
   image_picker: ^1.1.2
+  speech_to_text: ^7.0.0
 
   # Ekspor & bagikan laporan (PDF / gambar)
   pdf: ^3.11.3

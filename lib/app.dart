@@ -14,6 +14,7 @@ import 'core/theme/appearance_provider.dart';
 import 'core/theme/theme_provider.dart';
 import 'core/providers/quick_entry_provider.dart';
 import 'core/services/quick_entry_service.dart';
+import 'core/services/quick_templates.dart';
 
 class DafMoneyApp extends ConsumerStatefulWidget {
   const DafMoneyApp({super.key});
@@ -42,6 +43,7 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp> {
       QuickActionsService.init(router);
       try {
         await QuickEntryService.init();
+        await QuickTemplates.init();
         await ref.read(quickEntryProvider.notifier).sync();
       } catch (_) {}
     });
