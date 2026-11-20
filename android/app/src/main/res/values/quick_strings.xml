@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="quick_a11y_label">DafMoney Catat Cepat</string>
+    <string name="quick_a11y_description">Menambahkan tombol aksesibilitas yang membuka popup Catat cepat DafMoney di atas aplikasi apa pun. Layanan ini tidak membaca isi layar.</string>
+</resources>

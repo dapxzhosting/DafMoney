@@ -20,7 +20,7 @@ class QuickAddTileService : TileService() {
 
     override fun onClick() {
         super.onClick()
-        val intent = QuickAddActivity.intentFor(this, "expense")
+        val intent = QuickPopupActivity.intentFor(this, "expense")
         if (Build.VERSION.SDK_INT >= 34) {
             val pi = PendingIntent.getActivity(
                 this, 0, intent,

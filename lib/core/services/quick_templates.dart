@@ -6,14 +6,14 @@ import '../models/entry_type.dart';
 import 'quick_entry_saver.dart';
 import 'quick_entry_service.dart';
 
-/// Template favorit di widget home screen: 3 catatan pengeluaran yang paling
+/// Template favorit (widget memakai 3 pertama, popup memakai 6): catatan pengeluaran yang paling
 /// sering dipakai. Ketuk salah satunya di widget -> langsung tersimpan
 /// (nominal & kategori dari riwayat) tanpa membuka app.
 class QuickTemplates {
   QuickTemplates._();
 
   static const _widgetName = 'DafMoneyWidgetProvider';
-  static const slots = 3;
+  static const slots = 6;
 
   /// Daftarkan penangan ketukan tombol widget (jalan di latar belakang).
   static Future<void> init() async {
@@ -54,7 +54,18 @@ class QuickTemplates {
 @pragma('vm:entry-point')
 Future<void> quickWidgetBackgroundCallback(Uri? uri) async {
   DartPluginRegistrant.ensureInitialized();
-  if (uri == null || uri.host != 'template') return;
+  if (uri == null) return;
+
+  // Dari popup "Catat cepat": simpan teks apa adanya (jenis ikut pilihan).
+  if (uri.host == 'save') {
+    final type = EntryType.parse(uri.queryParameters['type']);
+    final text = uri.queryParameters['text'] ?? '';
+    final result = await QuickEntrySaver.save(type, text);
+    await QuickEntryService.notify(result.title, result.body);
+    return;
+  }
+
+  if (uri.host != 'template') return;
   final i = uri.queryParameters['i'];
   final note = await HomeWidget.getWidgetData<String>('tpl_$i');
   if (note == null || note.trim().isEmpty) return;

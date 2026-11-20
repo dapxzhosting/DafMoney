@@ -58,7 +58,7 @@ class DafMoneyWidgetProvider : AppWidgetProvider() {
 
     private fun quickAdd(context: Context, type: String, code: Int): PendingIntent =
         PendingIntent.getActivity(
-            context, code, QuickAddActivity.intentFor(context, type),
+            context, code, QuickPopupActivity.intentFor(context, type),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 }
