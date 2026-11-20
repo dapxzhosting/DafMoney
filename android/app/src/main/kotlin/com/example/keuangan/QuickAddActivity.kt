@@ -1,8 +1,10 @@
 package com.example.keuangan
 
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
+import android.widget.Toast
 import io.flutter.embedding.android.FlutterActivity
-import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
@@ -15,19 +17,44 @@ class QuickAddActivity : FlutterActivity() {
 
     override fun getDartEntrypointFunctionName(): String = "quickAddMain"
 
-    override fun getBackgroundMode(): BackgroundMode = BackgroundMode.transparent
+    // Dart memanggil "getArgs" begitu layar siap. Kalau tidak sampai 8 detik,
+    // layar gagal dimuat: beri tahu lewat toast lalu tutup (jangan layar hitam).
+    private var dartReady = false
+    private val handler = Handler(Looper.getMainLooper())
+
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        super.onCreate(savedInstanceState)
+        handler.postDelayed({
+            if (!dartReady && !isFinishing) {
+                Toast.makeText(
+                    this,
+                    "Catat cepat gagal dimuat. Coba buka DafMoney sekali dulu.",
+                    Toast.LENGTH_LONG
+                ).show()
+                finish()
+            }
+        }, 8000)
+    }
+
+    override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroy()
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
-                    "getArgs" -> result.success(
+                    "getArgs" -> {
+                        dartReady = true
+                        result.success(
                         mapOf(
                             "type" to (intent.getStringExtra(EXTRA_TYPE) ?: "expense"),
                             "text" to sharedText(),
                         )
-                    )
+                        )
+                    }
                     "close" -> {
                         finish()
                         result.success(null)

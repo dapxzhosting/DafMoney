@@ -9,11 +9,24 @@ import '../core/theme/app_colors.dart';
 
 const _channel = MethodChannel('dafmoney/quick_add');
 
-/// Titik masuk Dart untuk layar mini "Catat cepat" (QuickAddActivity).
-/// Dibuka dari tombol widget, Quick Settings Tile, atau menu Bagikan.
-@pragma('vm:entry-point')
-Future<void> quickAddMain() async {
+/// Menjalankan layar mini "Catat cepat" (QuickAddActivity).
+/// Dipanggil dari `quickAddMain()` di main.dart: titik masuk yang dicari
+/// Android harus berada di library utama.
+Future<void> runQuickAdd() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Kalau ada error saat menggambar, tampilkan teksnya (bukan layar kosong).
+  ErrorWidget.builder = (details) => Material(
+    color: const Color(0xFF7F1D1D),
+    child: Padding(
+      padding: const EdgeInsets.all(20),
+      child: SafeArea(
+        child: Text(
+          'Catat cepat error:\n${details.exceptionAsString()}',
+          style: const TextStyle(color: Colors.white, fontSize: 13),
+        ),
+      ),
+    ),
+  );
   runApp(const QuickAddApp());
 }
 
@@ -172,7 +185,7 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
     final isIncome = _type == EntryType.income;
 
     return Scaffold(
-      backgroundColor: Colors.black.withValues(alpha: 0.45),
+      backgroundColor: const Color(0xFF0B0F0D),
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: _close,

@@ -110,19 +110,25 @@ class QuickEntryService {
 
   static Future<void> hide() => _plugin.cancel(_mainId);
 
+  static int _flashSeq = 0;
+
   static Future<void> _flash(String title, String body) {
+    // Id unik: kalau Anda mencatat beberapa kali berturut-turut, tiap hasil
+    // muncul sendiri-sendiri (bukan saling menimpa).
+    final id = _resultId + 1 + (_flashSeq++ % 20);
     return _plugin.show(
-      _resultId,
+      id,
       title,
       body,
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'quick_entry_result_channel',
+          'quick_entry_result_v2',
           'Hasil Catat Cepat',
           channelDescription: 'Konfirmasi transaksi yang dicatat dari notifikasi',
-          importance: Importance.defaultImportance,
-          priority: Priority.defaultPriority,
-          timeoutAfter: 5000,
+          importance: Importance.high,
+          priority: Priority.high,
+          showWhen: true,
+          timeoutAfter: 6000,
         ),
       ),
     );

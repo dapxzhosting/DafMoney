@@ -76,6 +76,11 @@
             </intent-filter>
         </service>
 
+        <!-- Perantara tombol template widget: getar + toast, lalu simpan di latar belakang -->
+        <receiver
+            android:name=".WidgetTemplateReceiver"
+            android:exported="false" />
+
         <!-- Tombol widget yang jalan di latar belakang (home_widget) -->
         <receiver
             android:name="es.antonborri.home_widget.HomeWidgetBackgroundReceiver"

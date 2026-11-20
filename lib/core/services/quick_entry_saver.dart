@@ -86,13 +86,25 @@ class QuickEntrySaver {
     return user?.uid;
   }
 
+  /// Kategori & dompet jarang berubah dan sudah dimuat app: ambil dari cache
+  /// dulu supaya hemat pembacaan Firestore; kalau cache kosong baru ke server.
+  static Future<QuerySnapshot<Map<String, dynamic>>> _cacheFirst(
+    CollectionReference<Map<String, dynamic>> col,
+  ) async {
+    try {
+      final cached = await col.get(const GetOptions(source: Source.cache));
+      if (cached.docs.isNotEmpty) return cached;
+    } catch (_) {}
+    return col.get();
+  }
+
   static Future<QuerySnapshot<Map<String, dynamic>>> _recent(
     DocumentReference<Map<String, dynamic>> user,
   ) {
     return user
         .collection('transactions')
         .orderBy('date', descending: true)
-        .limit(400)
+        .limit(250)
         .get();
   }
 
@@ -196,7 +208,7 @@ class QuickEntrySaver {
         );
       }
 
-      final cats = await user.collection('categories').get();
+      final cats = await _cacheFirst(user.collection('categories'));
       final ofType = cats.docs
           .where((d) => EntryType.parse(d.data()['type'] as String?) == type)
           .toList();
@@ -219,8 +231,18 @@ class QuickEntrySaver {
           pick((n) => n == 'lainnya') ??
           (ofType.isNotEmpty ? ofType.first.id : '');
 
+      // Aturan Firestore menolak categoryId kosong; beri pesan yang jelas.
+      if (categoryId.isEmpty) {
+        return const QuickSaveResult(
+          ok: false,
+          title: 'Kategori belum ada',
+          body: 'Buka DafMoney dan buat kategori dulu.',
+        );
+      }
+      if (note.length > 200) note = note.substring(0, 200);
+
       String? walletId;
-      final wallets = await user.collection('wallets').get();
+      final wallets = await _cacheFirst(user.collection('wallets'));
       if (wallets.docs.isNotEmpty) {
         DateTime created(QueryDocumentSnapshot<Map<String, dynamic>> d) {
           final v = d.data()['createdAt'];

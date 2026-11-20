@@ -4,10 +4,9 @@ import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.net.Uri
+import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
-import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 
 class DafMoneyWidgetProvider : AppWidgetProvider() {
     override fun onUpdate(
@@ -40,8 +39,11 @@ class DafMoneyWidgetProvider : AppWidgetProvider() {
                         setTextViewText(viewId, label.ifEmpty { note })
                         setOnClickPendingIntent(
                             viewId,
-                            HomeWidgetBackgroundIntent.getBroadcast(
-                                context, Uri.parse("dafmoney://template?i=$i")
+                            PendingIntent.getBroadcast(
+                                context, 100 + i,
+                                Intent(context, WidgetTemplateReceiver::class.java)
+                                    .putExtra("i", i),
+                                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                             )
                         )
                     } else {
