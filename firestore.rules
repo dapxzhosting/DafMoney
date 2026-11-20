@@ -126,16 +126,22 @@ service cloud.firestore {
         && request.resource.data.email == request.auth.token.email
         && request.resource.data.createdAt == request.time;
 
-      // Hanya nama dan saldo awal yang boleh diubah.
+      // Nama, saldo awal, tantangan, dan pengaturan kunci aplikasi yang boleh diubah.
       allow update: if isOwner(uid)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'initialBalance'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'initialBalance', 'challenge', 'appLockEnabled', 'appLockGrace'])
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
         && request.resource.data.name.size() <= 60
         && (!('initialBalance' in request.resource.data)
             || (request.resource.data.initialBalance is int
                 && request.resource.data.initialBalance >= 0
-                && request.resource.data.initialBalance <= 100000000000));
+                && request.resource.data.initialBalance <= 100000000000))
+        && (!('appLockEnabled' in request.resource.data)
+            || request.resource.data.appLockEnabled is bool)
+        && (!('appLockGrace' in request.resource.data)
+            || request.resource.data.appLockGrace in [0, 60, 300])
+        && (!('challenge' in request.resource.data)
+            || request.resource.data.challenge is map);
 
       // Dihapus saat pengguna menghapus akunnya (setelah semua datanya dihapus).
       allow delete: if isOwner(uid);

@@ -1,3 +1,5 @@
+import 'package:equatable/equatable.dart';
+
 import '../../../core/models/entry_type.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../transactions/domain/money_transaction.dart';
@@ -6,7 +8,7 @@ import '../../transactions/domain/money_transaction.dart';
 const challengeMilestones = [3, 7, 14, 30, 60, 100];
 
 /// Tantangan: bertahan tanpa pengeluaran di satu kategori.
-class NoSpendChallenge {
+class NoSpendChallenge extends Equatable {
   const NoSpendChallenge({
     required this.categoryId,
     required this.startDate,
@@ -20,6 +22,9 @@ class NoSpendChallenge {
 
   /// Rekor terbaik dari tantangan-tantangan sebelumnya.
   final int bestEver;
+
+  @override
+  List<Object?> get props => [categoryId, startDate, targetDays, bestEver];
 
   Map<String, dynamic> toJson() => {
     'c': categoryId,

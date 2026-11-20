@@ -86,7 +86,9 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
   Future<void> _signOut() async {
     // Kunci adalah pengaturan perangkat; matikan agar akun berikutnya tidak
     // ikut terkunci.
-    await ref.read(appLockEnabledProvider.notifier).set(false);
+    await ref
+        .read(appLockEnabledProvider.notifier)
+        .set(false, syncRemote: false);
     await ref.read(firebaseAuthProvider).signOut();
     if (mounted) setState(() => _locked = false);
   }
@@ -96,6 +98,18 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
     // Pengguna mematikan kunci dari Pengaturan saat aplikasi terbuka.
     ref.listen<bool>(appLockEnabledProvider, (prev, next) {
       if (!next && _locked) setState(() => _locked = false);
+      // Kunci menyala karena sinkronisasi akun (mis. setelah instal ulang),
+      // bukan dari tombol Pengaturan: langsung kunci.
+      if (!(prev ?? false) &&
+          next &&
+          !_locked &&
+          ref.read(appLockEnabledProvider.notifier).changedByRemote) {
+        setState(() {
+          _locked = true;
+          _message = null;
+        });
+        _unlock();
+      }
     });
 
     return Stack(

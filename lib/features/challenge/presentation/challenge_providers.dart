@@ -8,6 +8,7 @@ import '../../../core/providers/firebase_providers.dart';
 import '../../../core/providers/session_providers.dart';
 import '../../../core/providers/shared_prefs_provider.dart';
 import '../../../core/utils/date_utils.dart';
+import '../../transactions/data/transaction_repository.dart' show writeSafe;
 import '../../transactions/presentation/providers/history_provider.dart';
 import '../domain/no_spend_challenge.dart';
 
@@ -25,7 +26,22 @@ class ChallengeNotifier extends Notifier<NoSpendChallenge?> {
     ref.listen<AsyncValue<DocumentSnapshot<Map<String, dynamic>>>>(
       userDocStreamProvider(uid),
       (previous, next) {
-        final data = next.value?.data();
+        final snap = next.value;
+        final data = snap?.data();
+        // Tantangan dihentikan di perangkat lain: field `challenge` terhapus.
+        // Hanya dipercaya bila snapshot dari server dan tanpa penulisan lokal
+        // yang belum terkirim, supaya tantangan lokal tidak terhapus sebelum
+        // sinkron (mis. snapshot pertama setelah instal ulang).
+        if (snap != null &&
+            data != null &&
+            !data.containsKey('challenge') &&
+            state != null &&
+            !snap.metadata.isFromCache &&
+            !snap.metadata.hasPendingWrites) {
+          state = null;
+          ref.read(sharedPrefsProvider).remove(key);
+          return;
+        }
         if (data != null && data.containsKey('challenge')) {
           final cMap = data['challenge'];
           if (cMap is Map<String, dynamic>) {
@@ -64,15 +80,19 @@ class ChallengeNotifier extends Notifier<NoSpendChallenge?> {
     final prefs = ref.read(sharedPrefsProvider);
     if (c == null) {
       await prefs.remove(key);
-      await ref.read(firestoreProvider).collection('users').doc(uid).set({
-        'challenge': FieldValue.delete(),
-      }, SetOptions(merge: true));
+      await writeSafe(
+        () => ref.read(firestoreProvider).collection('users').doc(uid).set({
+          'challenge': FieldValue.delete(),
+        }, SetOptions(merge: true)),
+      );
     } else {
       final json = c.toJson();
       await prefs.setString(key, jsonEncode(json));
-      await ref.read(firestoreProvider).collection('users').doc(uid).set({
-        'challenge': json,
-      }, SetOptions(merge: true));
+      await writeSafe(
+        () => ref.read(firestoreProvider).collection('users').doc(uid).set({
+          'challenge': json,
+        }, SetOptions(merge: true)),
+      );
     }
   }
 
