@@ -13,11 +13,6 @@ import '../domain/no_spend_challenge.dart';
 
 /// Tantangan aktif (disimpan lokal & disinkronkan ke akun Cloud Firestore).
 class ChallengeNotifier extends Notifier<NoSpendChallenge?> {
-  String? get _key {
-    final uid = ref.read(uidProvider);
-    return uid == null ? null : '${AppConstants.challengeKey}_$uid';
-  }
-
   @override
   NoSpendChallenge? build() {
     final uid = ref.watch(uidProvider);
@@ -36,7 +31,7 @@ class ChallengeNotifier extends Notifier<NoSpendChallenge?> {
           if (cMap is Map<String, dynamic>) {
             try {
               final remoteChallenge = NoSpendChallenge.fromJson(cMap);
-              if (state != remoteChallenge) {
+              if (remoteChallenge != null && state != remoteChallenge) {
                 state = remoteChallenge;
                 ref
                     .read(sharedPrefsProvider)
