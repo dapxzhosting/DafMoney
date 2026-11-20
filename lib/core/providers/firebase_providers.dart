@@ -24,3 +24,15 @@ class AuthTick extends Notifier<int> {
 }
 
 final authTickProvider = NotifierProvider<AuthTick, int>(AuthTick.new);
+
+final userDocStreamProvider =
+    StreamProvider.family<DocumentSnapshot<Map<String, dynamic>>, String>((
+      ref,
+      uid,
+    ) {
+      return ref
+          .watch(firestoreProvider)
+          .collection('users')
+          .doc(uid)
+          .snapshots();
+    });
