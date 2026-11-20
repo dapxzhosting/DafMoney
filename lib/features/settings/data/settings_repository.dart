@@ -52,6 +52,10 @@ class SettingsRepository {
       'wallets',
       'budgets',
       'categories',
+      'recurring',
+      'transfers',
+      'goals',
+      'debts',
     ]) {
       await _deleteCollection(uid, name);
     }

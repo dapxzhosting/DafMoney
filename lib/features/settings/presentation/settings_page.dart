@@ -15,6 +15,7 @@ import '../../auth/presentation/providers/auth_providers.dart';
 import 'providers/settings_providers.dart';
 import 'widgets/settings_sheets.dart';
 import 'widgets/quick_entry_section.dart';
+import 'widgets/app_lock_section.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -144,6 +145,24 @@ class SettingsPage extends ConsumerWidget {
                 subtitle: 'Tambah, ubah, atau hapus kategori',
                 onTap: () => context.push(AppRoutes.categories),
               ),
+              _Tile(
+                icon: Icons.event_repeat_rounded,
+                title: 'Transaksi berulang',
+                subtitle: 'Gaji, langganan, cicilan otomatis',
+                onTap: () => context.push(AppRoutes.recurring),
+              ),
+              _Tile(
+                icon: Icons.flag_rounded,
+                title: 'Target tabungan',
+                subtitle: 'Pantau progres tujuan keuangan',
+                onTap: () => context.push(AppRoutes.goals),
+              ),
+              _Tile(
+                icon: Icons.handshake_rounded,
+                title: 'Utang & piutang',
+                subtitle: 'Catat pinjaman dan jatuh tempo',
+                onTap: () => context.push(AppRoutes.debts),
+              ),
             ],
           ),
           const _Group(title: 'Pengingat', children: [ReminderSection()]),
@@ -242,6 +261,7 @@ class SettingsPage extends ConsumerWidget {
           _Group(
             title: 'Keamanan',
             children: [
+              const AppLockSection(),
               _Tile(
                 icon: Icons.lock_reset_rounded,
                 title: 'Ubah kata sandi',
@@ -253,6 +273,12 @@ class SettingsPage extends ConsumerWidget {
           _Group(
             title: 'Data',
             children: [
+              _Tile(
+                icon: Icons.import_export_rounded,
+                title: 'Impor & ekspor CSV',
+                subtitle: 'Pindahkan data dari/ke Excel atau aplikasi lain',
+                onTap: () => context.push(AppRoutes.csv),
+              ),
               _Tile(
                 icon: Icons.file_download_outlined,
                 title: 'Salin semua transaksi (CSV)',

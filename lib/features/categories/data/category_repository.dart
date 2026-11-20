@@ -74,6 +74,16 @@ class CategoryRepository {
         'Kategori masih dipakai oleh transaksi. Pindahkan atau hapus transaksinya dulu.',
       );
     }
+    final recurring = await _user(uid)
+        .collection('recurring')
+        .where('categoryId', isEqualTo: id)
+        .limit(1)
+        .get();
+    if (recurring.docs.isNotEmpty) {
+      throw const AppException(
+        'Kategori masih dipakai transaksi berulang. Ubah atau hapus aturannya dulu.',
+      );
+    }
     final budgets = await _user(uid)
         .collection('budgets')
         .where('categoryId', isEqualTo: id)

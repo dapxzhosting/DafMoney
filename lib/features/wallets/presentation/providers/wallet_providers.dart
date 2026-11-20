@@ -5,6 +5,8 @@ import '../../../../core/providers/firebase_providers.dart';
 import '../../../../core/providers/session_providers.dart';
 import '../../../transactions/domain/money_transaction.dart';
 import '../../../transactions/presentation/providers/transaction_providers.dart';
+import '../../../transfers/domain/wallet_transfer.dart';
+import '../../../transfers/presentation/transfer_providers.dart';
 import '../../data/wallet_repository.dart';
 import '../../domain/wallet.dart';
 
@@ -30,13 +32,22 @@ final walletsInitialSumProvider = Provider<int>((ref) {
 });
 
 /// Pemasukan dan pengeluaran per dompet. Kunci '' = transaksi tanpa dompet.
-final walletTotalsProvider = StreamProvider.autoDispose<Map<String, Balance>>((
-  ref,
-) {
-  final uid = ref.watch(uidProvider);
-  if (uid == null) return Stream.value(const <String, Balance>{});
-  return ref.watch(transactionRepositoryProvider).watchTotalsByWallet(uid);
-});
+final _txWalletTotalsProvider =
+    StreamProvider.autoDispose<Map<String, Balance>>((ref) {
+      final uid = ref.watch(uidProvider);
+      if (uid == null) return Stream.value(const <String, Balance>{});
+      return ref.watch(transactionRepositoryProvider).watchTotalsByWallet(uid);
+    });
+
+/// Total per dompet, sudah termasuk transfer antar dompet (yang tidak
+/// mengubah total saldo keseluruhan).
+final walletTotalsProvider =
+    Provider.autoDispose<AsyncValue<Map<String, Balance>>>((ref) {
+      final base = ref.watch(_txWalletTotalsProvider);
+      final transfers =
+          ref.watch(transfersProvider).valueOrNull ?? const <WalletTransfer>[];
+      return base.whenData((m) => mergeTransfers(m, transfers));
+    });
 
 class WalletActions {
   WalletActions(this._ref);

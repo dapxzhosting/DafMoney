@@ -17,6 +17,8 @@ import '../../domain/wallet.dart';
 import '../providers/wallet_providers.dart';
 import '../wallet_style.dart';
 import '../widgets/wallet_form_sheet.dart';
+import '../../../transfers/presentation/transfer_history.dart';
+import '../../../transfers/presentation/transfer_sheet.dart';
 
 class WalletsPage extends ConsumerWidget {
   const WalletsPage({super.key});
@@ -51,7 +53,16 @@ class WalletsPage extends ConsumerWidget {
 
     return FabScroll(
       builder: (context, fabExtended, onScroll) => Scaffold(
-        appBar: AppBar(title: const Text('Dompet')),
+        appBar: AppBar(
+          title: const Text('Dompet'),
+          actions: [
+            IconButton(
+              tooltip: 'Transfer antar dompet',
+              onPressed: () => showTransferSheet(context),
+              icon: const Icon(Icons.swap_horiz_rounded),
+            ),
+          ],
+        ),
         floatingActionButton: FloatingActionButton.extended(
           isExtended: fabExtended,
           onPressed: () => showWalletSheet(context),
@@ -92,6 +103,7 @@ class WalletsPage extends ConsumerWidget {
                       padding: const EdgeInsets.only(top: 6),
                       child: _UnassignedCard(net: unassigned.total),
                     ),
+                  const TransferHistory(),
                 ],
               );
             },

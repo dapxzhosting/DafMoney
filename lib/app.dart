@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/constants/app_constants.dart';
+import 'core/providers/firebase_providers.dart';
 import 'core/providers/reminder_provider.dart';
 import 'core/providers/session_providers.dart';
 import 'core/router/app_router.dart';
@@ -15,6 +16,8 @@ import 'core/theme/theme_provider.dart';
 import 'core/providers/quick_entry_provider.dart';
 import 'core/services/quick_entry_service.dart';
 import 'core/services/quick_templates.dart';
+import 'core/widgets/app_lock_gate.dart';
+import 'features/recurring/presentation/recurring_providers.dart';
 
 class DafMoneyApp extends ConsumerStatefulWidget {
   const DafMoneyApp({super.key});
@@ -23,10 +26,18 @@ class DafMoneyApp extends ConsumerStatefulWidget {
   ConsumerState<DafMoneyApp> createState() => _DafMoneyAppState();
 }
 
-class _DafMoneyAppState extends ConsumerState<DafMoneyApp> {
+class _DafMoneyAppState extends ConsumerState<DafMoneyApp>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Transaksi berulang diproses saat masuk, setelah verifikasi email, dan
+    // setiap aplikasi dibuka kembali.
+    ref.listenManual(uidProvider, (prev, next) {
+      if (prev != next) _runRecurring();
+    });
+    ref.listenManual(authTickProvider, (prev, next) => _runRecurring());
     // Pengingat hanya aktif untuk akun yang sedang masuk.
     ref.listenManual(uidProvider, (prev, next) {
       if (prev != next) ref.read(reminderProvider.notifier).sync();
@@ -47,6 +58,23 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp> {
         await ref.read(quickEntryProvider.notifier).sync();
       } catch (_) {}
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _runRecurring();
+  }
+
+  void _runRecurring() {
+    final user = ref.read(firebaseAuthProvider).currentUser;
+    if (user == null || !user.emailVerified) return;
+    ref.read(recurringActionsProvider).processDue();
   }
 
   @override
@@ -78,6 +106,8 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp> {
           themeAnimationDuration: const Duration(milliseconds: 350),
           themeAnimationCurve: Curves.easeInOut,
           routerConfig: router,
+          builder: (context, child) =>
+              AppLockGate(child: child ?? const SizedBox.shrink()),
           locale: const Locale('id', 'ID'),
           supportedLocales: const [Locale('id', 'ID'), Locale('en')],
           localizationsDelegates: const [

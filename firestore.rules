@@ -65,6 +65,55 @@ service cloud.firestore {
         && d.updatedAt == request.time;
     }
 
+    function validRecurring(d) {
+      return d.keys().hasOnly(['type', 'amount', 'categoryId', 'note', 'walletId', 'frequency', 'startDate', 'nextDate', 'anchorDay', 'active', 'createdAt'])
+        && d.type in ['income', 'expense']
+        && d.amount is int && d.amount > 0 && d.amount <= 100000000000
+        && d.categoryId is string && d.categoryId.size() > 0 && d.categoryId.size() <= 60
+        && d.note is string && d.note.size() <= 200
+        && (!('walletId' in d) || (d.walletId is string && d.walletId.size() <= 60))
+        && d.frequency in ['daily', 'weekly', 'monthly', 'yearly']
+        && d.startDate is timestamp
+        && d.nextDate is timestamp
+        && d.anchorDay is int && d.anchorDay >= 1 && d.anchorDay <= 31
+        && d.active is bool
+        && d.createdAt is timestamp;
+    }
+
+    function validTransfer(d) {
+      return d.keys().hasOnly(['fromWalletId', 'toWalletId', 'amount', 'note', 'date', 'createdAt'])
+        && d.fromWalletId is string && d.fromWalletId.size() > 0 && d.fromWalletId.size() <= 60
+        && d.toWalletId is string && d.toWalletId.size() > 0 && d.toWalletId.size() <= 60
+        && d.fromWalletId != d.toWalletId
+        && d.amount is int && d.amount > 0 && d.amount <= 100000000000
+        && d.note is string && d.note.size() <= 200
+        && d.date is timestamp
+        && d.createdAt is timestamp;
+    }
+
+    function validGoal(d) {
+      return d.keys().hasOnly(['name', 'icon', 'color', 'target', 'saved', 'deadline', 'createdAt'])
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 40
+        && d.icon is string && d.icon.size() <= 30
+        && d.color is int
+        && d.target is int && d.target > 0 && d.target <= 100000000000
+        && d.saved is int && d.saved >= 0 && d.saved <= 100000000000
+        && (!('deadline' in d) || d.deadline is timestamp)
+        && d.createdAt is timestamp;
+    }
+
+    function validDebt(d) {
+      return d.keys().hasOnly(['person', 'kind', 'amount', 'paid', 'note', 'date', 'dueDate', 'createdAt'])
+        && d.person is string && d.person.size() > 0 && d.person.size() <= 60
+        && d.kind in ['owe', 'lend']
+        && d.amount is int && d.amount > 0 && d.amount <= 100000000000
+        && d.paid is int && d.paid >= 0 && d.paid <= d.amount
+        && d.note is string && d.note.size() <= 200
+        && d.date is timestamp
+        && (!('dueDate' in d) || d.dueDate is timestamp)
+        && d.createdAt is timestamp;
+    }
+
     // Profil pengguna: hanya pemilik.
     match /users/{uid} {
       allow read: if isOwner(uid);
@@ -120,6 +169,48 @@ service cloud.firestore {
           && request.resource.data.createdAt == request.time;
         allow update: if canUse(uid)
           && validWallet(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt;
+      }
+
+      // Transaksi berulang, transfer antar dompet, target tabungan, utang & piutang.
+
+      match /recurring/{id} {
+        allow read, delete: if canUse(uid);
+        allow create: if canUse(uid)
+          && validRecurring(request.resource.data)
+          && request.resource.data.createdAt == request.time;
+        allow update: if canUse(uid)
+          && validRecurring(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt;
+      }
+
+      match /transfers/{id} {
+        allow read, delete: if canUse(uid);
+        allow create: if canUse(uid)
+          && validTransfer(request.resource.data)
+          && request.resource.data.createdAt == request.time;
+        allow update: if canUse(uid)
+          && validTransfer(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt;
+      }
+
+      match /goals/{id} {
+        allow read, delete: if canUse(uid);
+        allow create: if canUse(uid)
+          && validGoal(request.resource.data)
+          && request.resource.data.createdAt == request.time;
+        allow update: if canUse(uid)
+          && validGoal(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt;
+      }
+
+      match /debts/{id} {
+        allow read, delete: if canUse(uid);
+        allow create: if canUse(uid)
+          && validDebt(request.resource.data)
+          && request.resource.data.createdAt == request.time;
+        allow update: if canUse(uid)
+          && validDebt(request.resource.data)
           && request.resource.data.createdAt == resource.data.createdAt;
       }
 

@@ -91,6 +91,27 @@ Catat pemasukan & pengeluaran dalam hitungan detik, pantau anggaran, dan pahami 
 - **Salin anggaran** dari bulan sebelumnya dengan sekali ketuk.
 - **Notifikasi peringatan anggaran** saat pengeluaran mencapai **80%** dan **100%** (bisa dimatikan di Pengaturan).
 
+### 🔁 Transaksi Berulang
+- Aturan harian / mingguan / bulanan / tahunan untuk gaji, langganan, dan cicilan.
+- Dicatat otomatis saat aplikasi dibuka (dalam transaksi Firestore, jadi tidak ada duplikat). Tanggal 31 menyesuaikan ke akhir bulan pendek.
+
+### 🔒 Kunci Aplikasi
+- Sidik jari / wajah / PIN-pola perangkat, dengan jeda kunci ulang (langsung, 1 menit, 5 menit).
+- *Fail-closed*: error tidak pernah membuka kunci. Menyalakan dan mematikan kunci wajib lolos verifikasi.
+
+### 🔄 Transfer Antar Dompet
+- Memindahkan saldo antar dompet tanpa dihitung sebagai pemasukan/pengeluaran (laporan dan total saldo tidak berubah).
+
+### 🏁 Target Tabungan
+- Progres animasi, tenggat, dan saran tabungan per bulan. Dana target hanya penanda, tidak mengubah saldo dompet.
+
+### 🤝 Utang & Piutang
+- Cicilan pembayaran, bilah progres, status terlambat, dan pengingat pukul 09.00 saat jatuh tempo.
+
+### 📥 Impor & Ekspor CSV
+- Ekspor semua transaksi (termasuk dompet); impor dengan pratinjau, deteksi duplikat, dan pembuatan kategori/dompet baru otomatis.
+- Mendukung pemisah koma / titik koma dan format tanggal/nominal Indonesia.
+
 ### 🏷️ Kategori
 - Kategori bawaan terisi otomatis untuk pengguna baru (Makanan, Gaji, Transportasi, dll.).
 - **Kategori kustom:** nama, jenis (pemasukan/pengeluaran), warna, dan ikon.
@@ -251,7 +272,12 @@ users/{uid}                         name, email, createdAt, initialBalance
  │                                  walletId?, recurringId?, hasReceipt?
  ├── wallets/{id}                   name, icon, color, initialBalance, createdAt
  ├── receipts/{transactionId}       data (JPEG bytes ≤ ~900 KB), updatedAt
- └── budgets/{yyyy-MM_categoryId}   categoryId, amount, month, updatedAt
+ ├── budgets/{yyyy-MM_categoryId}   categoryId, amount, month, updatedAt
+ ├── recurring/{id}                 type, amount, categoryId, note, walletId?, frequency,
+ │                                  startDate, nextDate, anchorDay, active, createdAt
+ ├── transfers/{id}                 fromWalletId, toWalletId, amount, note, date, createdAt
+ ├── goals/{id}                     name, icon, color, target, saved, deadline?, createdAt
+ └── debts/{id}                     person, kind(owe|lend), amount, paid, note, date, dueDate?, createdAt
 ```
 
 > Nominal disimpan sebagai **bilangan bulat rupiah** (`int`), bukan desisimal, untuk menghindari galat pembulatan.

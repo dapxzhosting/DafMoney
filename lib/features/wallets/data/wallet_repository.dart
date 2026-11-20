@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../core/error/app_exception.dart';
 import '../../transactions/data/transaction_repository.dart' show writeSafe;
 import '../domain/wallet.dart';
 
@@ -78,6 +79,34 @@ class WalletRepository {
   /// Menghapus dompet. Transaksi yang memakai dompet ini tidak dihapus,
   /// hanya dilepas dari dompetnya (menjadi "tanpa dompet").
   Future<void> delete(String uid, String id) async {
+    // Dompet yang punya riwayat transfer tidak boleh dihapus: transfer
+    // menjadi tidak seimbang dan saldo dompet lawannya ikut salah.
+    final transfers = _user(uid).collection('transfers');
+    final asFrom = await transfers
+        .where('fromWalletId', isEqualTo: id)
+        .limit(1)
+        .get();
+    final asTo = await transfers
+        .where('toWalletId', isEqualTo: id)
+        .limit(1)
+        .get();
+    if (asFrom.docs.isNotEmpty || asTo.docs.isNotEmpty) {
+      throw const AppException(
+        'Dompet ini punya riwayat transfer. Hapus transfernya dulu di halaman Dompet.',
+      );
+    }
+    // Aturan transaksi berulang yang memakai dompet ini dilepas dari dompetnya.
+    final rec = await _user(uid)
+        .collection('recurring')
+        .where('walletId', isEqualTo: id)
+        .get();
+    if (rec.docs.isNotEmpty) {
+      final batch = _db.batch();
+      for (final d in rec.docs) {
+        batch.update(d.reference, {'walletId': FieldValue.delete()});
+      }
+      await batch.commit();
+    }
     final txCol = _user(uid).collection('transactions');
     while (true) {
       final snap = await txCol

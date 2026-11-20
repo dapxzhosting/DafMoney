@@ -18,6 +18,10 @@ import '../../features/settings/presentation/settings_page.dart';
 import '../../features/wallets/presentation/pages/wallets_page.dart';
 import '../../features/splash/presentation/splash_page.dart';
 import '../../features/challenge/presentation/challenge_page.dart';
+import '../../features/data_io/presentation/csv_page.dart';
+import '../../features/debts/presentation/debts_page.dart';
+import '../../features/goals/presentation/goals_page.dart';
+import '../../features/recurring/presentation/recurring_page.dart';
 import '../../features/onboarding/presentation/onboarding_page.dart';
 import '../providers/firebase_providers.dart';
 import '../providers/onboarding_provider.dart';
@@ -113,6 +117,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.challenge,
         pageBuilder: (_, s) => smoothPage(s, const ChallengePage()),
+      ),
+      GoRoute(
+        path: AppRoutes.recurring,
+        pageBuilder: (_, s) => smoothPage(s, const RecurringPage()),
+      ),
+      GoRoute(
+        path: AppRoutes.goals,
+        pageBuilder: (_, s) => smoothPage(s, const GoalsPage()),
+      ),
+      GoRoute(
+        path: AppRoutes.debts,
+        pageBuilder: (_, s) => smoothPage(s, const DebtsPage()),
+      ),
+      GoRoute(
+        path: AppRoutes.csv,
+        pageBuilder: (_, s) => smoothPage(s, const CsvPage()),
       ),
       GoRoute(
         path: AppRoutes.walletManager,

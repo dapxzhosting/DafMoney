@@ -106,4 +106,63 @@ class NotificationService {
       details,
     );
   }
+
+  static const _infoDetails = NotificationDetails(
+    android: AndroidNotificationDetails(
+      'info_channel',
+      'Info Aplikasi',
+      channelDescription: 'Pemberitahuan umum dari DafMoney',
+      importance: Importance.defaultImportance,
+      priority: Priority.defaultPriority,
+    ),
+  );
+
+  /// Notifikasi langsung berisi informasi singkat.
+  static Future<void> showInfo({
+    required String title,
+    required String body,
+  }) {
+    return _plugin.show(
+      DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title,
+      body,
+      _infoDetails,
+    );
+  }
+
+  static const _dueDetails = NotificationDetails(
+    android: AndroidNotificationDetails(
+      'due_channel',
+      'Jatuh Tempo',
+      channelDescription: 'Pengingat utang & piutang yang jatuh tempo',
+      importance: Importance.high,
+      priority: Priority.high,
+    ),
+  );
+
+  /// ID notifikasi stabil dari id dokumen (di luar rentang ID lain).
+  static int idFor(String docId) => 100000 + (docId.hashCode & 0x0fffffff);
+
+  /// Menjadwalkan satu notifikasi pada [when] (sekali, tidak berulang).
+  /// Diabaikan bila waktunya sudah lewat.
+  static Future<void> scheduleOnce({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime when,
+  }) async {
+    if (!when.isAfter(DateTime.now())) return;
+    await _plugin.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(when, tz.local),
+      _dueDetails,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
+  static Future<void> cancel(int id) => _plugin.cancel(id);
 }

@@ -16,6 +16,10 @@ abstract class AppRoutes {
   static const categories = '/categories';
   static const wallets = '/wallets';
   static const challenge = '/challenge';
+  static const recurring = '/recurring';
+  static const goals = '/goals';
+  static const debts = '/debts';
+  static const csv = '/csv';
 
   /// Halaman dompet yang dibuka dengan push (mis. dari form transaksi),
   /// terpisah dari tab Dompet di dalam shell.
