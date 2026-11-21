@@ -17,6 +17,7 @@ import '../../../transactions/presentation/providers/transaction_providers.dart'
 import '../../domain/wallet.dart';
 import '../providers/wallet_providers.dart';
 import '../wallet_style.dart';
+import '../widgets/wallet_adjust_sheet.dart';
 import '../widgets/wallet_form_sheet.dart';
 import '../../../transfers/presentation/transfer_history.dart';
 import '../../../transfers/presentation/transfer_sheet.dart';
@@ -96,6 +97,11 @@ class WalletsPage extends ConsumerWidget {
                       wallet: w,
                       balance: w.initialBalance + (totals[w.id]?.total ?? 0),
                       onTap: () => showWalletSheet(context, initial: w),
+                      onAdjust: () => showWalletAdjustSheet(
+                        context,
+                        wallet: w,
+                        balance: w.initialBalance + (totals[w.id]?.total ?? 0),
+                      ),
                       onDelete: () => _delete(context, ref, w),
                     ),
                     const SizedBox(height: 8),
@@ -157,12 +163,14 @@ class _WalletCard extends StatelessWidget {
     required this.wallet,
     required this.balance,
     required this.onTap,
+    required this.onAdjust,
     required this.onDelete,
   });
 
   final Wallet wallet;
   final int balance;
   final VoidCallback onTap;
+  final VoidCallback onAdjust;
   final VoidCallback onDelete;
 
   @override
@@ -202,6 +210,11 @@ class _WalletCard extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+              IconButton(
+                tooltip: 'Tambah selisih',
+                onPressed: onAdjust,
+                icon: Icon(Icons.add_card_rounded, color: cs.primary),
               ),
               IconButton(
                 onPressed: onDelete,
