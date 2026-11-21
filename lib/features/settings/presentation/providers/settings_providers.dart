@@ -65,7 +65,10 @@ class SettingsActions {
     try {
       await _auth.deleteCurrentUser();
     } catch (e) {
-      throw AppException('Gagal menghapus akun: $e');
+      throw AppException(
+        'Data akun sudah dihapus, tetapi akun login belum terhapus ($e). '
+        'Ketuk Hapus akun sekali lagi untuk menyelesaikannya.',
+      );
     }
   });
 }

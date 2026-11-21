@@ -42,10 +42,27 @@ final monthTransactionsProvider =
       return ref.watch(transactionsByRangeProvider(DateRange.month(month)));
     });
 
-final balanceProvider = StreamProvider.autoDispose<Balance>((ref) {
-  final uid = ref.watch(uidProvider);
-  if (uid == null) return Stream.value(Balance.zero);
-  return ref.watch(transactionRepositoryProvider).watchTotals(uid);
+/// Pemasukan dan pengeluaran per dompet. Kunci '' = transaksi tanpa dompet.
+/// Ini satu-satunya listener yang membaca seluruh transaksi; total saldo
+/// ([balanceProvider]) diturunkan darinya supaya biaya baca Firestore tidak
+/// dobel.
+final txTotalsByWalletProvider =
+    StreamProvider.autoDispose<Map<String, Balance>>((ref) {
+      final uid = ref.watch(uidProvider);
+      if (uid == null) return Stream.value(const <String, Balance>{});
+      return ref.watch(transactionRepositoryProvider).watchTotalsByWallet(uid);
+    });
+
+final balanceProvider = Provider.autoDispose<AsyncValue<Balance>>((ref) {
+  return ref.watch(txTotalsByWalletProvider).whenData((byWallet) {
+    var income = 0;
+    var expense = 0;
+    for (final b in byWallet.values) {
+      income += b.income;
+      expense += b.expense;
+    }
+    return Balance(income: income, expense: expense);
+  });
 });
 
 class TransactionActions {

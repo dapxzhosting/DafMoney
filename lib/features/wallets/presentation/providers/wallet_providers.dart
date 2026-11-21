@@ -31,19 +31,11 @@ final walletsInitialSumProvider = Provider<int>((ref) {
   return list.fold<int>(0, (sum, w) => sum + w.initialBalance);
 });
 
-/// Pemasukan dan pengeluaran per dompet. Kunci '' = transaksi tanpa dompet.
-final _txWalletTotalsProvider =
-    StreamProvider.autoDispose<Map<String, Balance>>((ref) {
-      final uid = ref.watch(uidProvider);
-      if (uid == null) return Stream.value(const <String, Balance>{});
-      return ref.watch(transactionRepositoryProvider).watchTotalsByWallet(uid);
-    });
-
 /// Total per dompet, sudah termasuk transfer antar dompet (yang tidak
 /// mengubah total saldo keseluruhan).
 final walletTotalsProvider =
     Provider.autoDispose<AsyncValue<Map<String, Balance>>>((ref) {
-      final base = ref.watch(_txWalletTotalsProvider);
+      final base = ref.watch(txTotalsByWalletProvider);
       final transfers =
           ref.watch(transfersProvider).valueOrNull ?? const <WalletTransfer>[];
       return base.whenData((m) => mergeTransfers(m, transfers));

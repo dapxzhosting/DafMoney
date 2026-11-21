@@ -159,6 +159,7 @@ Cakupan laporan: **Bulanan** (dirangkum per minggu), **Tahunan** (dirangkum per 
 - **Mode AMOLED** (hitam pekat) untuk layar OLED.
 - **6 warna aksen** pilihan, atau **warna dinamis Material You** mengikuti wallpaper (Android 12+).
 - **Saldo awal** dapat diatur sebelum pencatatan dimulai.
+- **Tersimpan di akun:** mode tema, warna aksen, AMOLED, tantangan (beserta rekor streak), dan pengaturan kunci aplikasi ikut tersimpan di akun, jadi tetap sama setelah instal ulang APK dan login kembali.
 
 ---
 
@@ -266,7 +267,9 @@ firestore.rules                   # Aturan keamanan Firestore
 Seluruh data disimpan di bawah dokumen pengguna, sehingga satu pengguna tidak pernah bersinggungan dengan data pengguna lain.
 
 ```
-users/{uid}                         name, email, createdAt, initialBalance
+users/{uid}                         name, email, createdAt, initialBalance,
+ │                                  themeMode?, accentColor?, amoled?,
+ │                                  challenge?, appLockEnabled?, appLockGrace?
  ├── categories/{id}                name, type, icon, color, createdAt
  ├── transactions/{id}              type, amount, categoryId, note, date, createdAt,
  │                                  walletId?, recurringId?, hasReceipt?
@@ -359,6 +362,11 @@ Poin utama aturannya:
 - ID anggaran dikunci ke pola `yyyy-MM_categoryId`, sehingga hanya ada satu anggaran per kategori per bulan.
 - **Semua jalur lain ditolak** secara bawaan.
 
+**Disarankan untuk rilis publik:**
+
+- Aktifkan **Firebase App Check** (Play Integrity) dan batasi API key di Google Cloud Console, supaya hanya aplikasimu yang bisa memanggil Firestore.
+- Hapus akun dilakukan dari aplikasi: data di semua subkoleksi dihapus lebih dulu, baru akun login. Bila langkah kedua gagal (mis. koneksi putus), ketuk **Hapus akun** sekali lagi untuk menyelesaikannya.
+
 > ⚠️ File `google-services.json` dan `firebase_options.dart` berisi identitas project Firebase (bukan rahasia server), tetapi pastikan **aturan Firestore sudah dideploy** karena itulah yang melindungi datamu.
 
 ---
@@ -369,7 +377,7 @@ Dua workflow GitHub Actions tersedia di `.github/workflows/`:
 
 | Workflow | Pemicu | Fungsi |
 |---|---|---|
-| **Flutter CI** (`flutter.yml`) | Push & PR ke `main` | `flutter pub get` dan `flutter analyze` |
+| **Flutter CI** (`flutter.yml`) | Push & PR ke `main` | `flutter pub get`, `flutter analyze`, dan `flutter test` |
 | **Build DafMoney APK** (`main.yml`) | Push ke `main` atau manual (*workflow_dispatch*) | Membangun **APK rilis** dan mengunggahnya sebagai artifact `DafMoney-Release` |
 
 Untuk mengunduh APK: buka tab **Actions** → pilih run terbaru → **Artifacts** → `DafMoney-Release`.
@@ -382,7 +390,17 @@ Untuk mengunduh APK: buka tab **Actions** → pilih run terbaru → **Artifacts*
 flutter test
 ```
 
-Saat ini tersedia pengujian untuk **parser Catat cepat** (`test/quick_entry_parser_test.dart`) yang mencakup akhiran `rb/jt/k`, pemisah ribuan, angka polos, dan kasus tanpa nominal.
+Pengujian yang tersedia di folder `test/`:
+
+| Berkas | Cakupan |
+|---|---|
+| `quick_entry_parser_test.dart` | Parser Catat cepat (`rb/jt/k`, pemisah ribuan, angka polos, tanpa nominal) |
+| `recurring_test.dart` | Jadwal transaksi berulang, termasuk tanggal 29–31 di bulan pendek |
+| `csv_test.dart` | Ekspor/impor CSV |
+| `goals_debts_transfers_test.dart` | Target tabungan, utang & piutang, transfer antar dompet |
+| `challenge_json_test.dart` | Bentuk data tantangan agar tetap cocok dengan `firestore.rules` |
+
+`flutter test` juga dijalankan otomatis oleh workflow **Flutter CI** pada setiap push dan PR.
 
 ---
 

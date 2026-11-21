@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../constants/app_constants.dart';
+import 'account_sync.dart';
 import 'firebase_providers.dart';
 import 'session_providers.dart';
 import 'shared_prefs_provider.dart';
@@ -18,7 +19,7 @@ class AppLockEnabled extends Notifier<bool> {
     final uid = ref.watch(uidProvider);
     final prefs = ref.read(sharedPrefsProvider);
     final key = uid != null ? '${AppConstants.appLockKey}_$uid' : AppConstants.appLockKey;
-    final localVal = prefs.getBool(key) ?? false;
+    var localVal = prefs.getBool(key) ?? false;
 
     if (uid != null) {
       ref.listen<AsyncValue<DocumentSnapshot<Map<String, dynamic>>>>(
@@ -36,6 +37,16 @@ class AppLockEnabled extends Notifier<bool> {
           }
         },
       );
+
+      // Listener di atas tidak terpanggil untuk data akun yang sudah termuat
+      // sebelum provider ini dibuat (mis. setelah login di instalan baru),
+      // jadi ambil nilainya langsung.
+      final remote = loadedUserData(ref, uid)?['appLockEnabled'];
+      if (remote is bool && remote != localVal) {
+        localVal = remote;
+        changedByRemote = true;
+        prefs.setBool(key, remote);
+      }
     }
 
     return localVal;
@@ -73,7 +84,7 @@ class AppLockGrace extends Notifier<int> {
     final prefs = ref.read(sharedPrefsProvider);
     final key = uid != null ? '${AppConstants.appLockGraceKey}_$uid' : AppConstants.appLockGraceKey;
     final v = prefs.getInt(key);
-    final localVal = options.contains(v) ? v! : 0;
+    var localVal = options.contains(v) ? v! : 0;
 
     if (uid != null) {
       ref.listen<AsyncValue<DocumentSnapshot<Map<String, dynamic>>>>(
@@ -89,6 +100,12 @@ class AppLockGrace extends Notifier<int> {
           }
         },
       );
+
+      final remote = loadedUserData(ref, uid)?['appLockGrace'];
+      if (remote is num && options.contains(remote.toInt())) {
+        localVal = remote.toInt();
+        prefs.setInt(key, localVal);
+      }
     }
 
     return localVal;

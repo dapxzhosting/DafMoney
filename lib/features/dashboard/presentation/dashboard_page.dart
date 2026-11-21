@@ -218,8 +218,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             children: [
               RefreshIndicator(
                 onRefresh: () async {
-                  ref.invalidate(balanceProvider);
-                  await ref.read(balanceProvider.future);
+                  ref.invalidate(txTotalsByWalletProvider);
+                  await ref.read(txTotalsByWalletProvider.future);
                 },
                 child: NotificationListener<ScrollNotification>(
                   onNotification: _onScroll,

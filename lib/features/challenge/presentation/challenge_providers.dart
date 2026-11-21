@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_constants.dart';
+import '../../../core/providers/account_sync.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../../core/providers/session_providers.dart';
 import '../../../core/providers/shared_prefs_provider.dart';
@@ -61,6 +62,20 @@ class ChallengeNotifier extends Notifier<NoSpendChallenge?> {
         }
       },
     );
+
+    // Listener di atas tidak terpanggil untuk data akun yang sudah termuat
+    // sebelum provider ini dibuat (Beranda dibuka setelah dokumen akun selesai
+    // dimuat), jadi tantangan dari akun harus diambil langsung di sini.
+    final remoteMap = loadedUserData(ref, uid)?['challenge'];
+    if (remoteMap is Map<String, dynamic>) {
+      final remote = NoSpendChallenge.fromJson(remoteMap);
+      if (remote != null) {
+        ref
+            .read(sharedPrefsProvider)
+            .setString(key, jsonEncode(remote.toJson()));
+        return remote;
+      }
+    }
 
     if (raw != null) {
       try {

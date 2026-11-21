@@ -155,23 +155,6 @@ class TransactionRepository {
     return snap.docs.map(_fromDoc).toList();
   }
 
-  Stream<Balance> watchTotals(String uid) {
-    return _col(uid).snapshots().map((snap) {
-      var inc = 0;
-      var exp = 0;
-      for (final d in snap.docs) {
-        final m = d.data();
-        final amount = (m['amount'] as num?)?.toInt() ?? 0;
-        if (m['type'] == 'income') {
-          inc += amount;
-        } else {
-          exp += amount;
-        }
-      }
-      return Balance(income: inc, expense: exp);
-    });
-  }
-
   /// Total per dompet. Kunci '' berarti transaksi tanpa dompet.
   Stream<Map<String, Balance>> watchTotalsByWallet(String uid) {
     return _col(uid).snapshots().map((snap) {

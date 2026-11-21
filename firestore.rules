@@ -114,6 +114,16 @@ service cloud.firestore {
         && d.createdAt is timestamp;
     }
 
+    // Tantangan tanpa jajan: c = id kategori, s = tanggal mulai (ISO), t = target hari, b = rekor terbaik.
+    function validChallenge(c) {
+      return c is map
+        && c.keys().hasOnly(['c', 's', 't', 'b'])
+        && c.c is string && c.c.size() <= 60
+        && c.s is string && c.s.size() <= 40
+        && c.t is int && c.t >= 1 && c.t <= 3650
+        && (!('b' in c) || (c.b is int && c.b >= 0 && c.b <= 3650));
+    }
+
     // Profil pengguna: hanya pemilik.
     match /users/{uid} {
       allow read: if isOwner(uid);
@@ -128,7 +138,7 @@ service cloud.firestore {
 
       // Nama, saldo awal, tantangan, dan pengaturan kunci aplikasi yang boleh diubah.
       allow update: if isOwner(uid)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'initialBalance', 'challenge', 'appLockEnabled', 'appLockGrace'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'initialBalance', 'challenge', 'appLockEnabled', 'appLockGrace', 'themeMode', 'accentColor', 'amoled'])
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
         && request.resource.data.name.size() <= 60
@@ -141,7 +151,13 @@ service cloud.firestore {
         && (!('appLockGrace' in request.resource.data)
             || request.resource.data.appLockGrace in [0, 60, 300])
         && (!('challenge' in request.resource.data)
-            || request.resource.data.challenge is map);
+            || validChallenge(request.resource.data.challenge))
+        && (!('themeMode' in request.resource.data)
+            || request.resource.data.themeMode in ['system', 'light', 'dark'])
+        && (!('accentColor' in request.resource.data)
+            || request.resource.data.accentColor is int)
+        && (!('amoled' in request.resource.data)
+            || request.resource.data.amoled is bool);
 
       // Dihapus saat pengguna menghapus akunnya (setelah semua datanya dihapus).
       allow delete: if isOwner(uid);

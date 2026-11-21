@@ -29,3 +29,6 @@ jobs:
 
       - name: Analyze project source
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Run unit tests
+        run: flutter test
