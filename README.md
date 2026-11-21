@@ -2,16 +2,18 @@
 
 # 💰 DafMoney
 
-**Aplikasi catatan keuangan pribadi yang modern, cepat, dan enak dipakai.**
+**Aplikasi pencatatan keuangan pribadi berbasis Flutter dan Firebase.**
 
-Catat pemasukan & pengeluaran dalam hitungan detik, pantau anggaran, dan pahami ke mana uangmu mengalir.
+Catat pemasukan dan pengeluaran, kelola dompet, pantau anggaran, serta pahami pola keuangan melalui laporan dan wawasan otomatis.
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)
-![Dart](https://img.shields.io/badge/Dart-3.13+-0175C2?logo=dart&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-3.13%2B-0175C2?logo=dart&logoColor=white)
 ![Riverpod](https://img.shields.io/badge/State-Riverpod-00B8D4)
 ![Firebase](https://img.shields.io/badge/Backend-Firebase-FFCA28?logo=firebase&logoColor=black)
 ![Material 3](https://img.shields.io/badge/UI-Material%203-6750A4?logo=materialdesign&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white)
+
+[Unduh APK](https://github.com/dapxzhosting/DafMoney/releases) · [Laporkan Bug](https://github.com/dapxzhosting/DafMoney/issues) · [Lihat Source Code](https://github.com/dapxzhosting/DafMoney)
 
 </div>
 
@@ -19,446 +21,507 @@ Catat pemasukan & pengeluaran dalam hitungan detik, pantau anggaran, dan pahami 
 
 ## 📸 Tampilan Aplikasi
 
-<table>
-  <tr>
-    <td align="center"><img src="docs/screenshots/dafmoney-1.png" width="200" alt="Beranda"/><br/><b>Beranda</b><br/>Saldo, dompet, wawasan</td>
-    <td align="center"><img src="docs/screenshots/dafmoney-2.png" width="200" alt="Kilas Bulan"/><br/><b>Kilas Bulan</b><br/>Cerita keuangan bulanan</td>
-    <td align="center"><img src="docs/screenshots/dafmoney-3.png" width="200" alt="Kategori teratas"/><br/><b>Kategori Teratas</b><br/>Ke mana uangmu mengalir</td>
-    <td align="center"><img src="docs/screenshots/dafmoney-4.png" width="200" alt="Laporan"/><br/><b>Laporan</b><br/>Arus kas & kalender pengeluaran</td>
-    <td align="center"><img src="docs/screenshots/dafmoney-5.png" width="200" alt="Pengaturan"/><br/><b>Pengaturan</b><br/>Pengingat & tampilan</td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/screenshots/dafmoney-1.png" width="160" alt="Beranda DafMoney" />
+  <img src="docs/screenshots/dafmoney-2.png" width="160" alt="Kilas Bulan DafMoney" />
+  <img src="docs/screenshots/dafmoney-3.png" width="160" alt="Kategori Teratas DafMoney" />
+  <img src="docs/screenshots/dafmoney-4.png" width="160" alt="Laporan DafMoney" />
+  <img src="docs/screenshots/dafmoney-5.png" width="160" alt="Pengaturan DafMoney" />
+</p>
+
+<p align="center">
+  <sub>Beranda · Kilas Bulan · Kategori Teratas · Laporan · Pengaturan</sub>
+</p>
 
 ---
 
 ## 📖 Daftar Isi
 
+- [Tentang DafMoney](#-tentang-dafmoney)
 - [Fitur Utama](#-fitur-utama)
-- [Catat Cepat (Android)](#-catat-cepat-android)
-- [Teknologi](#️-teknologi--library)
-- [Arsitektur & Struktur Proyek](#-arsitektur--struktur-proyek)
-- [Model Data Firestore](#-model-data-firestore)
-- [Panduan Setup](#-panduan-setup--instalasi)
+- [Catat Cepat di Android](#-catat-cepat-di-android)
+- [Teknologi](#️-teknologi)
+- [Struktur Proyek](#-struktur-proyek)
+- [Struktur Data Firestore](#️-struktur-data-firestore)
+- [Persiapan dan Instalasi](#-persiapan-dan-instalasi)
 - [Keamanan](#-keamanan)
-- [CI/CD](#-cicd)
+- [Build APK](#-build-apk)
 - [Pengujian](#-pengujian)
-- [Troubleshooting](#-troubleshooting--faq)
+- [GitHub Actions](#-github-actions)
+- [Troubleshooting](#-troubleshooting)
+- [Kredit](#-kredit)
 - [Lisensi](#-lisensi)
+- [Kontribusi dan Laporan Bug](#-kontribusi-dan-laporan-bug)
 
 ---
+
+## 💡 Tentang DafMoney
+
+DafMoney adalah aplikasi pencatatan keuangan pribadi yang membantu pengguna mencatat transaksi dan mengelola keuangan dalam satu tempat. Aplikasi ini dibuat menggunakan Flutter, dengan Firebase Authentication untuk autentikasi dan Cloud Firestore untuk penyimpanan serta sinkronisasi data.
+
+DafMoney ditujukan untuk penggunaan pribadi. Aplikasi ini bukan layanan perbankan, bukan penasihat keuangan, dan tidak terhubung secara otomatis ke rekening bank.
 
 ## 🌟 Fitur Utama
 
-### 🔐 Akun & Keamanan
-- **Daftar & masuk** dengan Email dan Kata Sandi (Firebase Authentication).
-- **Verifikasi email** wajib sebelum data bisa diakses, ditegakkan juga di sisi server lewat Firestore Rules.
-- **Lupa kata sandi** dengan tautan reset lewat email.
-- **Manajemen profil:** ubah nama, ganti kata sandi, dan hapus akun beserta seluruh datanya.
-- **Onboarding** singkat untuk pengguna baru dan **splash screen** animatif.
+### 🔐 Akun dan Keamanan
 
-### 🏠 Beranda (Dashboard)
-- **Kartu saldo** dengan grafik mini 7 hari, total pemasukan, dan total pengeluaran bulan terpilih.
-- **Sembunyikan saldo** dengan satu ketukan (disimpan di perangkat, bukan di akun).
-- **Pemilih bulan** untuk berpindah antar periode.
-- **Aksi cepat:** Pemasukan, Pengeluaran, Dompet, Laporan.
-- **Wawasan otomatis** dalam bentuk carousel (lihat bagian [Wawasan](#-wawasan-otomatis--kilas-bulan)).
-- **Kartu dompet** untuk melihat saldo tiap dompet sekilas.
-- **Kartu tantangan** hari tanpa jajan.
-- **Speed-dial FAB** untuk menambah transaksi, serta animasi angka, *skeleton loading*, dan transisi yang halus.
+- Daftar dan masuk menggunakan email serta kata sandi melalui Firebase Authentication.
+- Verifikasi email sebelum pengguna dapat mengakses data yang dilindungi.
+- Reset kata sandi melalui email.
+- Pengelolaan profil, termasuk mengubah nama dan kata sandi.
+- Penghapusan akun beserta data pengguna melalui aplikasi.
+- Onboarding untuk pengguna baru dan splash screen.
+
+### 🏠 Beranda
+
+- Ringkasan saldo, pemasukan, dan pengeluaran pada periode terpilih.
+- Grafik mini aktivitas keuangan selama 7 hari.
+- Fitur sembunyikan saldo yang disimpan secara lokal di perangkat.
+- Pemilih bulan untuk melihat periode lain.
+- Akses cepat ke pemasukan, pengeluaran, dompet, dan laporan.
+- Ringkasan dompet dan wawasan keuangan.
+- Kartu tantangan tanpa jajan.
 
 ### 💸 Transaksi
-- Tambah, ubah, dan hapus transaksi **Pemasukan** atau **Pengeluaran**, lengkap dengan **batalkan (undo)** setelah menghapus.
-- **Format Rupiah** otomatis saat mengetik (`Rp 25.000`).
-- **Saran kategori otomatis** dari catatan: aplikasi menebak kategori berdasarkan riwayat transaksimu sendiri, diproses di perangkat tanpa menyimpan data tambahan.
-- **Pilih dompet** untuk setiap transaksi.
-- **Foto struk:** lampirkan foto dari kamera/galeri. Foto dikompres lalu disimpan di Firestore (maks. ~900 KB), jadi tidak butuh Firebase Storage dan tetap jalan di paket gratis.
-- **Pencarian & filter lanjutan:**
-  - kata kunci pada catatan,
-  - jenis (pemasukan/pengeluaran),
-  - satu atau beberapa **kategori** dan **dompet**,
-  - **rentang nominal** (minimum/maksimum),
-  - **cakupan waktu:** Bulan terpilih, 3 bulan, 12 bulan, atau Semua.
-  - Lencana pada ikon filter menunjukkan berapa filter yang aktif.
+
+- Tambah, ubah, dan hapus transaksi pemasukan maupun pengeluaran.
+- Fitur undo setelah transaksi dihapus.
+- Format nominal Rupiah saat memasukkan nominal.
+- Pemilihan kategori dan dompet untuk transaksi.
+- Lampiran foto struk dari kamera atau galeri.
+- Saran kategori berdasarkan catatan transaksi yang diproses di perangkat.
+- Pencarian dan filter berdasarkan kata kunci, jenis transaksi, kategori, dompet, nominal, dan periode.
 
 ### 👛 Dompet
-- Kelola banyak dompet: **tunai, rekening bank, dompet digital**.
-- Tiap dompet punya **nama, ikon, warna, dan saldo awal** sendiri.
-- Saldo tiap dompet dihitung otomatis dari transaksi yang tercatat.
 
-### 🎯 Anggaran (Budgeting)
-- Batas pengeluaran **per kategori per bulan**.
-- **Progress bar** persentase anggaran terpakai dengan warna peringatan otomatis saat mendekati atau melewati batas.
-- **Salin anggaran** dari bulan sebelumnya dengan sekali ketuk.
-- **Notifikasi peringatan anggaran** saat pengeluaran mencapai **80%** dan **100%** (bisa dimatikan di Pengaturan).
+- Mengelola beberapa dompet, seperti uang tunai, rekening bank, dan dompet digital.
+- Mengatur nama, ikon, warna, dan saldo awal setiap dompet.
+- Saldo dompet dihitung dari saldo awal dan transaksi yang tercatat.
+
+### 🎯 Anggaran
+
+- Mengatur batas pengeluaran per kategori untuk setiap bulan.
+- Melihat persentase penggunaan anggaran.
+- Peringatan ketika penggunaan anggaran mencapai 80% dan 100%.
+- Menyalin anggaran dari bulan sebelumnya.
 
 ### 🔁 Transaksi Berulang
-- Aturan harian / mingguan / bulanan / tahunan untuk gaji, langganan, dan cicilan.
-- Dicatat otomatis saat aplikasi dibuka (dalam transaksi Firestore, jadi tidak ada duplikat). Tanggal 31 menyesuaikan ke akhir bulan pendek.
 
-### 🔒 Kunci Aplikasi
-- Sidik jari / wajah / PIN-pola perangkat, dengan jeda kunci ulang (langsung, 1 menit, 5 menit).
-- *Fail-closed*: error tidak pernah membuka kunci. Menyalakan dan mematikan kunci wajib lolos verifikasi.
+- Membuat jadwal transaksi harian, mingguan, bulanan, atau tahunan.
+- Cocok untuk mencatat pemasukan rutin, langganan, dan cicilan.
+- Transaksi berulang diproses saat aplikasi dibuka.
+- Penyesuaian tanggal untuk bulan yang lebih pendek.
 
 ### 🔄 Transfer Antar Dompet
-- Memindahkan saldo antar dompet tanpa dihitung sebagai pemasukan/pengeluaran (laporan dan total saldo tidak berubah).
+
+- Memindahkan saldo dari satu dompet ke dompet lain.
+- Transfer tidak dihitung sebagai pemasukan atau pengeluaran pada laporan.
 
 ### 🏁 Target Tabungan
-- Progres animasi, tenggat, dan saran tabungan per bulan. Dana target hanya penanda, tidak mengubah saldo dompet.
 
-### 🤝 Utang & Piutang
-- Cicilan pembayaran, bilah progres, status terlambat, dan pengingat pukul 09.00 saat jatuh tempo.
+- Membuat target nominal tabungan.
+- Memantau progres dan tenggat target.
+- Melihat saran jumlah tabungan per bulan.
+- Target tabungan berfungsi sebagai pelacak progres dan tidak otomatis mengubah saldo dompet.
 
-### 📥 Impor & Ekspor CSV
-- Ekspor semua transaksi (termasuk dompet); impor dengan pratinjau, deteksi duplikat, dan pembuatan kategori/dompet baru otomatis.
-- Mendukung pemisah koma / titik koma dan format tanggal/nominal Indonesia.
+### 🤝 Utang dan Piutang
+
+- Mencatat utang maupun piutang.
+- Mencatat pembayaran secara bertahap.
+- Memantau sisa pembayaran, progres, dan status jatuh tempo.
+- Pengingat untuk catatan yang mendekati atau melewati jatuh tempo.
+
+### 📥 Impor dan Ekspor CSV
+
+- Mengekspor data transaksi ke CSV.
+- Mengimpor transaksi dengan pratinjau sebelum disimpan.
+- Deteksi data duplikat.
+- Pembuatan kategori atau dompet yang diperlukan saat proses impor.
+- Mendukung pemisah koma dan titik koma serta format nominal/tanggal Indonesia.
 
 ### 🏷️ Kategori
-- Kategori bawaan terisi otomatis untuk pengguna baru (Makanan, Gaji, Transportasi, dll.).
-- **Kategori kustom:** nama, jenis (pemasukan/pengeluaran), warna, dan ikon.
 
-### 📈 Laporan & Analisis
-- **Rentang fleksibel:** Bulan ini, Bulan lalu, 3 bulan, Tahun ini, atau **Kustom**.
-- **Ringkasan:** pemasukan, pengeluaran, selisih, dan **rasio tabungan**.
-- **Grafik arus kas** (line chart) pemasukan vs pengeluaran per hari.
-- **Kalender pengeluaran (heatmap):** makin terang warna sebuah tanggal, makin besar pengeluaran di hari itu.
-- **Diagram donat** distribusi pengeluaran per kategori.
-- **Diagram batang** perbandingan antar bulan.
+- Kategori bawaan untuk pengguna baru.
+- Kategori kustom dengan nama, jenis transaksi, warna, dan ikon.
 
-### 🧾 Ekspor & Bagikan Laporan
-Buat laporan lalu bagikan lewat menu share Android:
+### 📈 Laporan dan Analisis
 
-| Format | Isi |
-|---|---|
-| **PDF** | Tabel lengkap dan siap cetak, dengan opsi menyertakan atau menyembunyikan daftar transaksi. |
-| **Gambar** | Kartu ringkas yang cantik untuk dibagikan ke teman atau media sosial. |
+- Rentang laporan bulanan, bulan sebelumnya, 3 bulan, tahun ini, atau rentang kustom.
+- Ringkasan pemasukan, pengeluaran, selisih, dan rasio tabungan.
+- Grafik arus kas harian.
+- Kalender pengeluaran berbentuk heatmap.
+- Diagram distribusi pengeluaran per kategori.
+- Perbandingan pengeluaran antarbulan.
 
-Cakupan laporan: **Bulanan** (dirangkum per minggu), **Tahunan** (dirangkum per bulan), **Seluruh riwayat** (dirangkum per tahun), atau **rentang tanggal kustom**.
+### 🧾 Ekspor Laporan
 
-### ✨ Wawasan Otomatis & Kilas Bulan
-- **Wawasan** disusun otomatis dari transaksi 6 bulan terakhir, misalnya:
-  - anggaran hampir habis atau terlewati,
-  - pengeluaran naik/turun dibanding periode yang sama bulan lalu (perbandingan dibuat adil, sampai tanggal yang sama),
-  - kategori terbesar dan kategori yang naik paling tajam,
-  - tingkat tabungan dan defisit,
-  - jumlah hari tanpa pengeluaran,
-  - transaksi terbesar.
-- **Kilas Bulan:** ringkasan bulananmu dalam format cerita bergaya *stories* (ketuk untuk lanjut) yang bisa dibagikan.
+- Ekspor laporan ke PDF.
+- Ekspor ringkasan laporan sebagai gambar.
+- Pilihan untuk menyertakan atau menyembunyikan daftar transaksi pada laporan PDF.
+- Cakupan laporan bulanan, tahunan, seluruh riwayat, atau rentang tanggal kustom.
+
+### ✨ Wawasan Otomatis dan Kilas Bulan
+
+- Wawasan berdasarkan riwayat transaksi, seperti kategori pengeluaran terbesar, perubahan pengeluaran, kondisi anggaran, dan tingkat tabungan.
+- Kilas Bulan berupa ringkasan keuangan bulanan bergaya stories yang dapat dibagikan.
 
 ### 🔥 Tantangan Tanpa Jajan
-- Pilih **kategori** (mis. Rokok, Jajan) dan **target hari**, lalu bertahan tanpa pengeluaran di kategori itu.
-- Pantau **streak** berjalan, **rekor terbaik**, dan penanda 7 hari terakhir.
-- Buka **lencana** di pencapaian **3, 7, 14, 30, 60, dan 100 hari**.
+
+- Memilih kategori dan target hari.
+- Memantau streak berjalan dan rekor terbaik.
+- Lencana pencapaian berdasarkan durasi tantangan.
 
 ### 🔔 Pengingat
-- **Pengingat harian** untuk mencatat transaksi pada jam pilihanmu. Otomatis dilewati bila hari ini sudah ada catatan.
-- **Peringatan anggaran** (80% dan 100%).
-- Tombol **Kirim notifikasi uji** untuk memastikan notifikasi muncul.
+
+- Pengingat harian untuk mencatat transaksi.
+- Notifikasi peringatan anggaran.
+- Notifikasi pengingat jatuh tempo.
+- Fitur kirim notifikasi uji.
 
 ### 🎨 Personalisasi
-- **Tema:** Sistem, Terang, atau Gelap.
-- **Mode AMOLED** (hitam pekat) untuk layar OLED.
-- **6 warna aksen** pilihan, atau **warna dinamis Material You** mengikuti wallpaper (Android 12+).
-- **Saldo awal** dapat diatur sebelum pencatatan dimulai.
-- **Tersimpan di akun:** mode tema, warna aksen, AMOLED, tantangan (beserta rekor streak), dan pengaturan kunci aplikasi ikut tersimpan di akun, jadi tetap sama setelah instal ulang APK dan login kembali.
 
----
+- Tema sistem, terang, dan gelap.
+- Mode AMOLED.
+- Pilihan warna aksen dan warna dinamis Material You pada perangkat yang mendukung.
+- Pengaturan saldo awal.
+- Beberapa preferensi pengguna disinkronkan melalui akun.
 
-## ⚡ Catat Cepat (Android)
+## ⚡ Catat Cepat di Android
 
-DafMoney punya beberapa jalan pintas agar mencatat transaksi tidak perlu membuka aplikasi penuh.
+DafMoney menyediakan beberapa cara untuk mencatat transaksi tanpa harus membuka aplikasi secara penuh:
 
-| Cara | Keterangan |
+| Fitur | Keterangan |
 |---|---|
-| **Notifikasi permanen** | Dua tombol *Pengeluaran* dan *Pemasukan* dengan kolom ketik. Tulis `makan siang 25rb`, kirim, dan transaksi langsung tersimpan walau aplikasi tertutup. |
-| **Widget layar utama** | Menampilkan total saldo dan sisa anggaran, plus tombol tambah dan **3 template favorit** (catatan pengeluaran yang paling sering dipakai). Ketuk template untuk langsung mencatat. |
-| **Quick Settings Tile** | Tombol **Catat transaksi** di panel tarik-atas Android. |
-| **Menu Bagikan** | Bagikan teks dari aplikasi lain (mis. notifikasi bank atau chat) ke DafMoney untuk dicatat. |
-| **App Shortcuts** | Tekan lama ikon aplikasi, lalu pilih *Tambah Pengeluaran* atau *Tambah Pemasukan*. |
-| **Input suara** | Ucapkan transaksimu di layar Catat cepat (membutuhkan izin mikrofon). |
+| Notifikasi Catat Cepat | Tombol pemasukan dan pengeluaran serta kolom untuk memasukkan transaksi. |
+| Widget layar utama | Menampilkan ringkasan saldo dan sisa anggaran serta menyediakan pintasan pencatatan. |
+| Quick Settings Tile | Pintasan Catat transaksi dari panel Quick Settings Android. |
+| Menu Bagikan | Mengirim teks dari aplikasi lain ke DafMoney untuk diproses sebagai transaksi. |
+| App Shortcuts | Pintasan pemasukan dan pengeluaran dari ikon aplikasi. |
+| Input suara | Memasukkan transaksi menggunakan suara pada layar Catat Cepat. |
 
-### Format penulisan yang dikenali
+### Contoh format Catat Cepat
 
-Parser membaca teks bebas menjadi **catatan + nominal**, dan menebak kategorinya dari kata kunci:
+| Teks yang dimasukkan | Nominal yang dibaca | Catatan |
+|---|---:|---|
+| `makan siang 25rb` | Rp25.000 | Makan siang |
+| `gaji 5jt` | Rp5.000.000 | Gaji |
+| `bensin 1,5jt` | Rp1.500.000 | Bensin |
+| `kopi 15.000` | Rp15.000 | Kopi |
+| `parkir 3k` | Rp3.000 | Parkir |
+| `beli 2 galon 30000` | Rp30.000 | Beli 2 galon |
+| `Rp 12.500 bakso` | Rp12.500 | Bakso |
 
-| Ketik | Nominal | Catatan |
-|---|---|---|
-| `makan siang 25rb` | Rp 25.000 | Makan siang |
-| `gaji 5jt` | Rp 5.000.000 | Gaji |
-| `bensin 1,5jt` | Rp 1.500.000 | Bensin |
-| `kopi 15.000` | Rp 15.000 | Kopi |
-| `parkir 3k` | Rp 3.000 | Parkir |
-| `beli 2 galon 30000` | Rp 30.000 | Beli 2 galon |
-| `Rp 12.500 bakso` | Rp 12.500 | Bakso |
-
-Akhiran yang didukung: `rb`, `ribu`, `k` (ribu) dan `jt`, `juta` (juta). Angka polos di bawah 1.000 (mis. `Magnum 1`) dianggap jumlah barang, bukan rupiah.
+Parser mengenali akhiran `rb`, `ribu`, `k`, `jt`, dan `juta`. Angka polos di bawah 1.000 dapat dianggap sebagai jumlah barang, bukan nominal Rupiah.
 
 ---
 
-## 🛠️ Teknologi & Library
+## 🛠️ Teknologi
 
 | Kebutuhan | Teknologi |
 |---|---|
-| Framework | [Flutter](https://flutter.dev) (Dart SDK `^3.13.5`), Material Design 3 |
-| State management | [flutter_riverpod](https://riverpod.dev) |
+| Framework | [Flutter](https://flutter.dev/) dan Material Design 3 |
+| Bahasa | [Dart](https://dart.dev/) |
+| State management | [flutter_riverpod](https://riverpod.dev/) |
 | Navigasi | [go_router](https://pub.dev/packages/go_router) |
-| Backend | [Firebase Authentication](https://firebase.google.com/docs/auth) & [Cloud Firestore](https://firebase.google.com/docs/firestore) |
+| Autentikasi dan database | [Firebase Authentication](https://firebase.google.com/docs/auth) dan [Cloud Firestore](https://firebase.google.com/docs/firestore) |
 | Grafik | [fl_chart](https://pub.dev/packages/fl_chart) |
-| Animasi & tipografi | [flutter_animate](https://pub.dev/packages/flutter_animate), [google_fonts](https://pub.dev/packages/google_fonts) |
+| Animasi dan font | [flutter_animate](https://pub.dev/packages/flutter_animate), [google_fonts](https://pub.dev/packages/google_fonts) |
 | Warna dinamis | [dynamic_color](https://pub.dev/packages/dynamic_color) |
 | Notifikasi | [flutter_local_notifications](https://pub.dev/packages/flutter_local_notifications), [timezone](https://pub.dev/packages/timezone) |
-| Widget & shortcut Android | [home_widget](https://pub.dev/packages/home_widget), [quick_actions](https://pub.dev/packages/quick_actions) |
-| Ekspor & berbagi | [pdf](https://pub.dev/packages/pdf), [share_plus](https://pub.dev/packages/share_plus), [path_provider](https://pub.dev/packages/path_provider) |
-| Media & suara | [image_picker](https://pub.dev/packages/image_picker), [speech_to_text](https://pub.dev/packages/speech_to_text) |
+| Widget dan pintasan | [home_widget](https://pub.dev/packages/home_widget), [quick_actions](https://pub.dev/packages/quick_actions) |
+| Ekspor dan berbagi | [pdf](https://pub.dev/packages/pdf), [share_plus](https://pub.dev/packages/share_plus), [path_provider](https://pub.dev/packages/path_provider) |
+| Media dan suara | [image_picker](https://pub.dev/packages/image_picker), [speech_to_text](https://pub.dev/packages/speech_to_text) |
 | Penyimpanan lokal | [shared_preferences](https://pub.dev/packages/shared_preferences) |
-| Lainnya | `intl` (format Rupiah `id_ID`), `equatable`, `local_auth` |
+| Lainnya | `intl`, `equatable`, `local_auth` |
 
 ---
 
-## 📁 Arsitektur & Struktur Proyek
+## 📁 Struktur Proyek
 
-Proyek memakai pendekatan **feature-first**: setiap fitur punya lapisan `data`, `domain`, dan `presentation` sendiri, sedangkan kode yang dipakai bersama ada di `core/`.
+DafMoney menggunakan pendekatan **feature-first**. Kode fitur dikelompokkan berdasarkan kebutuhan aplikasi, sedangkan komponen yang digunakan bersama ditempatkan di `core/`.
 
-```
+```text
 lib/
-├── main.dart                     # Entry point & inisialisasi layanan
-├── app.dart                      # Root MaterialApp, tema, warna dinamis
-├── firebase_options.dart         # Konfigurasi Firebase (hasil FlutterFire CLI)
-├── quick_add/                    # Entry point Dart untuk layar mini "Catat cepat"
+├── main.dart
+├── app.dart
+├── firebase_options.dart
+├── quick_add/
 ├── core/
-│   ├── constants/                # Konstanta global (kunci pref, locale, simbol mata uang)
-│   ├── error/                    # Exception & penanganan error
-│   ├── models/                   # Model bersama (EntryType)
-│   ├── providers/                # Provider global (Firebase, sesi, prefs, privasi, pengingat)
-│   ├── router/                   # GoRouter & proteksi rute
-│   ├── services/                 # Notifikasi, widget, quick actions, parser & saver catat cepat
-│   ├── theme/                    # Skema warna, tema, aksen, AMOLED
-│   ├── utils/                    # Formatter, validator, util tanggal, snackbar
-│   └── widgets/                  # Komponen UI bersama (charts, skeleton, FAB, dialog, dll.)
+│   ├── constants/
+│   ├── error/
+│   ├── models/
+│   ├── providers/
+│   ├── router/
+│   ├── services/
+│   ├── theme/
+│   ├── utils/
+│   └── widgets/
 └── features/
-    ├── auth/                     # Login, daftar, verifikasi email, lupa sandi
-    ├── onboarding/               # Pengenalan aplikasi
-    ├── splash/                   # Splash screen
-    ├── dashboard/                # Beranda
-    ├── transactions/             # Transaksi, pencarian/filter, saran kategori, struk
-    ├── wallets/                  # Manajemen dompet
-    ├── budgets/                  # Anggaran & peringatan
-    ├── categories/               # Kategori bawaan & kustom
-    ├── reports/                  # Laporan, kalender pengeluaran, kalkulasi
-    ├── export/                   # Ekspor PDF & gambar
-    ├── insights/                 # Wawasan otomatis & Kilas Bulan
-    ├── challenge/                # Tantangan tanpa jajan
-    └── settings/                 # Profil, pengingat, tampilan, saldo awal
+    ├── auth/
+    ├── onboarding/
+    ├── splash/
+    ├── dashboard/
+    ├── transactions/
+    ├── wallets/
+    ├── budgets/
+    ├── categories/
+    ├── reports/
+    ├── export/
+    ├── insights/
+    ├── challenge/
+    └── settings/
 
 android/app/src/main/kotlin/com/example/keuangan/
 ├── MainActivity.kt
-├── DafMoneyWidgetProvider.kt     # Widget layar utama
-├── QuickAddActivity.kt           # Layar mini Catat cepat
-└── QuickAddTileService.kt        # Quick Settings Tile
+├── DafMoneyWidgetProvider.kt
+├── QuickAddActivity.kt
+└── QuickAddTileService.kt
 
-docs/screenshots/                 # Screenshot untuk README
-firestore.rules                   # Aturan keamanan Firestore
-.github/workflows/                # CI: analisis kode & build APK
+docs/
+└── screenshots/
+
+firestore.rules
+.github/
+└── workflows/
 ```
 
 ---
 
-## 🗄️ Model Data Firestore
+## 🗄️ Struktur Data Firestore
 
-Seluruh data disimpan di bawah dokumen pengguna, sehingga satu pengguna tidak pernah bersinggungan dengan data pengguna lain.
+Data aplikasi disimpan di bawah dokumen pengguna (`users/{uid}`) dan dipisahkan ke dalam subkoleksi.
 
-```
-users/{uid}                         name, email, createdAt, initialBalance,
- │                                  themeMode?, accentColor?, amoled?,
- │                                  challenge?, appLockEnabled?, appLockGrace?
- ├── categories/{id}                name, type, icon, color, createdAt
- ├── transactions/{id}              type, amount, categoryId, note, date, createdAt,
- │                                  walletId?, recurringId?, hasReceipt?
- ├── wallets/{id}                   name, icon, color, initialBalance, createdAt
- ├── receipts/{transactionId}       data (JPEG bytes ≤ ~900 KB), updatedAt
- ├── budgets/{yyyy-MM_categoryId}   categoryId, amount, month, updatedAt
- ├── recurring/{id}                 type, amount, categoryId, note, walletId?, frequency,
- │                                  startDate, nextDate, anchorDay, active, createdAt
- ├── transfers/{id}                 fromWalletId, toWalletId, amount, note, date, createdAt
- ├── goals/{id}                     name, icon, color, target, saved, deadline?, createdAt
- └── debts/{id}                     person, kind(owe|lend), amount, paid, note, date, dueDate?, createdAt
+```text
+users/{uid}
+├── categories/{id}
+├── transactions/{id}
+├── wallets/{id}
+├── receipts/{transactionId}
+├── budgets/{yyyy-MM_categoryId}
+├── recurring/{id}
+├── transfers/{id}
+├── goals/{id}
+└── debts/{id}
 ```
 
-> Nominal disimpan sebagai **bilangan bulat rupiah** (`int`), bukan desisimal, untuk menghindari galat pembulatan.
+Nominal uang disimpan sebagai bilangan bulat Rupiah (`int`) agar tidak menggunakan pecahan desimal untuk perhitungan uang.
+
+> Struktur di atas merupakan gambaran koleksi utama. Field setiap dokumen mengikuti implementasi model dan aturan pada `firestore.rules`.
 
 ---
 
-## 🚀 Panduan Setup & Instalasi
+## 🚀 Persiapan dan Instalasi
 
-### 1. Prasyarat
+### Persyaratan
 
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) (stable, Dart `>= 3.13.5`)
-- Android Studio atau VS Code, dengan Android SDK terpasang
-- JDK 17
-- Akun [Firebase](https://console.firebase.google.com/)
-- (Opsional) [Node.js](https://nodejs.org) untuk Firebase CLI
+- Flutter SDK stable dengan Dart SDK yang memenuhi batas versi pada `pubspec.yaml` (saat dokumentasi ini disusun, proyek mencantumkan Dart `^3.13.5`).
+- Android Studio atau Visual Studio Code.
+- Android SDK.
+- JDK 17.
+- Akun dan project [Firebase](https://console.firebase.google.com/).
+- Node.js untuk memasang Firebase CLI.
 
-### 2. Clone & pasang dependensi
+### 1. Clone repository
 
 ```bash
 git clone https://github.com/dapxzhosting/DafMoney.git
 cd DafMoney
+```
+
+### 2. Pasang dependensi Flutter
+
+```bash
 flutter pub get
 ```
 
-### 3. Konfigurasi Firebase
+### 3. Siapkan Firebase
 
-1. Buat project baru di [Firebase Console](https://console.firebase.google.com/).
+1. Buat project di [Firebase Console](https://console.firebase.google.com/).
 2. Aktifkan **Authentication** dengan metode **Email/Password**.
-3. Aktifkan **Cloud Firestore**.
-4. Hubungkan project ke aplikasi dengan FlutterFire CLI:
+3. Buat atau aktifkan **Cloud Firestore**.
+4. Pasang Firebase CLI dan FlutterFire CLI.
 
-   ```bash
-   npm install -g firebase-tools
-   firebase login
-   dart pub global activate flutterfire_cli
-   flutterfire configure
-   ```
+```bash
+npm install -g firebase-tools
+firebase login
+dart pub global activate flutterfire_cli
+```
 
-   Perintah ini menghasilkan `lib/firebase_options.dart` dan `android/app/google-services.json` untuk project-mu.
-5. **Deploy aturan keamanan Firestore** (wajib, lihat [Keamanan](#-keamanan)):
+5. Hubungkan aplikasi dengan project Firebase milikmu:
 
-   ```bash
-   firebase deploy --only firestore:rules
-   ```
+```bash
+flutterfire configure
+```
+
+Ikuti instruksi CLI untuk memilih project dan platform. Perintah tersebut akan menyiapkan konfigurasi Firebase untuk aplikasi.
+
+6. Pastikan konfigurasi Android yang diperlukan tersedia, termasuk `google-services.json` jika digunakan oleh konfigurasi Gradle project.
+7. Deploy aturan Firestore dari repository:
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+**Penting:** jangan menjalankan aplikasi yang terhubung ke database produksi sebelum memastikan Firestore Rules yang sesuai sudah diterapkan.
 
 ### 4. Jalankan aplikasi
 
 ```bash
-flutter run                 # mode debug
-flutter run --release       # uji perilaku rilis di perangkat
-flutter build apk --release # build APK rilis
+flutter run
 ```
-
-APK hasil build ada di `build/app/outputs/flutter-apk/app-release.apk`.
-
-### 5. Izin Android yang dipakai
-
-| Izin | Kegunaan |
-|---|---|
-| `INTERNET` | Terhubung ke Firebase |
-| `POST_NOTIFICATIONS` | Pengingat, peringatan anggaran, dan Catat cepat (Android 13+) |
-| `RECEIVE_BOOT_COMPLETED` | Menjadwalkan ulang pengingat setelah HP restart |
-| `VIBRATE` | Getaran notifikasi |
-| `RECORD_AUDIO` | Input suara pada Catat cepat |
 
 ---
 
 ## 🔒 Keamanan
 
-Berkas [`firestore.rules`](firestore.rules) di repositori ini adalah **satu-satunya sumber kebenaran** aturan keamanan. Jangan menyalin aturan dari tempat lain, karena aturan yang terlalu sederhana akan menolak data dompet, struk, dan anggaran.
+Aturan akses database berada di file [`firestore.rules`](firestore.rules). Baca dan sesuaikan file tersebut sebelum menghubungkan aplikasi ke project Firebase yang akan digunakan.
 
-Poin utama aturannya:
+Hal yang perlu diperhatikan:
 
-- **Hanya pemilik** yang bisa membaca dan menulis data di `users/{uid}/...`.
-- Akses data mensyaratkan **email sudah terverifikasi**, dicek dari token Firebase Auth (tidak bisa dipalsukan klien).
-- **Validasi skema:** setiap dokumen hanya boleh berisi field yang diizinkan, dengan tipe dan batas panjang yang jelas.
-- **Batas nominal** (`0 < amount ≤ 100.000.000.000`) dan batas ukuran struk (≤ 900 KB).
-- Jenis kategori **tidak bisa diubah** setelah dibuat, dan `createdAt` tidak bisa dimanipulasi.
-- ID anggaran dikunci ke pola `yyyy-MM_categoryId`, sehingga hanya ada satu anggaran per kategori per bulan.
-- **Semua jalur lain ditolak** secara bawaan.
+- Setiap pengguna hanya boleh mengakses data miliknya sendiri.
+- Akses data yang dilindungi mensyaratkan email Firebase Authentication telah diverifikasi.
+- Aturan Firestore melakukan validasi terhadap field dan tipe data yang diizinkan.
+- Terapkan Firestore Rules ke project Firebase yang benar sebelum aplikasi digunakan.
+- Pertimbangkan mengaktifkan Firebase App Check dengan Play Integrity untuk aplikasi Android yang didistribusikan secara publik.
+- Batasi API key melalui pengaturan Google Cloud sesuai kebutuhan platform.
+- Jangan pernah memasukkan service account private key atau kredensial server ke dalam aplikasi Flutter atau repository publik.
 
-**Disarankan untuk rilis publik:**
-
-- Aktifkan **Firebase App Check** (Play Integrity) dan batasi API key di Google Cloud Console, supaya hanya aplikasimu yang bisa memanggil Firestore.
-- Hapus akun dilakukan dari aplikasi: data di semua subkoleksi dihapus lebih dulu, baru akun login. Bila langkah kedua gagal (mis. koneksi putus), ketuk **Hapus akun** sekali lagi untuk menyelesaikannya.
-
-> ⚠️ File `google-services.json` dan `firebase_options.dart` berisi identitas project Firebase (bukan rahasia server), tetapi pastikan **aturan Firestore sudah dideploy** karena itulah yang melindungi datamu.
+File `google-services.json` dan `firebase_options.dart` berisi konfigurasi identitas aplikasi Firebase. Keduanya bukan pengganti aturan keamanan database. **Keamanan data tetap bergantung pada konfigurasi Firebase Authentication, Firestore Rules, dan pengaturan project Firebase.**
 
 ---
 
-## ⚙️ CI/CD
+## 📦 Build APK
 
-Dua workflow GitHub Actions tersedia di `.github/workflows/`:
+Untuk membuat APK release secara lokal:
 
-| Workflow | Pemicu | Fungsi |
-|---|---|---|
-| **Flutter CI** (`flutter.yml`) | Push & PR ke `main` | `flutter pub get`, `flutter analyze`, dan `flutter test` |
-| **Build DafMoney APK** (`main.yml`) | Push ke `main` atau manual (*workflow_dispatch*) | Membangun **APK rilis** dan mengunggahnya sebagai artifact `DafMoney-Release` |
+```bash
+flutter clean
+flutter pub get
+flutter analyze
+flutter test
+flutter build apk --release
+```
 
-Untuk mengunduh APK: buka tab **Actions** → pilih run terbaru → **Artifacts** → `DafMoney-Release`.
+Hasil APK biasanya tersedia di:
+
+```text
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+Untuk distribusi publik, siapkan konfigurasi signing release milik sendiri. Jangan membagikan APK yang ditandatangani dengan debug key sebagai rilis produksi. Simpan keystore dan password di tempat aman; jangan commit ke repository.
 
 ---
 
 ## 🧪 Pengujian
 
+Jalankan seluruh unit test dengan:
+
 ```bash
 flutter test
 ```
 
-Pengujian yang tersedia di folder `test/`:
+Jalankan pemeriksaan statis dengan:
 
-| Berkas | Cakupan |
+```bash
+flutter analyze
+```
+
+Test yang tercantum di repository mencakup beberapa area berikut:
+
+| File test | Cakupan |
 |---|---|
-| `quick_entry_parser_test.dart` | Parser Catat cepat (`rb/jt/k`, pemisah ribuan, angka polos, tanpa nominal) |
-| `recurring_test.dart` | Jadwal transaksi berulang, termasuk tanggal 29–31 di bulan pendek |
-| `csv_test.dart` | Ekspor/impor CSV |
-| `goals_debts_transfers_test.dart` | Target tabungan, utang & piutang, transfer antar dompet |
-| `challenge_json_test.dart` | Bentuk data tantangan agar tetap cocok dengan `firestore.rules` |
+| `quick_entry_parser_test.dart` | Parsing teks Catat Cepat dan format nominal |
+| `recurring_test.dart` | Perhitungan jadwal transaksi berulang, termasuk tanggal akhir bulan |
+| `csv_test.dart` | Pemrosesan impor dan ekspor CSV |
+| `goals_debts_transfers_test.dart` | Logika target tabungan, utang-piutang, dan transfer |
+| `challenge_json_test.dart` | Bentuk data tantangan yang digunakan bersama Firestore Rules |
 
-`flutter test` juga dijalankan otomatis oleh workflow **Flutter CI** pada setiap push dan PR.
+Test yang tersedia bukan jaminan bahwa seluruh alur aplikasi telah diuji. Sebelum rilis, lakukan juga pengujian manual pada login, sinkronisasi, transaksi, transfer, impor data, notifikasi, dan pemulihan ketika jaringan terputus.
 
 ---
 
-## 🔧 Troubleshooting & FAQ
+## ⚙️ GitHub Actions
+
+Repository menyediakan workflow GitHub Actions di folder `.github/workflows/` untuk pemeriksaan Flutter dan proses build APK.
+
+- **Flutter CI**: menjalankan pengambilan dependensi, analisis kode, dan test pada pemicu yang ditentukan di file workflow.
+- **Build DafMoney APK**: menjalankan proses build APK dan mengunggah hasilnya sebagai artifact jika workflow berhasil.
+
+Untuk melihat hasilnya, buka tab **Actions** pada repository, pilih workflow dan run yang diinginkan, lalu periksa bagian **Artifacts**.
+
+> Detail branch, trigger, nama artifact, serta kebutuhan GitHub Secrets mengikuti konfigurasi workflow terbaru di repository. Pastikan signing secret sudah tersedia untuk build release yang akan didistribusikan.
+
+---
+
+## 🔧 Troubleshooting
 
 <details>
-<summary><b>Aplikasi force close saat dibuka di APK rilis</b></summary>
+<summary><b>Aplikasi berhenti saat dibuka</b></summary>
 
-Pastikan izin Internet ada di `android/app/src/main/AndroidManifest.xml`:
+- Pastikan perangkat menggunakan versi Android yang didukung.
+- Pastikan izin Internet tersedia.
+- Periksa konfigurasi Firebase Android dan file konfigurasi project.
+- Untuk melihat log, jalankan aplikasi dari perangkat yang terhubung ke komputer.
 
-```xml
-<uses-permission android:name="android.permission.INTERNET"/>
+```bash
+flutter run --release
 ```
+
 </details>
 
 <details>
-<summary><b>Stuck di halaman splash / logo</b></summary>
+<summary><b>Aplikasi berhenti di splash screen</b></summary>
 
-1. Pastikan perangkat terhubung ke internet.
-2. Periksa `android/app/google-services.json` dan `lib/firebase_options.dart` sudah sesuai project Firebase-mu.
-3. Lihat log aslinya dengan menyambungkan HP via USB:
+- Periksa koneksi internet.
+- Pastikan konfigurasi Firebase sesuai dengan project yang digunakan.
+- Pastikan Firebase Authentication dan Cloud Firestore sudah diaktifkan.
+- Periksa log aplikasi untuk mengetahui error yang sebenarnya.
 
-   ```bash
-   flutter run --release
-   ```
 </details>
 
 <details>
-<summary><b>Data tidak muncul / error <code>permission-denied</code></b></summary>
+<summary><b>Data tidak muncul atau muncul permission-denied</b></summary>
 
-- Pastikan **email sudah diverifikasi** (aturan Firestore menolak akun yang belum terverifikasi).
-- Pastikan aturan terbaru sudah dideploy: `firebase deploy --only firestore:rules`.
+- Pastikan pengguna sudah masuk dan email telah diverifikasi.
+- Pastikan Firestore Rules sudah di-deploy ke project Firebase yang benar.
+- Periksa apakah UID pengguna sesuai dengan lokasi dokumen yang diakses aplikasi.
+
+```bash
+firebase deploy --only firestore:rules
+```
+
 </details>
 
 <details>
 <summary><b>Email verifikasi tidak diterima</b></summary>
 
-Cek folder *Spam/Junk*, atau gunakan tombol **Kirim Ulang Email** di halaman verifikasi. Firebase membatasi jumlah email yang dikirim dalam waktu singkat.
+- Periksa folder Spam atau Junk.
+- Gunakan fitur kirim ulang email di aplikasi.
+- Periksa template dan konfigurasi email pada Firebase Authentication.
+
 </details>
 
 <details>
-<summary><b>Notifikasi atau pengingat tidak muncul</b></summary>
+<summary><b>Notifikasi tidak muncul</b></summary>
 
-- Izinkan notifikasi untuk DafMoney (Android 13+ meminta izin saat pertama kali).
-- Gunakan **Pengaturan → Pengingat → Kirim notifikasi uji** untuk memastikan.
-- Beberapa merek HP (Xiaomi, Oppo, Vivo, dll.) membatasi aplikasi di latar belakang. Nonaktifkan penghemat baterai untuk DafMoney.
+- Pastikan izin notifikasi untuk DafMoney telah diberikan.
+- Pada Android 13 atau lebih baru, periksa izin `POST_NOTIFICATIONS`.
+- Periksa pengaturan baterai perangkat karena beberapa produsen membatasi aktivitas aplikasi di latar belakang.
+- Gunakan fitur notifikasi uji di aplikasi.
+
 </details>
 
 <details>
 <summary><b>Widget tidak memperbarui data</b></summary>
 
-Buka aplikasi sekali agar saldo dan template terbaru tersimpan ke widget. Pastikan juga DafMoney tidak dibatasi di latar belakang.
+Buka aplikasi utama untuk memperbarui data widget. Pastikan aplikasi tidak dibatasi oleh pengaturan baterai atau aktivitas latar belakang perangkat.
+
 </details>
 
 <details>
-<summary><b>Build error <code>immutable workspace</code> pada Gradle</b></summary>
+<summary><b>Build Gradle bermasalah</b></summary>
 
-Cache transform Gradle rusak atau terganggu antivirus. Bersihkan dengan:
+Coba hentikan proses Gradle, bersihkan hasil build Flutter, lalu pasang dependensi kembali.
 
 ```bash
 cd android
@@ -468,25 +531,37 @@ flutter clean
 flutter pub get
 ```
 
-Jika masih gagal, hapus folder `.gradle/caches` lalu build ulang.
 </details>
 
 ---
 
-## 🖼️ Kredit Ilustrasi
+## 🖼️ Kredit
 
-Ilustrasi di folder `assets/illustrations/` (layar sambutan, halaman masuk/daftar, dan tampilan kosong) berasal dari [Freepik](https://www.freepik.com), termasuk karya Sabiqul Fahmi. Pastikan kamu memiliki lisensi yang sesuai (atribusi untuk akun gratis, atau lisensi Premium) sebelum merilis aplikasi ke publik.
+Beberapa ilustrasi pada folder `assets/illustrations/` berasal dari Freepik, termasuk karya Sabiqul Fahmi. Periksa dan penuhi ketentuan lisensi serta atribusi sumber ilustrasi sebelum mendistribusikan aplikasi.
 
 ---
 
 ## 📄 Lisensi
 
-Proyek ini dibuat untuk keperluan *Open Source*. Bebas digunakan, dimodifikasi, dan dikembangkan kembali.
+Pastikan repository memiliki file `LICENSE` yang menyatakan lisensi proyek secara eksplisit sebelum mengizinkan penggunaan, modifikasi, atau distribusi ulang oleh pihak lain. Sampai file lisensi ditambahkan dan dipilih oleh pemilik repository, ketentuan penggunaan ulang kode belum dinyatakan secara eksplisit di README ini.
+
+---
+
+## 🤝 Kontribusi dan Laporan Bug
+
+Ide, masukan, dan laporan bug sangat dihargai.
+
+1. Periksa apakah masalah yang sama sudah dilaporkan di [GitHub Issues](https://github.com/dapxzhosting/DafMoney/issues).
+2. Buat issue baru dengan langkah untuk mereproduksi masalah, hasil yang diharapkan, hasil yang terjadi, dan screenshot atau log jika tersedia.
+3. Untuk perubahan kode, buat branch terpisah dan ajukan Pull Request.
+4. Jalankan `flutter analyze` dan `flutter test` sebelum mengirim perubahan.
 
 ---
 
 <div align="center">
 
-Dibuat dengan 💚 menggunakan Flutter oleh [dapxzhosting](https://github.com/dapxzhosting)
+**Dibuat dengan 💚 menggunakan Flutter**
+
+[ dapxzhosting ](https://github.com/dapxzhosting) · [ Repository DafMoney ](https://github.com/dapxzhosting/DafMoney)
 
 </div>
