@@ -17,10 +17,9 @@ abstract class AppImages {
   /// Perempuan menghitung koin di meja kerja.
   static const womanDesk = '$_dir/woman_desk.webp';
 
-  static const belumAdaAnggaran = '$_dir/belum_ada_anggaran.jpeg';
-  static const belumAdaDompet = '$_dir/belum_ada_dompet.jpeg';
-  static const belumAdaTargetTabungan = '$_dir/belum_ada_target_tabungan.jpeg';
-  static const belumAdaTransaksi = '$_dir/belum_ada_transaksi.jpeg';
-  static const piutang = '$_dir/piutang.jpeg';
-  static const utang = '$_dir/utang.jpeg';
+  static const tantanganCelengan = '$_dir/tantangan_celengan.jpeg';
+  static const dompetKosong = '$_dir/dompet_kosong.jpeg';
+  static const transaksiTerbaru = '$_dir/transaksi_terbaru.jpeg';
+  static const pengeluaranKategori = '$_dir/pengeluaran_kategori.jpeg';
+  static const targetTabungan = '$_dir/target_tabungan.jpeg';
 }

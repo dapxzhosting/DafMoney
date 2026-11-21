@@ -58,18 +58,21 @@ class AmountField extends StatelessWidget {
     this.label = 'Nominal',
     this.errorText,
     this.autofocus = false,
+    this.onChanged,
   });
 
   final TextEditingController controller;
   final String label;
   final String? errorText;
   final bool autofocus;
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
       autofocus: autofocus,
+      onChanged: onChanged,
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,

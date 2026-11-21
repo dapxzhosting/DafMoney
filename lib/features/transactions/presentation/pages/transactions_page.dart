@@ -331,7 +331,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
 
                     if (list.isEmpty) {
                       return EmptyState(
-                        image: AppImages.belumAdaTransaksi,
+                        image: AppImages.womanDesk,
                         icon: Icons.receipt_long_rounded,
                         title: all.isEmpty
                             ? 'Belum ada transaksi'

@@ -101,7 +101,7 @@ class BudgetsPage extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           EmptyState(
-                            image: AppImages.belumAdaAnggaran,
+                            image: AppImages.womanChart,
                             icon: Icons.pie_chart_rounded,
                             title: 'Belum ada anggaran',
                             message:

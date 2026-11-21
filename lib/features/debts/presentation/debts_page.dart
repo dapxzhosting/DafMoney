@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/constants/app_images.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/snackbar.dart';
@@ -82,7 +81,6 @@ class _DebtsPageState extends ConsumerState<DebtsPage> {
                 Padding(
                   padding: const EdgeInsets.only(top: 40),
                   child: EmptyState(
-                    image: _kind == DebtKind.owe ? AppImages.utang : AppImages.piutang,
                     icon: Icons.handshake_rounded,
                     title: _kind == DebtKind.owe
                         ? 'Tidak ada utang'

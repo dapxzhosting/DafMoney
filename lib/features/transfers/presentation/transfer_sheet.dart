@@ -42,7 +42,14 @@ class _TransferSheetState extends ConsumerState<TransferSheet> {
     final t = _from;
     _from = _to;
     _to = t;
+    _error = null;
   });
+
+  /// Hapus pesan galat lama begitu pengguna mengubah isian, supaya tidak
+  /// tertinggal (mis. "harus berbeda" padahal dompet sudah dibedakan).
+  void _clearError() {
+    if (_error != null) setState(() => _error = null);
+  }
 
   Future<void> _save() async {
     final amount = parseAmount(_amount.text);
@@ -56,6 +63,41 @@ class _TransferSheetState extends ConsumerState<TransferSheet> {
     }
     setState(() => _error = error);
     if (error != null) return;
+
+    // Saldo dompet asal tidak cukup: tanya dulu, jangan diam-diam jadi minus.
+    final wallets = ref.read(walletsProvider).valueOrNull ?? const <Wallet>[];
+    final totals =
+        ref.read(walletTotalsProvider).valueOrNull ??
+        const <String, Balance>{};
+    final source = wallets.where((w) => w.id == _from).firstOrNull;
+    if (source != null) {
+      final balance = source.initialBalance + (totals[source.id]?.total ?? 0);
+      if (amount! > balance) {
+        final ok = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Saldo tidak cukup'),
+            content: Text(
+              'Saldo ${source.name} hanya ${Fmt.rupiah(balance)}. '
+              'Transfer ${Fmt.rupiah(amount)} akan membuat saldonya menjadi '
+              '${Fmt.rupiah(balance - amount)}. Tetap lanjutkan?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Batal'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('Tetap pindahkan'),
+              ),
+            ],
+          ),
+        );
+        if (ok != true || !mounted) return;
+      }
+    }
+
     setState(() => _saving = true);
     final err = await ref
         .read(transferActionsProvider)
@@ -119,7 +161,12 @@ class _TransferSheetState extends ConsumerState<TransferSheet> {
     return SheetBody(
       title: 'Transfer antar dompet',
       children: [
-        picker('Dari dompet', _from, (v) => setState(() => _from = v)),
+        picker('Dari dompet', _from, (v) {
+          setState(() {
+            _from = v;
+            _error = null;
+          });
+        }),
         Align(
           alignment: Alignment.center,
           child: IconButton.filledTonal(
@@ -128,9 +175,14 @@ class _TransferSheetState extends ConsumerState<TransferSheet> {
             icon: const Icon(Icons.swap_vert_rounded),
           ),
         ),
-        picker('Ke dompet', _to, (v) => setState(() => _to = v)),
+        picker('Ke dompet', _to, (v) {
+          setState(() {
+            _to = v;
+            _error = null;
+          });
+        }),
         const SizedBox(height: 16),
-        AmountField(controller: _amount),
+        AmountField(controller: _amount, onChanged: (_) => _clearError()),
         const SizedBox(height: 16),
         TextField(
           controller: _note,
