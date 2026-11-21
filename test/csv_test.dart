@@ -126,7 +126,6 @@ void main() {
           createdAt: DateTime(2026, 1, 5),
         ),
       ];
-      // Berkas berisi dua baris identik: satu sudah ada, satu benar-benar baru.
       final plan = planImport(
         rows: [row('bakso'), row('bakso'), row('kopi')],
         existing: existing,

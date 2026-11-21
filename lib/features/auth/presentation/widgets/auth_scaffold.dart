@@ -21,7 +21,6 @@ class AuthScaffold extends StatelessWidget {
   final List<Widget> children;
   final bool canGoBack;
 
-  /// Aset ilustrasi (lihat `AppImages`). Bila diisi, menggantikan ikon di atas judul.
   final String? illustration;
 
   @override
@@ -60,26 +59,26 @@ class AuthScaffold extends StatelessWidget {
                               ),
                             )
                           else
-                          Container(
-                            width: 68,
-                            height: 68,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [cs.primary, cs.tertiary],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(22),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: cs.primary.withValues(alpha: 0.3),
-                                  blurRadius: 22,
-                                  offset: const Offset(0, 10),
+                            Container(
+                              width: 68,
+                              height: 68,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [cs.primary, cs.tertiary],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
-                              ],
+                                borderRadius: BorderRadius.circular(22),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: cs.primary.withValues(alpha: 0.3),
+                                    blurRadius: 22,
+                                    offset: const Offset(0, 10),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(icon, size: 32, color: cs.onPrimary),
                             ),
-                            child: Icon(icon, size: 32, color: cs.onPrimary),
-                          ),
                           const SizedBox(height: 24),
                           Text(
                             title,

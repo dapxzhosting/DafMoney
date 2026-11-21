@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Ilustrasi dalam kartu putih membulat.
-///
-/// Gambar sumbernya berlatar putih, jadi dibingkai dalam kartu putih supaya
-/// tampil rapi baik di tema terang maupun gelap (tanpa kotak putih yang
-/// "menempel" di latar gelap). [tilted] menambahkan blok warna miring di
-/// belakang kartu sebagai aksen.
 class Illustration extends StatelessWidget {
   const Illustration(
     this.asset, {

@@ -24,10 +24,6 @@ class Insight {
   final InsightTone tone;
 }
 
-/// Menyusun wawasan otomatis untuk [month] dari transaksi 6 bulan terakhir.
-///
-/// Perbandingan dengan bulan lalu dibuat adil: bila bulan berjalan belum
-/// selesai, bulan lalu hanya dihitung sampai tanggal yang sama.
 List<Insight> buildInsights({
   required List<MoneyTransaction> all,
   required DateTime month,
@@ -58,7 +54,6 @@ List<Insight> buildInsights({
   final prevSum = summarize(prev);
   final out = <Insight>[];
 
-  // 1. Anggaran yang paling mepet / terlewati.
   BudgetProgress? worst;
   for (final b in budgets) {
     if (b.ratio >= 0.8 && (worst == null || b.ratio > worst.ratio)) worst = b;
@@ -84,7 +79,6 @@ List<Insight> buildInsights({
     );
   }
 
-  // 2. Total pengeluaran vs bulan lalu.
   if (prevSum.expense > 0 && curSum.expense > 0) {
     final change = (curSum.expense - prevSum.expense) / prevSum.expense;
     final diff = (curSum.expense - prevSum.expense).abs();
@@ -112,7 +106,6 @@ List<Insight> buildInsights({
     }
   }
 
-  // 3. Kategori yang paling melonjak.
   final prevByCat = {
     for (final c in byCategory(prev, EntryType.expense)) c.categoryId: c.total,
   };
@@ -140,7 +133,6 @@ List<Insight> buildInsights({
     );
   }
 
-  // 4. Tingkat tabungan.
   if (curSum.income > 0) {
     final rate = curSum.net / curSum.income;
     final pct = (rate * 100).round();
@@ -174,7 +166,6 @@ List<Insight> buildInsights({
     }
   }
 
-  // 5. Kategori pengeluaran terbesar.
   final cats0 = byCategory(cur, EntryType.expense);
   if (cats0.isNotEmpty && curSum.expense > 0) {
     final top = cats0.first;
@@ -190,7 +181,6 @@ List<Insight> buildInsights({
     );
   }
 
-  // 6. Hari tanpa pengeluaran.
   final spendDays = <int>{
     for (final t in cur)
       if (t.type == EntryType.expense) t.date.day,
@@ -210,7 +200,6 @@ List<Insight> buildInsights({
     );
   }
 
-  // 7. Pengeluaran tunggal terbesar.
   MoneyTransaction? biggest;
   for (final t in cur) {
     if (t.type == EntryType.expense &&

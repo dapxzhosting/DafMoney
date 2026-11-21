@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../theme/app_spacing.dart';
 import 'illustration.dart';
 
-/// Empty state beririsan ilustrasi: ikon besar dengan latar lembut berlapis.
 class EmptyState extends StatelessWidget {
   const EmptyState({
     super.key,
@@ -21,7 +20,6 @@ class EmptyState extends StatelessWidget {
   final String? actionLabel;
   final VoidCallback? onAction;
 
-  /// Aset ilustrasi (lihat `AppImages`). Bila diisi, menggantikan ikon besar.
   final String? image;
 
   @override
@@ -38,55 +36,55 @@ class EmptyState extends StatelessWidget {
               Illustration(image!, size: 168, tilted: true)
             else
               SizedBox(
-              width: 150,
-              height: 130,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 130,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: cs.primaryContainer.withValues(alpha: 0.35),
-                    ),
-                  ),
-                  Container(
-                    width: 94,
-                    height: 94,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: cs.primaryContainer.withValues(alpha: 0.7),
-                    ),
-                  ),
-                  Positioned(
-                    top: 8,
-                    right: 14,
-                    child: Container(
-                      width: 14,
-                      height: 14,
+                width: 150,
+                height: 130,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      width: 130,
+                      height: 130,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: cs.tertiaryContainer,
+                        color: cs.primaryContainer.withValues(alpha: 0.35),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    left: 12,
-                    child: Container(
-                      width: 10,
-                      height: 10,
+                    Container(
+                      width: 94,
+                      height: 94,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: cs.secondaryContainer,
+                        color: cs.primaryContainer.withValues(alpha: 0.7),
                       ),
                     ),
-                  ),
-                  Icon(icon, size: 48, color: cs.onPrimaryContainer),
-                ],
+                    Positioned(
+                      top: 8,
+                      right: 14,
+                      child: Container(
+                        width: 14,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: cs.tertiaryContainer,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 10,
+                      left: 12,
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: cs.secondaryContainer,
+                        ),
+                      ),
+                    ),
+                    Icon(icon, size: 48, color: cs.onPrimaryContainer),
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: Gap.md),
             Text(
               title,

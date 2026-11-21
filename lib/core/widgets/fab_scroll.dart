@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Membungkus Scaffold agar FAB bisa mengecil (hanya ikon) saat daftar
-/// digulir ke bawah dan melebar lagi saat digulir ke atas.
-///
-/// Pasang [onScroll] ke `NotificationListener` di body, dan pakai
-/// [extended] pada `FloatingActionButton.extended(isExtended: ...)`.
 class FabScroll extends StatefulWidget {
   const FabScroll({super.key, required this.builder});
 

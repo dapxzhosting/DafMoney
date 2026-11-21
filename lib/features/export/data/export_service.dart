@@ -5,8 +5,6 @@ import 'dart:ui' show Rect;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-/// Menyimpan berkas sementara lalu membuka lembar bagikan sistem. Dari sana
-/// pengguna bisa mengirim ke aplikasi lain atau menyimpan ke berkas / galeri.
 abstract class ExportService {
   static Future<void> shareBytes({
     required Uint8List bytes,

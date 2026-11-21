@@ -47,9 +47,8 @@ class TransferActions {
         );
   });
 
-  Future<String?> delete(String id) => runGuarded(
-    () => _ref.read(transferRepositoryProvider).delete(_uid, id),
-  );
+  Future<String?> delete(String id) =>
+      runGuarded(() => _ref.read(transferRepositoryProvider).delete(_uid, id));
 }
 
 final transferActionsProvider = Provider<TransferActions>(

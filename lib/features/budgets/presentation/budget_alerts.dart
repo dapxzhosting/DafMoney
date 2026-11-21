@@ -7,7 +7,6 @@ import '../../categories/presentation/category_style.dart';
 import '../../categories/presentation/providers/category_providers.dart';
 import 'providers/budget_providers.dart';
 
-/// Keadaan anggaran satu kategori sebelum transaksi baru disimpan.
 class BudgetSnapshot {
   const BudgetSnapshot({
     required this.categoryName,
@@ -20,10 +19,7 @@ class BudgetSnapshot {
   final int spent;
 }
 
-/// Mengirim notifikasi saat pengeluaran melewati 80% atau 100% anggaran.
 abstract class BudgetAlerts {
-  /// Ambil keadaan anggaran sebelum menyimpan. null bila tidak ada anggaran
-  /// untuk kategori / bulan itu, atau peringatan dimatikan.
   static BudgetSnapshot? capture(
     WidgetRef ref, {
     required String categoryId,
@@ -31,7 +27,6 @@ abstract class BudgetAlerts {
   }) {
     if (!ref.read(budgetAlertsEnabledProvider)) return null;
 
-    // Progres anggaran hanya tersedia untuk bulan yang sedang dipilih.
     final month = ref.read(selectedMonthProvider);
     if (date.year != month.year || date.month != month.month) return null;
 
@@ -53,7 +48,6 @@ abstract class BudgetAlerts {
     return null;
   }
 
-  /// Kirim notifikasi bila [delta] membuat pemakaian melewati ambang.
   static Future<void> notifyIfCrossed(BudgetSnapshot before, int delta) async {
     if (delta <= 0) return;
     final b = before.spent / before.limit;
@@ -68,8 +62,6 @@ abstract class BudgetAlerts {
         categoryName: before.categoryName,
         percentage: (a * 100).round(),
       );
-    } catch (_) {
-      // Notifikasi tidak kritis.
-    }
+    } catch (_) {}
   }
 }

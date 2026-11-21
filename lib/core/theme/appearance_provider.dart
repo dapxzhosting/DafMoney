@@ -8,21 +8,17 @@ import '../providers/firebase_providers.dart';
 import '../providers/session_providers.dart';
 import '../providers/shared_prefs_provider.dart';
 
-/// Pilihan warna aksen. `null` = otomatis (warna sistem bila tersedia,
-/// jika tidak memakai warna merek).
 abstract class AccentOptions {
   static const List<Color> colors = [
-    Color(0xFF0E9F6E), // hijau (merek)
-    Color(0xFF2563EB), // biru
-    Color(0xFF7C3AED), // ungu
-    Color(0xFFDB2777), // merah muda
-    Color(0xFFEA580C), // oranye
-    Color(0xFF0891B2), // sian
+    Color(0xFF0E9F6E),
+    Color(0xFF2563EB),
+    Color(0xFF7C3AED),
+    Color(0xFFDB2777),
+    Color(0xFFEA580C),
+    Color(0xFF0891B2),
   ];
 }
 
-/// Warna aksen. Disimpan di perangkat dan disinkronkan ke akun
-/// (`accentColor`: nilai ARGB, 0 = otomatis).
 class AccentNotifier extends Notifier<Color?> {
   static const _field = 'accentColor';
 
@@ -51,7 +47,6 @@ class AccentNotifier extends Notifier<Color?> {
             _saveLocal(remote);
           }
         } else if (state != null && isSettledServerSnapshot(snap)) {
-          // Akun belum punya pilihan warna: unggah yang ada di perangkat ini.
           syncToAccount(ref.read(firestoreProvider), uid, {
             _field: state!.toARGB32(),
           });
@@ -92,7 +87,6 @@ final accentProvider = NotifierProvider<AccentNotifier, Color?>(
   AccentNotifier.new,
 );
 
-/// Mode AMOLED. Disimpan di perangkat dan disinkronkan ke akun (`amoled`).
 class AmoledNotifier extends Notifier<bool> {
   static const _field = 'amoled';
 

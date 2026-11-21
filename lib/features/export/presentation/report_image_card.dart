@@ -4,11 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/utils/formatters.dart';
 import '../domain/export_report.dart';
 
-/// Kartu laporan untuk dibagikan sebagai gambar.
-///
-/// Sengaja tidak memakai warna tema aplikasi supaya hasilnya selalu sama
-/// (terang, rapi) apa pun tema yang sedang aktif. Lebar tetap 360 dp; ambil
-/// dengan pixelRatio 3 untuk hasil 1080 px.
 class ReportImageCard extends StatelessWidget {
   const ReportImageCard({super.key, required this.report});
 

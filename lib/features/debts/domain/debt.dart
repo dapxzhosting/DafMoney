@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// Arah catatan: [owe] = saya berutang ke orang lain, [lend] = orang lain
-/// berutang ke saya (piutang).
 enum DebtKind {
   owe('Utang saya', 'Saya berutang ke'),
   lend('Piutang', 'Orang yang berutang');
@@ -43,7 +41,6 @@ class Debt extends Equatable {
   double get progress =>
       amount <= 0 ? 0 : (paid / amount).clamp(0.0, 1.0).toDouble();
 
-  /// Lewat tenggat dan belum lunas (dibandingkan per hari, bukan per jam).
   bool isOverdue(DateTime now) {
     final d = dueDate;
     if (d == null || settled) return false;
@@ -64,7 +61,6 @@ class Debt extends Equatable {
   ];
 }
 
-/// Total sisa yang belum lunas untuk satu arah.
 int outstanding(Iterable<Debt> debts, DebtKind kind) => debts
     .where((d) => d.kind == kind)
     .fold<int>(0, (sum, d) => sum + d.remaining);

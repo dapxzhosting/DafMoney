@@ -7,8 +7,6 @@ import 'shared_prefs_provider.dart';
 
 const quickEntryEnabledKey = 'quick_entry_enabled';
 
-/// Saklar notifikasi "Catat cepat" (tersimpan di perangkat, default aktif).
-/// Notifikasi hanya tampil bila ada akun yang sedang masuk.
 class QuickEntryNotifier extends Notifier<bool> {
   @override
   bool build() =>
@@ -28,8 +26,6 @@ class QuickEntryNotifier extends Notifier<bool> {
       } else {
         await QuickEntryService.hide();
       }
-      // Template widget mengikuti akun yang masuk (tidak tergantung saklar
-      // notifikasi).
       if (signedIn) {
         await QuickTemplates.refresh();
       } else {

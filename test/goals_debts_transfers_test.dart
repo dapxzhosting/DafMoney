@@ -27,9 +27,12 @@ void main() {
     test('tabungan per bulan menuju tenggat', () {
       final now = DateTime(2026, 1, 10);
       final goal = g(saved: 400000, deadline: DateTime(2026, 4, 10));
-      expect(goal.monthlyNeeded(now), 200000); // 600.000 / 3 bulan
+      expect(goal.monthlyNeeded(now), 200000);
       expect(g(deadline: DateTime(2025, 1, 1)).monthlyNeeded(now), isNull);
-      expect(g(saved: 1000000, deadline: DateTime(2026, 4, 1)).monthlyNeeded(now), isNull);
+      expect(
+        g(saved: 1000000, deadline: DateTime(2026, 4, 1)).monthlyNeeded(now),
+        isNull,
+      );
     });
   });
 
@@ -55,16 +58,15 @@ void main() {
       final now = DateTime(2026, 3, 10, 15);
       expect(d(due: DateTime(2026, 3, 9)).isOverdue(now), isTrue);
       expect(d(due: DateTime(2026, 3, 10)).isOverdue(now), isFalse);
-      expect(d(due: DateTime(2026, 3, 9), paid: 500000).isOverdue(now), isFalse);
+      expect(
+        d(due: DateTime(2026, 3, 9), paid: 500000).isOverdue(now),
+        isFalse,
+      );
       expect(d().isOverdue(now), isFalse);
     });
 
     test('total belum lunas per arah', () {
-      final list = [
-        d(paid: 100000),
-        d(kind: DebtKind.lend),
-        d(paid: 500000),
-      ];
+      final list = [d(paid: 100000), d(kind: DebtKind.lend), d(paid: 500000)];
       expect(outstanding(list, DebtKind.owe), 400000);
       expect(outstanding(list, DebtKind.lend), 500000);
     });

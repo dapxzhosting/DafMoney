@@ -8,8 +8,6 @@ import '../providers/firebase_providers.dart';
 import '../providers/session_providers.dart';
 import '../providers/shared_prefs_provider.dart';
 
-/// Mode tema (terang / gelap / sistem). Disimpan di perangkat dan disinkronkan
-/// ke akun, jadi setelah instal ulang dan login pilihannya kembali.
 class ThemeModeNotifier extends Notifier<ThemeMode> {
   static const _field = 'themeMode';
 
@@ -42,10 +40,7 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
             prefs.setString(AppConstants.themeModeKey, remote.name);
           }
         } else if (state != ThemeMode.system && isSettledServerSnapshot(snap)) {
-          // Akun belum punya pilihan tema: unggah yang ada di perangkat ini.
-          syncToAccount(ref.read(firestoreProvider), uid, {
-            _field: state.name,
-          });
+          syncToAccount(ref.read(firestoreProvider), uid, {_field: state.name});
         }
       },
     );

@@ -160,9 +160,8 @@ class _DebtFormSheetState extends ConsumerState<DebtFormSheet> {
         const SizedBox(height: 8),
         Text(
           'Pengingat dikirim pukul 09.00 pada hari jatuh tempo. Catatan ini tidak mengubah saldo dompet.',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+          style: Theme.of(context).textTheme.bodySmall
+              ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 20),
         SizedBox(
@@ -178,7 +177,6 @@ class _DebtFormSheetState extends ConsumerState<DebtFormSheet> {
   }
 }
 
-/// Sheet untuk mencatat pembayaran / penerimaan cicilan.
 Future<void> showDebtPaymentSheet(BuildContext context, Debt debt) =>
     showFormSheet(context, _PaymentSheet(debt: debt));
 
@@ -215,7 +213,9 @@ class _PaymentSheetState extends ConsumerState<_PaymentSheet> {
       return;
     }
     if (!undo && v > widget.debt.remaining) {
-      setState(() => _error = 'Melebihi sisa ${Fmt.rupiah(widget.debt.remaining)}');
+      setState(
+        () => _error = 'Melebihi sisa ${Fmt.rupiah(widget.debt.remaining)}',
+      );
       return;
     }
     setState(() {

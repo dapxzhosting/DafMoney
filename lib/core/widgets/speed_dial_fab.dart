@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+
 import 'motion.dart';
 
 class SpeedDialAction {
@@ -17,8 +18,6 @@ class SpeedDialAction {
   final VoidCallback onTap;
 }
 
-/// FAB yang mengembang menjadi beberapa aksi cepat. Latar buram (scrim)
-/// dipasang terpisah oleh halaman agar menutupi seluruh layar.
 class SpeedDialFab extends StatelessWidget {
   const SpeedDialFab({
     super.key,
@@ -85,7 +84,6 @@ class SpeedDialFab extends StatelessWidget {
                         ],
                       ),
                     )
-                    // Item paling dekat tombol utama muncul duluan.
                     .animate(
                       autoPlay: false,
                       target: open ? 1 : 0,

@@ -21,8 +21,6 @@ abstract class AppRoutes {
   static const debts = '/debts';
   static const csv = '/csv';
 
-  /// Halaman dompet yang dibuka dengan push (mis. dari form transaksi),
-  /// terpisah dari tab Dompet di dalam shell.
   static const walletManager = '/wallet-manager';
 
   static const authRoutes = {login, register, forgotPassword};

@@ -103,7 +103,6 @@ class _ActiveChallenge extends ConsumerWidget {
         ListView(
           padding: const EdgeInsets.fromLTRB(Gap.page, Gap.xs, Gap.page, 40),
           children: [
-            // Kartu utama
             Container(
                   padding: const EdgeInsets.all(Gap.lg),
                   decoration: BoxDecoration(
@@ -177,7 +176,6 @@ class _ActiveChallenge extends ConsumerWidget {
                 .slideY(begin: 0.08, curve: Curves.easeOutCubic),
             const SizedBox(height: Gap.md),
 
-            // 7 hari terakhir
             _Panel(
               title: '7 hari terakhir',
               child: Row(
@@ -196,7 +194,6 @@ class _ActiveChallenge extends ConsumerWidget {
             ),
             const SizedBox(height: Gap.md),
 
-            // Statistik
             Row(
               children: [
                 _Stat(
@@ -216,7 +213,6 @@ class _ActiveChallenge extends ConsumerWidget {
             ),
             const SizedBox(height: Gap.md),
 
-            // Lencana
             _Panel(
               title: 'Lencana',
               child: GridView.count(
@@ -238,7 +234,6 @@ class _ActiveChallenge extends ConsumerWidget {
             ),
             const SizedBox(height: Gap.lg),
 
-            // Aksi
             if (progress.completed)
               FilledButton.icon(
                 onPressed: () =>

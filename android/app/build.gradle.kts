@@ -3,10 +3,7 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // START: FlutterFire Configuration
     id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -36,7 +33,6 @@ android {
     }
 
     signingConfigs {
-        // Aktif hanya bila android/key.properties ada (storeFile, storePassword, keyAlias, keyPassword).
         if (keyProps.containsKey("storeFile")) {
             create("release") {
                 storeFile = file(keyProps["storeFile"] as String)
@@ -50,7 +46,6 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
-            // R8 dimatikan: pengecilan kode bisa merusak plugin Firebase di rilis.
             isMinifyEnabled = false
             isShrinkResources = false
         }

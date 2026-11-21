@@ -5,7 +5,6 @@ import '../../../../core/providers/app_lock_providers.dart';
 import '../../../../core/services/biometric_service.dart';
 import '../../../../core/utils/snackbar.dart';
 
-/// Pengaturan kunci aplikasi (sidik jari / wajah / PIN perangkat).
 class AppLockSection extends ConsumerWidget {
   const AppLockSection({super.key});
 
@@ -27,17 +26,16 @@ class AppLockSection extends ConsumerWidget {
       if (r == AuthResult.success) {
         await notifier.set(true);
       } else if (context.mounted) {
-        context.showSnack('Verifikasi gagal. Kunci aplikasi tidak diaktifkan.', error: true);
+        context.showSnack(
+          'Verifikasi gagal. Kunci aplikasi tidak diaktifkan.',
+          error: true,
+        );
       }
       return;
     }
-    // Mematikan juga harus lolos verifikasi, supaya orang lain yang memegang
-    // ponsel yang sedang terbuka tidak bisa mematikannya begitu saja.
     final r = await BiometricService.authenticate(
       reason: 'Verifikasi untuk mematikan kunci aplikasi',
     );
-    // Jika perangkat sudah tidak punya kunci layar, kunci memang tak bisa
-    // dipakai lagi; izinkan mematikannya.
     if (r == AuthResult.success || r == AuthResult.unavailable) {
       await notifier.set(false);
     } else if (context.mounted) {
@@ -50,7 +48,8 @@ class AppLockSection extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
     final enabled = ref.watch(appLockEnabledProvider);
     final grace = ref.watch(appLockGraceProvider);
-    String label(int s) => s == 0 ? 'Langsung' : (s == 60 ? '1 menit' : '5 menit');
+    String label(int s) =>
+        s == 0 ? 'Langsung' : (s == 60 ? '1 menit' : '5 menit');
 
     return Column(
       children: [

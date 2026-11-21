@@ -8,7 +8,6 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/section_header.dart';
 import '../domain/insight_engine.dart';
 
-/// Carousel kartu wawasan. Kartu pertama selalu ajakan membuka "Kilas Bulan".
 class InsightsCarousel extends StatefulWidget {
   const InsightsCarousel({
     super.key,
@@ -41,7 +40,6 @@ class _InsightsCarouselState extends State<InsightsCarousel> {
 
   void _autoAdvance() {
     if (!mounted || !_controller.hasClients) return;
-    // Jangan jalan saat tab lain aktif atau pengguna baru saja menggeser.
     if (!TickerMode.of(context)) return;
     if (DateTime.now().difference(_lastTouch) < const Duration(seconds: 8)) {
       return;
@@ -57,7 +55,6 @@ class _InsightsCarouselState extends State<InsightsCarousel> {
   @override
   void didUpdateWidget(InsightsCarousel old) {
     super.didUpdateWidget(old);
-    // Jumlah kartu berubah (mis. ganti bulan): kembali ke kartu pertama.
     if (old.insights.length != widget.insights.length) {
       _page = 0;
       if (_controller.hasClients) _controller.jumpToPage(0);
@@ -80,7 +77,6 @@ class _InsightsCarouselState extends State<InsightsCarousel> {
       children: [
         const SectionHeader(title: 'Wawasan'),
         const SizedBox(height: Gap.xs),
-        // Melebar ke tepi layar agar kartu berikutnya mengintip.
         Transform.translate(
           offset: const Offset(0, 0),
           child: SizedBox(

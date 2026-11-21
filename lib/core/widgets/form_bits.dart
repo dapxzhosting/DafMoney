@@ -4,8 +4,6 @@ import 'package:flutter/services.dart';
 import '../utils/amount_formatter.dart';
 import '../utils/formatters.dart';
 
-/// Kerangka bottom sheet formulir yang seragam (judul + isi yang bisa di-scroll
-/// dan naik saat keyboard muncul).
 class SheetBody extends StatelessWidget {
   const SheetBody({super.key, required this.title, required this.children});
 
@@ -50,7 +48,6 @@ Future<void> showFormSheet(BuildContext context, Widget child) {
   );
 }
 
-/// Kolom nominal rupiah dengan pemisah ribuan.
 class AmountField extends StatelessWidget {
   const AmountField({
     super.key,
@@ -88,7 +85,6 @@ class AmountField extends StatelessWidget {
   }
 }
 
-/// Kolom tanggal yang membuka pemilih tanggal. [value] null = belum dipilih.
 class DateField extends StatelessWidget {
   const DateField({
     super.key,
@@ -116,7 +112,6 @@ class DateField extends StatelessWidget {
         final first = firstDate ?? DateTime(now.year - 10);
         final last = lastDate ?? DateTime(now.year + 20);
         var initial = value ?? now;
-        // initialDate wajib berada di dalam rentang, kalau tidak pemilih error.
         if (initial.isBefore(first)) initial = first;
         if (initial.isAfter(last)) initial = last;
         final picked = await showDatePicker(

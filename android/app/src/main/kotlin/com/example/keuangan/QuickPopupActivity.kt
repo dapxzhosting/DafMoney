@@ -20,11 +20,6 @@ import android.widget.TextView
 import android.widget.Toast
 import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 
-/**
- * Popup "Catat cepat" (native, tanpa membuka app). Muncul di atas app apa pun
- * dari: tombol aksesibilitas, tombol widget, Quick Settings Tile, atau menu
- * Bagikan. Penyimpanan dikerjakan Dart di latar belakang (home_widget).
- */
 class QuickPopupActivity : Activity() {
 
     private var type = "expense"
@@ -82,7 +77,6 @@ class QuickPopupActivity : Activity() {
         findViewById<View>(R.id.chip_scroll).visibility = if (income) View.GONE else View.VISIBLE
     }
 
-    /** Template favorit (pengeluaran) dari riwayat; dibuat app saat dibuka. */
     private fun buildChips() {
         val prefs = getSharedPreferences("HomeWidgetPreferences", Context.MODE_PRIVATE)
         val box = findViewById<LinearLayout>(R.id.chips)
@@ -167,8 +161,6 @@ class QuickPopupActivity : Activity() {
         } catch (_: Exception) {
         }
     }
-
-    // --- teks yang dibagikan dari app lain (m-banking, e-wallet) ---
 
     private fun guessType(text: String): String {
         val t = text.lowercase()

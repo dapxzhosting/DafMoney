@@ -35,7 +35,6 @@ class TransactionFormPage extends ConsumerStatefulWidget {
 
   final MoneyTransaction? initial;
 
-  /// Jenis awal untuk transaksi baru (mis. dari shortcut ikon aplikasi).
   final EntryType? initialType;
 
   @override
@@ -56,11 +55,9 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
   List<CategoryHint> _hints = const [];
   bool _saving = false;
 
-  // Dompet: selama belum disentuh, transaksi baru memakai dompet pertama.
   String? _walletId;
   bool _walletTouched = false;
 
-  // Foto struk.
   final _picker = ImagePicker();
   Uint8List? _newReceipt;
   bool _removeReceipt = false;
@@ -82,8 +79,6 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     _note.addListener(_onNoteChanged);
   }
 
-  /// Menebak kategori dari catatan; memilihnya otomatis untuk transaksi baru
-  /// selama pengguna belum memilih kategori sendiri.
   void _onNoteChanged() {
     final history = ref.read(recentHistoryProvider);
     final cats = ref.read(categoriesProvider).valueOrNull ?? const [];
@@ -265,7 +260,6 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     HapticFeedback.mediumImpact();
     final note = _note.text.trim();
 
-    // Keadaan anggaran sebelum disimpan, untuk peringatan 80% / 100%.
     final alertBefore = _type == EntryType.expense
         ? BudgetAlerts.capture(ref, categoryId: _categoryId!, date: _date)
         : null;
@@ -304,8 +298,6 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     }
     if (alertBefore != null) {
       final i = widget.initial;
-      // Saat mengubah transaksi yang kategori dan bulannya sama, anggaran
-      // sebelumnya sudah memuat nominal lama: hitung selisihnya saja.
       final sameSlot =
           _editing &&
           i != null &&
@@ -318,7 +310,6 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
         sameSlot ? amount - i.amount : amount,
       );
     }
-    // Sudah mencatat hari ini: lewati pengingat hari ini.
     if (!_editing && isSameDay(_date, DateTime.now())) {
       ref.read(reminderProvider.notifier).onTransactionLogged();
     }
@@ -426,7 +417,6 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     final tt = Theme.of(context).textTheme;
     final fin = context.finance;
     final accent = _type == EntryType.income ? fin.income : fin.expense;
-    // Dipantau selama form terbuka agar riwayat untuk saran kategori tetap ada.
     ref.watch(recentHistoryProvider);
     final cats = ref.watch(categoriesProvider).valueOrNull ?? const [];
     final options = cats.where((c) => c.type == _type).toList();

@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-/// Api tantangan yang bergoyang. [lit] = false menampilkan api padam.
 class FlameIcon extends StatelessWidget {
   const FlameIcon({super.key, required this.size, required this.lit});
 
@@ -71,7 +70,6 @@ class FlameIcon extends StatelessWidget {
   }
 }
 
-/// Cincin kemajuan menuju target.
 class ProgressRing extends StatelessWidget {
   const ProgressRing({
     super.key,
@@ -158,7 +156,6 @@ class _RingPainter extends CustomPainter {
       old.progress != progress || old.color != color;
 }
 
-/// Hujan konfeti sekali jalan (untuk perayaan).
 class ConfettiBurst extends StatefulWidget {
   const ConfettiBurst({super.key});
 
@@ -238,7 +235,6 @@ class _ConfettiPainter extends CustomPainter {
       final lt = ((t - p.delay) / (1 - p.delay)).clamp(0.0, 1.0).toDouble();
       if (lt <= 0) continue;
       final x = (p.x + p.vx * lt) * size.width;
-      // Naik sebentar lalu jatuh (gravitasi sederhana).
       final y = size.height * (-0.1 + p.vy * lt + 1.1 * lt * lt * 0.6);
       final opacity = lt > 0.8 ? (1 - lt) / 0.2 : 1.0;
       canvas.save();

@@ -5,13 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/error/app_exception.dart';
 import 'transaction_repository.dart' show writeSafe;
 
-/// Foto struk disimpan langsung di Firestore (tanpa Firebase Storage, jadi
-/// tetap jalan di paket gratis). Satu dokumen per transaksi, id-nya sama
-/// dengan id transaksi: users/{uid}/receipts/{transactionId}.
 class ReceiptRepository {
   ReceiptRepository(this._db);
 
-  /// Batas dokumen Firestore 1 MiB, sisakan ruang untuk field lain.
   static const int maxBytes = 900000;
 
   final FirebaseFirestore _db;

@@ -217,15 +217,14 @@ class _Illustration extends StatelessWidget {
       width: 280,
       height: 260,
       child: Center(
-        child:
-            Illustration(slide.image, size: 224, tilted: true)
-                .animate(autoPlay: false, target: target)
-                .scale(
-                  begin: const Offset(0.7, 0.7),
-                  duration: 650.ms,
-                  curve: Curves.easeOutBack,
-                )
-                .fadeIn(duration: 350.ms),
+        child: Illustration(slide.image, size: 224, tilted: true)
+            .animate(autoPlay: false, target: target)
+            .scale(
+              begin: const Offset(0.7, 0.7),
+              duration: 650.ms,
+              curve: Curves.easeOutBack,
+            )
+            .fadeIn(duration: 350.ms),
       ),
     );
   }

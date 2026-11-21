@@ -19,7 +19,6 @@ final receiptRepositoryProvider = Provider<ReceiptRepository>(
   (ref) => ReceiptRepository(ref.watch(firestoreProvider)),
 );
 
-/// Foto struk satu transaksi (null jika tidak ada).
 final receiptProvider = FutureProvider.autoDispose.family<Uint8List?, String>((
   ref,
   transactionId,
@@ -42,10 +41,6 @@ final monthTransactionsProvider =
       return ref.watch(transactionsByRangeProvider(DateRange.month(month)));
     });
 
-/// Pemasukan dan pengeluaran per dompet. Kunci '' = transaksi tanpa dompet.
-/// Ini satu-satunya listener yang membaca seluruh transaksi; total saldo
-/// ([balanceProvider]) diturunkan darinya supaya biaya baca Firestore tidak
-/// dobel.
 final txTotalsByWalletProvider =
     StreamProvider.autoDispose<Map<String, Balance>>((ref) {
       final uid = ref.watch(uidProvider);
@@ -104,7 +99,6 @@ class TransactionActions {
       try {
         await _receipts.save(_uid, id, receipt);
       } catch (_) {
-        // Batalkan transaksinya agar mencoba ulang tidak membuat duplikat.
         try {
           await _repo.delete(_uid, id);
         } catch (_) {}
@@ -114,9 +108,6 @@ class TransactionActions {
     _bump();
   });
 
-  /// [newReceipt]: foto baru yang menggantikan foto lama.
-  /// [keepReceipt]: pertahankan foto lama (jika tidak ada [newReceipt]).
-  /// [hadReceipt]: transaksi ini sebelumnya punya foto struk.
   Future<String?> update(
     String id, {
     required EntryType type,
@@ -154,7 +145,6 @@ class TransactionActions {
     _bump();
   });
 
-  /// Foto struk untuk disimpan sementara sebelum transaksi dihapus.
   Future<Uint8List?> receiptBytes(String id) async {
     try {
       return await _receipts.fetch(_uid, id);
@@ -163,7 +153,6 @@ class TransactionActions {
     }
   }
 
-  /// Mengembalikan transaksi yang baru dihapus (beserta foto struknya).
   Future<String?> restore(MoneyTransaction t, {Uint8List? receipt}) =>
       runGuarded(() async {
         await _repo.restore(_uid, t, hasReceipt: receipt != null);
@@ -171,7 +160,6 @@ class TransactionActions {
         _bump();
       });
 
-  /// Menggandakan transaksi dengan tanggal hari ini (foto struk tidak ikut).
   Future<({String? error, String? id})> duplicate(MoneyTransaction t) async {
     String? newId;
     final err = await runGuarded(() async {

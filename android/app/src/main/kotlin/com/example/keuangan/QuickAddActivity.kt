@@ -8,17 +8,10 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
-/**
- * Layar mini "Catat cepat" (transparan, tampil di atas app lain).
- * Dibuka dari tombol widget, Quick Settings Tile, atau menu Bagikan.
- * UI-nya Flutter (entrypoint `quickAddMain`), tanpa membuka app utama.
- */
 class QuickAddActivity : FlutterActivity() {
 
     override fun getDartEntrypointFunctionName(): String = "quickAddMain"
 
-    // Dart memanggil "getArgs" begitu layar siap. Kalau tidak sampai 8 detik,
-    // layar gagal dimuat: beri tahu lewat toast lalu tutup (jangan layar hitam).
     private var dartReady = false
     private val handler = Handler(Looper.getMainLooper())
 

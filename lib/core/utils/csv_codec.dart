@@ -1,7 +1,3 @@
-/// Pembaca/penulis CSV sederhana (RFC 4180): mendukung tanda kutip ganda,
-/// koma di dalam kutip, baris baru di dalam kutip, BOM, dan pemisah
-/// koma / titik koma / tab (terdeteksi otomatis, karena Excel versi Indonesia
-/// memakai titik koma).
 abstract class CsvCodec {
   static String encodeField(String s) {
     final needsQuote =
@@ -22,7 +18,6 @@ abstract class CsvCodec {
     return sb.toString();
   }
 
-  /// Memilih pemisah dari baris pertama di luar tanda kutip.
   static String detectDelimiter(String text) {
     var inQuotes = false;
     final counts = {',': 0, ';': 0, '\t': 0};
@@ -63,7 +58,6 @@ abstract class CsvCodec {
 
     void endRow() {
       endField();
-      // Lewati baris yang benar-benar kosong.
       if (!(row.length == 1 && row.first.trim().isEmpty)) rows.add(row);
       row = <String>[];
     }
@@ -91,7 +85,6 @@ abstract class CsvCodec {
       } else if (c == '\n') {
         endRow();
       } else if (c == '\r') {
-        // CRLF: \n berikutnya yang menutup baris.
         if (i + 1 >= text.length || text[i + 1] != '\n') endRow();
       } else {
         field.write(c);

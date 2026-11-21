@@ -70,7 +70,6 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
   }
 
   Future<void> _delete(MoneyTransaction t) async {
-    // Sembunyikan dulu supaya terasa instan, lalu hapus di server.
     setState(() => _hidden.add(t.id));
     final ok = await deleteWithUndo(
       context,
@@ -389,7 +388,6 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                           child: Dismissible(
                             key: ValueKey(t.id),
                             direction: DismissDirection.horizontal,
-                            // Geser ke kanan: gandakan.
                             background: Container(
                               alignment: Alignment.centerLeft,
                               padding: const EdgeInsets.only(left: 22),
@@ -415,7 +413,6 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                                 ],
                               ),
                             ),
-                            // Geser ke kiri: hapus (bisa dibatalkan).
                             secondaryBackground: Container(
                               alignment: Alignment.centerRight,
                               padding: const EdgeInsets.only(right: 22),
@@ -430,7 +427,6 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                             ),
                             confirmDismiss: (direction) async {
                               if (direction == DismissDirection.startToEnd) {
-                                // Jangan tunggu: kartu langsung kembali ke posisi.
                                 unawaited(duplicateWithUndo(context, ref, t));
                                 return false;
                               }
@@ -462,7 +458,6 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
   }
 }
 
-/// Banner saat pencarian lintas bulan (menggantikan pemilih bulan).
 class _ScopeBanner extends StatelessWidget {
   const _ScopeBanner({super.key, required this.scope, required this.onReset});
 
@@ -505,7 +500,6 @@ class _ScopeBanner extends StatelessWidget {
   }
 }
 
-/// Ringkasan hasil saat ada pencarian / filter aktif.
 class _ResultSummary extends StatelessWidget {
   const _ResultSummary({required this.row});
 

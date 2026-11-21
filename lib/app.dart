@@ -32,13 +32,10 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Transaksi berulang diproses saat masuk, setelah verifikasi email, dan
-    // setiap aplikasi dibuka kembali.
     ref.listenManual(uidProvider, (prev, next) {
       if (prev != next) _runRecurring();
     });
     ref.listenManual(authTickProvider, (prev, next) => _runRecurring());
-    // Pengingat hanya aktif untuk akun yang sedang masuk.
     ref.listenManual(uidProvider, (prev, next) {
       if (prev != next) ref.read(reminderProvider.notifier).sync();
     });
@@ -91,7 +88,6 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp>
         return MaterialApp.router(
           title: AppConstants.appName,
           debugShowCheckedModeBanner: false,
-          // Warna aksen pilihan pengguna mengalahkan warna dinamis sistem.
           theme: accent == null && lightDynamic != null
               ? lightTheme.copyWith(colorScheme: lightDynamic)
               : lightTheme,

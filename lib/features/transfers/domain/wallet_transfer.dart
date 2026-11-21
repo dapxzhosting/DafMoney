@@ -2,8 +2,6 @@ import 'package:equatable/equatable.dart';
 
 import '../../transactions/domain/money_transaction.dart';
 
-/// Perpindahan uang antar dua dompet. Bukan pemasukan atau pengeluaran, jadi
-/// tidak masuk laporan dan tidak mengubah total saldo.
 class WalletTransfer extends Equatable {
   const WalletTransfer({
     required this.id,
@@ -22,18 +20,9 @@ class WalletTransfer extends Equatable {
   final DateTime date;
 
   @override
-  List<Object?> get props => [
-    id,
-    fromWalletId,
-    toWalletId,
-    amount,
-    note,
-    date,
-  ];
+  List<Object?> get props => [id, fromWalletId, toWalletId, amount, note, date];
 }
 
-/// Menggabungkan transfer ke total per dompet: dompet asal dihitung seperti
-/// pengeluaran, dompet tujuan seperti pemasukan (hanya untuk saldo dompet).
 Map<String, Balance> mergeTransfers(
   Map<String, Balance> base,
   List<WalletTransfer> transfers,

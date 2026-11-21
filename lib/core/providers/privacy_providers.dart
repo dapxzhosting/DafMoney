@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/app_constants.dart';
 import 'shared_prefs_provider.dart';
 
-/// Apakah angka saldo disembunyikan (dikunci di perangkat, bukan di akun).
 class HideBalanceNotifier extends Notifier<bool> {
   @override
   bool build() =>

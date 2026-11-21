@@ -7,7 +7,6 @@ import '../../firebase_options.dart';
 import '../models/entry_type.dart';
 import 'quick_entry_parser.dart';
 
-/// Hasil menyimpan transaksi cepat (untuk notifikasi / dialog).
 class QuickSaveResult {
   const QuickSaveResult({
     required this.ok,
@@ -20,7 +19,6 @@ class QuickSaveResult {
   final String body;
 }
 
-/// Catatan yang sering dipakai (untuk chip template).
 class QuickNote {
   const QuickNote({
     required this.note,
@@ -32,7 +30,6 @@ class QuickNote {
   final int amount;
   final int count;
 
-  /// "Magnum 1 · 8rb"
   String get label => '$note · ${shortRupiah(amount)}';
 }
 
@@ -58,11 +55,9 @@ String _rupiah(int v) {
   return 'Rp $buf';
 }
 
-String _norm(String s) => s.trim().replaceAll(RegExp(r'\s+'), ' ').toLowerCase();
+String _norm(String s) =>
+    s.trim().replaceAll(RegExp(r'\s+'), ' ').toLowerCase();
 
-/// Logika menyimpan transaksi dari teks singkat. Dipakai oleh notifikasi,
-/// tombol template widget, dan dialog "Catat cepat". Aman dipanggil dari
-/// isolate latar belakang (menginisialisasi Firebase sendiri).
 class QuickEntrySaver {
   QuickEntrySaver._();
 
@@ -86,8 +81,6 @@ class QuickEntrySaver {
     return user?.uid;
   }
 
-  /// Kategori & dompet jarang berubah dan sudah dimuat app: ambil dari cache
-  /// dulu supaya hemat pembacaan Firestore; kalau cache kosong baru ke server.
   static Future<QuerySnapshot<Map<String, dynamic>>> _cacheFirst(
     CollectionReference<Map<String, dynamic>> col,
   ) async {
@@ -108,7 +101,6 @@ class QuickEntrySaver {
         .get();
   }
 
-  /// Catatan yang paling sering dipakai untuk [type], paling sering dulu.
   static Future<List<QuickNote>> topNotes(
     EntryType type, {
     int limit = 6,
@@ -146,10 +138,6 @@ class QuickEntrySaver {
     ];
   }
 
-  /// Menyimpan transaksi dari [raw], mis. "makan siang 25rb" atau "Magnum 1".
-  ///
-  /// Teks yang persis sama dengan catatan lama memakai nominal, kategori, dan
-  /// dompet dari transaksi terakhir dengan catatan itu.
   static Future<QuickSaveResult> save(EntryType type, String raw) async {
     final text = raw.trim().replaceAll(RegExp(r'\s+'), ' ');
     if (text.isEmpty) {
@@ -204,7 +192,8 @@ class QuickEntrySaver {
         return QuickSaveResult(
           ok: false,
           title: 'Nominal tidak terbaca',
-          body: '"$text" belum pernah dicatat. Tulis dengan nominal, mis. "$text 8rb".',
+          body:
+              '"$text" belum pernah dicatat. Tulis dengan nominal, mis. "$text 8rb".',
         );
       }
 
@@ -231,7 +220,6 @@ class QuickEntrySaver {
           pick((n) => n == 'lainnya') ??
           (ofType.isNotEmpty ? ofType.first.id : '');
 
-      // Aturan Firestore menolak categoryId kosong; beri pesan yang jelas.
       if (categoryId.isEmpty) {
         return const QuickSaveResult(
           ok: false,

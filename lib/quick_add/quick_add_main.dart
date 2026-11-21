@@ -9,12 +9,8 @@ import '../core/theme/app_colors.dart';
 
 const _channel = MethodChannel('dafmoney/quick_add');
 
-/// Menjalankan layar mini "Catat cepat" (QuickAddActivity).
-/// Dipanggil dari `quickAddMain()` di main.dart: titik masuk yang dicari
-/// Android harus berada di library utama.
 Future<void> runQuickAdd() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Kalau ada error saat menggambar, tampilkan teksnya (bukan layar kosong).
   ErrorWidget.builder = (details) => Material(
     color: const Color(0xFF7F1D1D),
     child: Padding(
@@ -35,7 +31,10 @@ class QuickAddApp extends StatelessWidget {
 
   ThemeData _theme(Brightness b) => ThemeData(
     useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(seedColor: AppColors.brand, brightness: b),
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.brand,
+      brightness: b,
+    ),
   );
 
   @override
@@ -284,7 +283,9 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
                               for (final t in _templates)
                                 ActionChip(
                                   label: Text(t.label),
-                                  onPressed: _saving ? null : () => _save(t.note),
+                                  onPressed: _saving
+                                      ? null
+                                      : () => _save(t.note),
                                 ),
                             ],
                           ),
@@ -306,9 +307,15 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
                               ? const SizedBox(
                                   width: 18,
                                   height: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 )
-                              : Icon(_done ? Icons.check_rounded : Icons.bolt_rounded),
+                              : Icon(
+                                  _done
+                                      ? Icons.check_rounded
+                                      : Icons.bolt_rounded,
+                                ),
                           label: Text(_done ? 'Tersimpan' : 'Simpan'),
                         ),
                       ],

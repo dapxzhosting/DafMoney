@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-/// Kotak abu-abu dengan kilau yang bergerak, pengganti spinner saat memuat.
 class SkeletonBox extends StatelessWidget {
   const SkeletonBox({
     super.key,
@@ -15,7 +14,6 @@ class SkeletonBox extends StatelessWidget {
   final double height;
   final double radius;
 
-  /// Warna dasar. Kosong = otomatis mengikuti tema.
   final Color? color;
 
   @override
@@ -40,7 +38,6 @@ class SkeletonBox extends StatelessWidget {
   }
 }
 
-/// Daftar kerangka bentuk kartu transaksi.
 class SkeletonList extends StatelessWidget {
   const SkeletonList({
     super.key,

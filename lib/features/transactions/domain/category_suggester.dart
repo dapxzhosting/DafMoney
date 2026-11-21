@@ -6,10 +6,8 @@ class CategoryHint {
 
   final String categoryId;
 
-  /// Skor mentah: jumlah kecocokan berbobot dari riwayat.
   final double score;
 
-  /// Bagian skor terhadap semua saran (0..1).
   final double confidence;
 }
 
@@ -66,8 +64,6 @@ double _overlap(Set<String> q, Set<String> n) {
   return shared;
 }
 
-/// Menebak kategori dari catatan berdasarkan riwayat transaksi yang pernah
-/// dicatat (tidak ada data baru yang disimpan).
 List<CategoryHint> suggestCategories({
   required String note,
   required List<MoneyTransaction> history,

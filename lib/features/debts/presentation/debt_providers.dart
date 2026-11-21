@@ -29,7 +29,6 @@ class DebtActions {
 
   DebtRepository get _repo => _ref.read(debtRepositoryProvider);
 
-  /// Pengingat pukul 09.00 pada tanggal jatuh tempo (jika belum lunas).
   Future<void> _reschedule({
     required String id,
     required String person,
@@ -50,9 +49,7 @@ class DebtActions {
             : '$person belum membayar ${Fmt.rupiah(remaining)}.',
         when: DateTime(dueDate.year, dueDate.month, dueDate.day, 9),
       );
-    } catch (_) {
-      // Pengingat bersifat tambahan; kegagalannya tidak boleh membatalkan simpan.
-    }
+    } catch (_) {}
   }
 
   Future<String?> add({
@@ -109,7 +106,6 @@ class DebtActions {
     );
   });
 
-  /// [delta] > 0 mencatat pembayaran, < 0 membatalkannya.
   Future<String?> pay(Debt d, int delta) => runGuarded(() async {
     final paid = await _repo.adjustPaid(_uid, d.id, delta);
     await _reschedule(

@@ -20,22 +20,22 @@ class PrimaryButton extends StatelessWidget {
     return PressScale(
       scale: 0.97,
       child: FilledButton(
-      onPressed: loading ? () {} : onPressed,
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        child: loading
-            ? SizedBox(
-                key: const ValueKey('loading'),
-                height: 22,
-                width: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  color: cs.onPrimary,
-                ),
-              )
-            : SwapText(label, key: const ValueKey('label')),
+        onPressed: loading ? () {} : onPressed,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: loading
+              ? SizedBox(
+                  key: const ValueKey('loading'),
+                  height: 22,
+                  width: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: cs.onPrimary,
+                  ),
+                )
+              : SwapText(label, key: const ValueKey('label')),
+        ),
       ),
-    ),
     );
   }
 }

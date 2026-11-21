@@ -10,9 +10,6 @@ import '../../../core/utils/formatters.dart';
 import '../../export/domain/export_report.dart';
 import '../../export/presentation/report_image_page.dart';
 
-/// "Kilas Bulan": ringkasan bulanan dalam bentuk cerita layar penuh
-/// (ketuk kanan/kiri untuk pindah, tahan untuk jeda, geser ke bawah untuk
-/// menutup).
 class MonthStoryPage extends StatefulWidget {
   const MonthStoryPage({super.key, required this.report});
 
@@ -90,7 +87,6 @@ class _MonthStoryPageState extends State<MonthStoryPage>
 
   void _next({bool auto = false}) {
     if (_index >= _slides.length - 1) {
-      // Slide terakhir: tetap di sana (ada tombol aksi).
       if (!auto) HapticFeedback.selectionClick();
       return;
     }
@@ -135,7 +131,6 @@ class _MonthStoryPageState extends State<MonthStoryPage>
           behavior: HitTestBehavior.opaque,
           onTapUp: (d) {
             if (isLast) {
-              // Di slide terakhir hanya ketuk kiri yang berarti "mundur".
               if (d.localPosition.dx < size.width * 0.3) _prev();
               return;
             }
@@ -231,10 +226,6 @@ class _MonthStoryPageState extends State<MonthStoryPage>
 
 enum _SlideKind { intro, totals, categories, weeks, biggest, outro }
 
-// ---------------------------------------------------------------------------
-// Gaya & komponen bersama
-// ---------------------------------------------------------------------------
-
 TextStyle _ts(
   double size, {
   FontWeight weight = FontWeight.w600,
@@ -325,7 +316,6 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-/// Gelembung latar yang melayang pelan.
 class _FloatingBubbles extends StatelessWidget {
   const _FloatingBubbles();
 
@@ -402,7 +392,6 @@ class _SlideFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Bila layar sangat pendek, isi dipotong rapi (bukan overflow bergaris).
     return LayoutBuilder(
       builder: (context, c) => SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
@@ -419,10 +408,6 @@ class _SlideFrame extends StatelessWidget {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Slide 1 - Intro
-// ---------------------------------------------------------------------------
 
 class _IntroSlide extends StatelessWidget {
   const _IntroSlide({required this.report});
@@ -484,10 +469,6 @@ class _IntroSlide extends StatelessWidget {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Slide 2 - Total pemasukan & pengeluaran
-// ---------------------------------------------------------------------------
 
 class _TotalsSlide extends StatelessWidget {
   const _TotalsSlide({required this.report});
@@ -580,10 +561,6 @@ class _TotalsSlide extends StatelessWidget {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Slide 3 - Kategori teratas
-// ---------------------------------------------------------------------------
 
 class _CategoriesSlide extends StatelessWidget {
   const _CategoriesSlide({required this.report});
@@ -703,10 +680,6 @@ class _CategoryBar extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Slide 4 - Minggu paling boros
-// ---------------------------------------------------------------------------
-
 class _WeeksSlide extends StatelessWidget {
   const _WeeksSlide({required this.report});
 
@@ -804,10 +777,6 @@ class _WeeksSlide extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Slide 5 - Pengeluaran tunggal terbesar
-// ---------------------------------------------------------------------------
-
 class _BiggestSlide extends StatelessWidget {
   const _BiggestSlide({required this.report});
 
@@ -880,10 +849,6 @@ class _BiggestSlide extends StatelessWidget {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Slide 6 - Penutup (cincin tabungan + aksi)
-// ---------------------------------------------------------------------------
 
 class _OutroSlide extends StatelessWidget {
   const _OutroSlide({

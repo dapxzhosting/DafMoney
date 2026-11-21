@@ -11,7 +11,6 @@ class NotificationService {
 
   static Future<void> init() async {
     tz.initializeTimeZones();
-    // Pakai zona waktu perangkat; tanpa ini tz.local berisi UTC.
     try {
       final name = await FlutterTimezone.getLocalTimezone();
       tz.setLocalLocation(tz.getLocation(name));
@@ -45,9 +44,6 @@ class NotificationService {
     ),
   );
 
-  /// Menjadwalkan pengingat harian pada [hour]:[minute]. Dengan [skipToday]
-  /// pengingat pertama baru berbunyi besok (mis. karena hari ini sudah
-  /// mencatat transaksi).
   static Future<void> scheduleDailyReminder({
     int hour = 20,
     int minute = 0,
@@ -74,7 +70,6 @@ class NotificationService {
 
   static Future<void> cancelDailyReminder() => _plugin.cancel(_reminderId);
 
-  /// Notifikasi langsung untuk menguji pengaturan.
   static Future<void> showTestReminder() {
     return _plugin.show(
       1002,
@@ -123,11 +118,7 @@ class NotificationService {
     ),
   );
 
-  /// Notifikasi langsung berisi informasi singkat.
-  static Future<void> showInfo({
-    required String title,
-    required String body,
-  }) {
+  static Future<void> showInfo({required String title, required String body}) {
     return _plugin.show(
       DateTime.now().millisecondsSinceEpoch ~/ 1000,
       title,
@@ -146,11 +137,8 @@ class NotificationService {
     ),
   );
 
-  /// ID notifikasi stabil dari id dokumen (di luar rentang ID lain).
   static int idFor(String docId) => 100000 + (docId.hashCode & 0x0fffffff);
 
-  /// Menjadwalkan satu notifikasi pada [when] (sekali, tidak berulang).
-  /// Diabaikan bila waktunya sudah lewat.
   static Future<void> scheduleOnce({
     required int id,
     required String title,

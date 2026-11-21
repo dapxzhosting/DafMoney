@@ -10,7 +10,6 @@ import '../../../core/models/entry_type.dart';
 import '../../../core/utils/formatters.dart';
 import '../domain/export_report.dart';
 
-/// Membuat laporan PDF (A4) dari [ExportReport].
 abstract class PdfExporter {
   static Future<Uint8List> build(
     ExportReport report, {
@@ -45,7 +44,6 @@ class _PdfBuilder {
   pw.TextStyle _b(double size, {PdfColor? color}) =>
       pw.TextStyle(font: _boldFont, fontSize: size, color: color ?? _ink);
 
-  /// Font bawaan PDF hanya mendukung Latin-1: buang karakter lain (mis. emoji).
   static String _t(String s) {
     final b = StringBuffer();
     for (final c in s.runes) {

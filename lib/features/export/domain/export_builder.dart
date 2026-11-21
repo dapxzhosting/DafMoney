@@ -11,7 +11,6 @@ import '../../wallets/domain/wallet.dart';
 import 'export_report.dart';
 
 abstract class ExportRanges {
-  /// Rentang yang harus diambil dari database untuk [scope].
   static DateRange forScope(
     ExportScope scope, {
     required DateTime month,
@@ -68,8 +67,6 @@ ExportReport buildExportReport({
     ];
   }
 
-  // Rata-rata pengeluaran per hari, dihitung sampai hari ini bila periodenya
-  // belum selesai.
   final today = dateOnly(DateTime.now());
   final tomorrow = DateTime(today.year, today.month, today.day + 1);
   final start = scope == ExportScope.allYears && sorted.isNotEmpty

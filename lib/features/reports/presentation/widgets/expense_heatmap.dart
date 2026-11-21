@@ -16,8 +16,6 @@ import '../../../transactions/presentation/widgets/transaction_tile.dart';
 import '../../../wallets/presentation/providers/wallet_providers.dart';
 import '../../domain/report_calculator.dart';
 
-/// Kalender panas pengeluaran: tiap hari diwarnai menurut besar pengeluaran.
-/// Ketuk sebuah hari untuk melihat transaksinya.
 class ExpenseHeatmap extends ConsumerStatefulWidget {
   const ExpenseHeatmap({super.key, required this.range, required this.txns});
 
@@ -123,7 +121,6 @@ class _ExpenseHeatmapState extends ConsumerState<ExpenseHeatmap> {
           );
     }
 
-    // Statistik ringkas.
     DayTotal? peak;
     var activeDays = 0;
     var totalExpense = 0;

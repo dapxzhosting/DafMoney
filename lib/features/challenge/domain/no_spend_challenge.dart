@@ -4,10 +4,8 @@ import '../../../core/models/entry_type.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../transactions/domain/money_transaction.dart';
 
-/// Pencapaian (dalam hari) yang membuka lencana.
 const challengeMilestones = [3, 7, 14, 30, 60, 100];
 
-/// Tantangan: bertahan tanpa pengeluaran di satu kategori.
 class NoSpendChallenge extends Equatable {
   const NoSpendChallenge({
     required this.categoryId,
@@ -20,7 +18,6 @@ class NoSpendChallenge extends Equatable {
   final DateTime startDate;
   final int targetDays;
 
-  /// Rekor terbaik dari tantangan-tantangan sebelumnya.
   final int bestEver;
 
   @override
@@ -62,18 +59,14 @@ class ChallengeProgress {
 
   final NoSpendChallenge challenge;
 
-  /// Hari beruntun tanpa pengeluaran sampai hari ini (0 bila jajan hari ini).
   final int streak;
 
-  /// Rekor beruntun dalam tantangan ini.
   final int longest;
 
-  /// Rekor terbaik sepanjang masa (tantangan ini + sebelumnya).
   final int best;
 
   final bool spentToday;
 
-  /// 7 hari terakhir, dari paling lama ke hari ini.
   final List<DayMark> last7;
 
   int get target => challenge.targetDays;

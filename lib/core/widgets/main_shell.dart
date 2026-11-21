@@ -44,7 +44,6 @@ class MainShell extends ConsumerWidget {
     ref.watch(categorySeedProvider);
 
     return Scaffold(
-      // Batasi lebar konten di tablet / layar lebar agar kartu tidak melar.
       body: Align(
         alignment: Alignment.topCenter,
         child: ConstrainedBox(

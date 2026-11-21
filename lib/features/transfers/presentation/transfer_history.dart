@@ -9,7 +9,6 @@ import '../../wallets/presentation/providers/wallet_providers.dart';
 import '../domain/wallet_transfer.dart';
 import 'transfer_providers.dart';
 
-/// Daftar transfer terbaru di halaman Dompet (bisa dihapus).
 class TransferHistory extends ConsumerWidget {
   const TransferHistory({super.key});
 
@@ -17,7 +16,8 @@ class TransferHistory extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
-    final transfers = ref.watch(transfersProvider).valueOrNull ?? const <WalletTransfer>[];
+    final transfers =
+        ref.watch(transfersProvider).valueOrNull ?? const <WalletTransfer>[];
     final wallets = ref.watch(walletMapProvider);
     if (transfers.isEmpty) return const SizedBox.shrink();
     final recent = transfers.take(8).toList();
@@ -63,8 +63,7 @@ class TransferHistory extends ConsumerWidget {
                       final ok = await confirmDialog(
                         context,
                         title: 'Hapus transfer?',
-                        message:
-                            'Saldo kedua dompet kembali seperti sebelum transfer ini.',
+                        message: 'Saldo kedua dompet kembali seperti sebelum transfer ini.',
                         confirmLabel: 'Hapus',
                         destructive: true,
                       );

@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/privacy_providers.dart';
 import '../utils/formatters.dart';
 
-/// Menampilkan nominal rupiah dengan animasi hitung naik/turun, dan
-/// menggantinya dengan titik-titik saat saldo disembunyikan.
 class AnimatedAmount extends ConsumerWidget {
   const AnimatedAmount({
     super.key,
@@ -18,7 +16,6 @@ class AnimatedAmount extends ConsumerWidget {
   final int value;
   final TextStyle? style;
 
-  /// false = selalu tampil, tidak ikut pengaturan sembunyikan saldo.
   final bool maskable;
   final Duration duration;
 

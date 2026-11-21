@@ -31,7 +31,6 @@ class DebtRepository {
           dueDate: due is Timestamp ? due.toDate() : null,
         );
       }).toList();
-      // Belum lunas di atas; yang jatuh tempo lebih dulu paling atas.
       list.sort((a, b) {
         if (a.settled != b.settled) return a.settled ? 1 : -1;
         final da = a.dueDate, db = b.dueDate;
@@ -44,7 +43,6 @@ class DebtRepository {
     });
   }
 
-  /// Mengembalikan id dokumen baru (dipakai untuk menjadwalkan pengingat).
   Future<String> add(
     String uid, {
     required String person,
@@ -99,8 +97,6 @@ class DebtRepository {
     );
   }
 
-  /// Mencatat pembayaran ([delta] > 0) atau membatalkannya ([delta] < 0).
-  /// Hasil akhir dijaga di antara 0 dan jumlah utang.
   Future<int> adjustPaid(String uid, String id, int delta) async {
     final ref = _col(uid).doc(id);
     try {

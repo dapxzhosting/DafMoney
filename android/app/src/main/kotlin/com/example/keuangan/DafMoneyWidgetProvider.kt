@@ -22,11 +22,9 @@ class DafMoneyWidgetProvider : AppWidgetProvider() {
                 setTextViewText(R.id.total_balance, totalBalance)
                 setTextViewText(R.id.remaining_budget, remainingBudget)
 
-                // Tombol cepat: buka dialog "Catat cepat" (tanpa membuka app utama).
                 setOnClickPendingIntent(R.id.btn_expense, quickAdd(context, "expense", 1))
                 setOnClickPendingIntent(R.id.btn_income, quickAdd(context, "income", 2))
 
-                // Template favorit: satu ketukan langsung tersimpan di latar belakang.
                 val slots = listOf(R.id.tpl_1, R.id.tpl_2, R.id.tpl_3)
                 var any = false
                 slots.forEachIndexed { index, viewId ->

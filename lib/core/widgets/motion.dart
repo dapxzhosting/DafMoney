@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
-/// Kurva & durasi standar supaya semua animasi terasa seragam.
 class Motion {
   Motion._();
 
@@ -15,8 +14,6 @@ class Motion {
   static const Curve spring = Curves.easeOutBack;
 }
 
-/// Efek tekan halus: mengecil sedikit saat disentuh lalu kembali memantul.
-/// Bungkus kartu / tombol apa pun tanpa mengubah isi di dalamnya.
 class Pressable extends StatefulWidget {
   const Pressable({
     super.key,
@@ -73,8 +70,6 @@ class _PressableState extends State<Pressable> {
   }
 }
 
-/// Muncul bertahap (fade + naik) dengan jeda berdasarkan [index].
-/// Cocok untuk item list / kartu yang tampil berurutan.
 class StaggerIn extends StatefulWidget {
   const StaggerIn({
     super.key,
@@ -137,8 +132,6 @@ class _StaggerInState extends State<StaggerIn>
   }
 }
 
-/// Transisi halaman untuk go_router: fade + geser tipis + skala sangat kecil.
-/// Dipakai lewat `pageBuilder: (c, s) => smoothPage(s, const Page())`.
 CustomTransitionPage<T> smoothPage<T>(GoRouterState state, Widget child) {
   return CustomTransitionPage<T>(
     key: state.pageKey,
@@ -172,8 +165,6 @@ CustomTransitionPage<T> smoothPage<T>(GoRouterState state, Widget child) {
   );
 }
 
-/// Efek tekan murni visual (tanpa menangkap gesture), aman dibungkus di
-/// sekitar widget yang sudah punya InkWell / tombol sendiri.
 class PressScale extends StatefulWidget {
   const PressScale({super.key, required this.child, this.scale = 0.97});
 
@@ -207,9 +198,6 @@ class _PressScaleState extends State<PressScale> {
   }
 }
 
-/// Teks yang berganti dengan animasi: teks lama naik & memudar, teks baru
-/// naik dari bawah. Lebar ikut menyesuaikan dengan mulus (cocok untuk
-/// label tombol seperti "Transaksi" <-> "Tutup").
 class SwapText extends StatelessWidget {
   const SwapText(
     this.text, {

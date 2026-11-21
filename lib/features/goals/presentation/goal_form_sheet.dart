@@ -205,7 +205,9 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
                     color: Color(c),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: c == _colorValue ? cs.onSurface : Colors.transparent,
+                      color: c == _colorValue
+                          ? cs.onSurface
+                          : Colors.transparent,
                       width: 2.5,
                     ),
                   ),
@@ -234,7 +236,6 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
   }
 }
 
-/// Sheet kecil untuk menambah / menarik dana.
 Future<void> showGoalFundsSheet(
   BuildContext context,
   SavingsGoal goal, {
@@ -300,9 +301,8 @@ class _GoalFundsSheetState extends ConsumerState<_GoalFundsSheet> {
         const SizedBox(height: 8),
         Text(
           'Dana target hanya penanda tabungan. Saldo dompet tidak berubah.',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+          style: Theme.of(context).textTheme.bodySmall
+              ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 20),
         SizedBox(

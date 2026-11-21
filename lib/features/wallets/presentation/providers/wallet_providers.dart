@@ -25,14 +25,11 @@ final walletMapProvider = Provider<Map<String, Wallet>>((ref) {
   return {for (final w in list) w.id: w};
 });
 
-/// Jumlah saldo awal semua dompet (ikut dihitung di total saldo dashboard).
 final walletsInitialSumProvider = Provider<int>((ref) {
   final list = ref.watch(walletsProvider).valueOrNull ?? const <Wallet>[];
   return list.fold<int>(0, (sum, w) => sum + w.initialBalance);
 });
 
-/// Total per dompet, sudah termasuk transfer antar dompet (yang tidak
-/// mengubah total saldo keseluruhan).
 final walletTotalsProvider =
     Provider.autoDispose<AsyncValue<Map<String, Balance>>>((ref) {
       final base = ref.watch(txTotalsByWalletProvider);

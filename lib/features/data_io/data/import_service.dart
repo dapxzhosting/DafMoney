@@ -19,7 +19,6 @@ class ImportPlan {
   final List<ImportRow> toImport;
   final int duplicates;
 
-  /// Kunci "tipe|nama" kategori yang akan dibuat.
   final Set<String> newCategories;
   final Set<String> newWallets;
 }
@@ -27,16 +26,12 @@ class ImportPlan {
 String _catKey(EntryType type, String name) =>
     '${type.name}|${name.trim().toLowerCase()}';
 
-/// Menghitung apa yang akan terjadi tanpa menulis apa pun (untuk pratinjau).
 ImportPlan planImport({
   required List<ImportRow> rows,
   required List<MoneyTransaction> existing,
   required Map<String, Category> categories,
   required List<Wallet> wallets,
 }) {
-  // Hitung transaksi yang sudah ada per kunci. Baris berkas yang cocok
-  // "menghabiskan" satu kemunculan yang ada (dianggap duplikat); sisanya tetap
-  // diimpor, jadi dua transaksi kembar yang sah di dalam berkas tidak hilang.
   final remaining = <String, int>{};
   for (final t in existing) {
     final k = dedupeKeyOf(
@@ -83,8 +78,6 @@ class ImportService {
 
   final FirebaseFirestore _db;
 
-  /// Menulis hasil impor: kategori & dompet baru dibuat lebih dulu, lalu
-  /// transaksi dalam batch 400. Mengembalikan jumlah transaksi yang ditulis.
   Future<int> run(
     String uid, {
     required ImportPlan plan,
@@ -97,7 +90,6 @@ class ImportService {
     final walletCol = user.collection('wallets');
     final txCol = user.collection('transactions');
 
-    // id kategori / dompet: yang sudah ada + yang akan dibuat.
     final catIds = <String, String>{
       for (final c in categories.values) _catKey(c.type, c.name): c.id,
     };
@@ -135,8 +127,6 @@ class ImportService {
         setupOps++;
       }
     }
-    // Batas Firestore 500 operasi: kategori+dompet baru praktis jauh di bawahnya,
-    // tetapi dijaga agar gagal dengan pesan jelas, bukan setengah jalan.
     if (setupOps > 450) {
       throw StateError(
         'Terlalu banyak kategori/dompet baru (>450). Rapikan nama di berkas lalu coba lagi.',

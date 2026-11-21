@@ -29,8 +29,10 @@ void main() {
   });
 
   test('menebak kategori', () {
-    expect(guessCategoryName('Kopi susu', EntryType.expense),
-        'makanan & minuman');
+    expect(
+      guessCategoryName('Kopi susu', EntryType.expense),
+      'makanan & minuman',
+    );
     expect(guessCategoryName('Parkir', EntryType.expense), 'transportasi');
     expect(guessCategoryName('Gaji bulanan', EntryType.income), 'gaji');
     expect(guessCategoryName('xyz', EntryType.expense), isNull);

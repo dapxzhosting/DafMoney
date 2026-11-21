@@ -70,7 +70,6 @@ class _CsvPageState extends ConsumerState<CsvPage> {
     final d = DateTime.now();
     final stamp =
         '${d.year}${d.month.toString().padLeft(2, '0')}${d.day.toString().padLeft(2, '0')}';
-    // BOM agar Excel membaca UTF-8 (huruf non-ASCII) dengan benar.
     final bytes = Uint8List.fromList([0xEF, 0xBB, 0xBF, ...utf8.encode(csv)]);
     await ExportService.shareBytes(
       bytes: bytes,
@@ -142,7 +141,8 @@ class _CsvPageState extends ConsumerState<CsvPage> {
             categories: {for (final c in cats) c.id: c},
             wallets: wallets,
             onProgress: (done, total) {
-              if (mounted) setState(() => _progress = (done: done, total: total));
+              if (mounted)
+                setState(() => _progress = (done: done, total: total));
             },
           );
       ref.read(dataVersionProvider.notifier).bump();
@@ -354,7 +354,8 @@ class _PreviewCard extends StatelessWidget {
               ),
             if (preview.errors.isNotEmpty)
               Theme(
-                data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                data: Theme.of(context)
+                    .copyWith(dividerColor: Colors.transparent),
                 child: ExpansionTile(
                   tilePadding: EdgeInsets.zero,
                   title: Text(
@@ -388,7 +389,9 @@ class _PreviewCard extends StatelessWidget {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: (busy || n == 0) ? null : onImport,
-                  child: Text(n == 0 ? 'Tidak ada yang diimpor' : 'Impor $n transaksi'),
+                  child: Text(
+                    n == 0 ? 'Tidak ada yang diimpor' : 'Impor $n transaksi',
+                  ),
                 ),
               ),
           ],

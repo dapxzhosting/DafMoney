@@ -9,15 +9,12 @@ import '../../../../core/widgets/primary_button.dart';
 import '../../domain/wallet.dart';
 import '../providers/wallet_providers.dart';
 
-/// Tambahkan uang selisih ke dompet. [balance] = saldo dompet saat ini di aplikasi.
 Future<void> showWalletAdjustSheet(
   BuildContext context, {
   required Wallet wallet,
   required int balance,
-}) => showFormSheet(
-  context,
-  WalletAdjustSheet(wallet: wallet, balance: balance),
-);
+}) =>
+    showFormSheet(context, WalletAdjustSheet(wallet: wallet, balance: balance));
 
 enum _Mode { selisih, saldo }
 
@@ -47,7 +44,6 @@ class _WalletAdjustSheetState extends ConsumerState<WalletAdjustSheet> {
     super.dispose();
   }
 
-  /// Jumlah uang yang akan ditambahkan ke dompet (null bila isian belum valid).
   int? get _diff {
     final v = parseAmount(_amount.text);
     if (v == null || v <= 0) return null;
@@ -69,8 +65,6 @@ class _WalletAdjustSheetState extends ConsumerState<WalletAdjustSheet> {
     final diff = _diff!;
     final w = widget.wallet;
     setState(() => _saving = true);
-    // Selisih ditambahkan ke saldo dompet tanpa dihitung sebagai pemasukan,
-    // jadi laporan pemasukan/pengeluaran tidak terganggu.
     final err = await ref
         .read(walletActionsProvider)
         .update(
@@ -106,10 +100,7 @@ class _WalletAdjustSheetState extends ConsumerState<WalletAdjustSheet> {
         SegmentedButton<_Mode>(
           segments: const [
             ButtonSegment(value: _Mode.selisih, label: Text('Jumlah selisih')),
-            ButtonSegment(
-              value: _Mode.saldo,
-              label: Text('Saldo sebenarnya'),
-            ),
+            ButtonSegment(value: _Mode.saldo, label: Text('Saldo sebenarnya')),
           ],
           selected: {_mode},
           onSelectionChanged: (s) => setState(() {

@@ -71,8 +71,6 @@ class RecurringRepository {
     );
   }
 
-  /// Jadwal dihitung ulang dari [startDate] bila tanggal mulai atau
-  /// frekuensinya berubah; selain itu `nextDate` dipertahankan.
   Future<void> update(
     String uid,
     RecurringEntry old, {
@@ -108,16 +106,11 @@ class RecurringRepository {
   Future<void> delete(String uid, String id) =>
       writeSafe(() => _col(uid).doc(id).delete());
 
-  /// Mencatat semua kemunculan yang sudah jatuh tempo. Tiap aturan diproses
-  /// dalam transaksi Firestore: transaksi baru dan pergeseran `nextDate`
-  /// berhasil atau gagal bersamaan, jadi tidak ada duplikat meski dua
-  /// perangkat membuka aplikasi sekaligus. Butuh koneksi internet.
-  /// Mengembalikan jumlah transaksi yang dibuat.
   Future<int> processDue(String uid) async {
     final today = dateOnly(DateTime.now());
-    final snap = await _col(
-      uid,
-    ).where('nextDate', isLessThanOrEqualTo: Timestamp.fromDate(today)).get();
+    final snap = await _col(uid)
+        .where('nextDate', isLessThanOrEqualTo: Timestamp.fromDate(today))
+        .get();
     var created = 0;
     for (final doc in snap.docs) {
       if (doc.data()['active'] == false) continue;
@@ -153,9 +146,7 @@ class RecurringRepository {
           tx.update(doc.reference, {'nextDate': Timestamp.fromDate(next)});
           return dates.length;
         });
-      } catch (_) {
-        // Offline atau ditolak: dicoba lagi saat aplikasi dibuka berikutnya.
-      }
+      } catch (_) {}
     }
     return created;
   }

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/reminder_provider.dart';
 import '../../../../core/utils/snackbar.dart';
 
-/// Pengaturan pengingat harian: saklar, jam, dan tombol uji notifikasi.
 class ReminderSection extends ConsumerWidget {
   const ReminderSection({super.key});
 

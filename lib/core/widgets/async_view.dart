@@ -17,7 +17,6 @@ class AsyncView<T> extends StatelessWidget {
   final Widget Function(T data) data;
   final VoidCallback? onRetry;
 
-  /// Tampilan saat memuat. Bawaan: kerangka daftar dengan kilau.
   final Widget? loading;
 
   @override

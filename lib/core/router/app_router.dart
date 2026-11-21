@@ -57,7 +57,6 @@ class _RouterRefresh extends ChangeNotifier {
       return loc == AppRoutes.verifyEmail ? null : AppRoutes.verifyEmail;
     }
 
-    // Pengguna yang belum pernah melihat onboarding diarahkan ke sana dulu.
     if (!_ref.read(onboardingDoneProvider)) {
       return loc == AppRoutes.onboarding ? null : AppRoutes.onboarding;
     }

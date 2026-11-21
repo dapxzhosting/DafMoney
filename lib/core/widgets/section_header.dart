@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Judul bagian yang seragam di semua halaman.
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
     super.key,

@@ -28,7 +28,6 @@ class GoalRepository {
           deadline: dl is Timestamp ? dl.toDate() : null,
         );
       }).toList();
-      // Yang belum tercapai di atas, lalu yang paling dekat tenggatnya.
       list.sort((a, b) {
         if (a.reached != b.reached) return a.reached ? 1 : -1;
         final da = a.deadline, db = b.deadline;
@@ -86,8 +85,6 @@ class GoalRepository {
     );
   }
 
-  /// Menambah ([delta] > 0) atau menarik ([delta] < 0) dana. Memakai
-  /// transaksi agar tidak bisa turun di bawah nol walau diubah dua perangkat.
   Future<void> adjustSaved(String uid, String id, int delta) async {
     final ref = _col(uid).doc(id);
     try {

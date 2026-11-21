@@ -18,7 +18,6 @@ enum Frequency {
   );
 }
 
-/// Aturan transaksi yang dicatat otomatis (gaji, langganan, cicilan, dst.).
 class RecurringEntry extends Equatable {
   const RecurringEntry({
     required this.id,
@@ -43,11 +42,8 @@ class RecurringEntry extends Equatable {
   final Frequency frequency;
   final DateTime startDate;
 
-  /// Tanggal kemunculan berikutnya yang belum dicatat.
   final DateTime nextDate;
 
-  /// Tanggal (1-31) acuan untuk jadwal bulanan/tahunan, supaya "31 Januari"
-  /// tetap kembali ke tanggal 31 setelah melewati Februari.
   final int anchorDay;
   final bool active;
 
@@ -67,7 +63,6 @@ class RecurringEntry extends Equatable {
   ];
 }
 
-/// Kemunculan setelah [from]. Murni (tanpa efek samping) agar mudah dites.
 DateTime nextOccurrence(DateTime from, Frequency f, int anchorDay) {
   switch (f) {
     case Frequency.daily:
@@ -88,8 +83,6 @@ int _clampDay(DateTime firstOfMonth, int day) {
   return day > last ? last : day;
 }
 
-/// Semua tanggal jatuh tempo dari [next] sampai [today] (inklusif), maksimal
-/// [limit] agar aturan yang lama tidak terbuka tidak membanjiri data.
 List<DateTime> dueDates({
   required DateTime next,
   required DateTime today,

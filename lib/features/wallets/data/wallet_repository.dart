@@ -28,7 +28,6 @@ class WalletRepository {
 
   DateTime _created(QueryDocumentSnapshot<Map<String, dynamic>> d) {
     final v = d.data()['createdAt'];
-    // createdAt masih null sesaat setelah dibuat (menunggu server): anggap terbaru.
     return v is Timestamp ? v.toDate() : DateTime.now();
   }
 
@@ -76,11 +75,7 @@ class WalletRepository {
     );
   }
 
-  /// Menghapus dompet. Transaksi yang memakai dompet ini tidak dihapus,
-  /// hanya dilepas dari dompetnya (menjadi "tanpa dompet").
   Future<void> delete(String uid, String id) async {
-    // Dompet yang punya riwayat transfer tidak boleh dihapus: transfer
-    // menjadi tidak seimbang dan saldo dompet lawannya ikut salah.
     final transfers = _user(uid).collection('transfers');
     final asFrom = await transfers
         .where('fromWalletId', isEqualTo: id)
@@ -95,7 +90,6 @@ class WalletRepository {
         'Dompet ini punya riwayat transfer. Hapus transfernya dulu di halaman Dompet.',
       );
     }
-    // Aturan transaksi berulang yang memakai dompet ini dilepas dari dompetnya.
     final rec = await _user(uid)
         .collection('recurring')
         .where('walletId', isEqualTo: id)

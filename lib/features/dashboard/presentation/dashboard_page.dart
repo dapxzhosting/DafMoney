@@ -75,7 +75,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   bool _dialOpen = false;
   bool _compact = false;
 
-  /// Tinggi gulir kira-kira sampai kartu saldo keluar layar.
   static const _compactThreshold = 250.0;
 
   bool _onScroll(ScrollNotification n) {
@@ -120,7 +119,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     ).push(MonthStoryPage.route(report));
   }
 
-  /// Saldo kumulatif harian 7 hari terakhir untuk sparkline.
   List<double> _sparkline(List<MoneyTransaction> all) {
     final today = DateTime.now();
     final days = List.generate(
@@ -396,7 +394,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   }
 }
 
-/// Latar buram di belakang speed-dial; ketuk untuk menutup.
 class _Scrim extends StatelessWidget {
   const _Scrim({required this.visible, required this.onTap});
 
@@ -873,7 +870,6 @@ class _BalanceCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(28),
         child: Stack(
           children: [
-            // Lapisan gradien lembut + pola lingkaran
             Positioned(
               top: -60,
               right: -40,

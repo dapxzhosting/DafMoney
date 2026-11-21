@@ -30,8 +30,6 @@ class RecurringActions {
 
   RecurringRepository get _repo => _ref.read(recurringRepositoryProvider);
 
-  /// Dipanggil saat masuk, setelah verifikasi email, dan saat aplikasi dibuka
-  /// kembali. Aman dipanggil berulang.
   Future<void> processDue() async {
     final uid = _ref.read(uidProvider);
     if (uid == null || _running) return;
@@ -48,7 +46,6 @@ class RecurringActions {
         } catch (_) {}
       }
     } catch (_) {
-      // Diabaikan: akan dicoba lagi nanti.
     } finally {
       _running = false;
     }
@@ -102,8 +99,7 @@ class RecurringActions {
   Future<String?> setActive(String id, bool active) =>
       runGuarded(() => _repo.setActive(_uid, id, active));
 
-  Future<String?> delete(String id) =>
-      runGuarded(() => _repo.delete(_uid, id));
+  Future<String?> delete(String id) => runGuarded(() => _repo.delete(_uid, id));
 }
 
 final recurringActionsProvider = Provider<RecurringActions>(

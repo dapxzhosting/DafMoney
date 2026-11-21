@@ -1,8 +1,6 @@
 import '../../../core/utils/date_utils.dart';
 import 'money_transaction.dart';
 
-/// Seberapa jauh pencarian menjangkau. Selain [month], data diambil dari
-/// rentang yang lebih luas.
 enum TxScope {
   month('Bulan terpilih'),
   last3('3 bulan'),
@@ -13,7 +11,6 @@ enum TxScope {
 
   final String label;
 
-  /// Rentang tanggal untuk cakupan non-bulan.
   DateRange get range {
     final n = DateTime.now();
     switch (this) {
@@ -35,7 +32,6 @@ enum TxScope {
   }
 }
 
-/// Filter lanjutan di halaman Transaksi (di luar jenis dan kata kunci).
 class TxFilter {
   const TxFilter({
     this.categoryIds = const {},
@@ -55,7 +51,6 @@ class TxFilter {
 
   bool get hasAmount => minAmount != null || maxAmount != null;
 
-  /// Jumlah aspek filter yang aktif (untuk lencana di ikon).
   int get activeCount =>
       (categoryIds.isEmpty ? 0 : 1) +
       (walletIds.isEmpty ? 0 : 1) +

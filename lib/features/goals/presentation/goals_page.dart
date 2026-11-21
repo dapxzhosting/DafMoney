@@ -36,8 +36,7 @@ class GoalsPage extends ConsumerWidget {
               image: AppImages.goalEmpty,
               icon: Icons.flag_rounded,
               title: 'Belum ada target tabungan',
-              message:
-                  'Tentukan tujuan seperti liburan atau dana darurat, lalu pantau progresnya.',
+              message: 'Tentukan tujuan seperti liburan atau dana darurat, lalu pantau progresnya.',
               actionLabel: 'Buat target',
               onAction: () => showGoalSheet(context),
             );
@@ -244,11 +243,8 @@ class _GoalCard extends ConsumerWidget {
                   OutlinedButton(
                     onPressed: goal.saved == 0
                         ? null
-                        : () => showGoalFundsSheet(
-                            context,
-                            goal,
-                            deposit: false,
-                          ),
+                        : () =>
+                              showGoalFundsSheet(context, goal, deposit: false),
                     child: const Text('Tarik'),
                   ),
                 ],

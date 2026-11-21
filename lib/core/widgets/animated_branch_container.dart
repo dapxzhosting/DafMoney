@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Container cabang untuk StatefulShellRoute yang memberi transisi
-/// fade + geser tipis saat pindah tab. Semua cabang tetap hidup (state
-/// terjaga), tab yang tidak aktif disembunyikan dan tickernya dimatikan.
 class FadeThroughBranches extends StatelessWidget {
   const FadeThroughBranches({
     super.key,

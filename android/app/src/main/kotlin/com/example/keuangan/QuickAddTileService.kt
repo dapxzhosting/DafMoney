@@ -6,7 +6,6 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 
-/** Tombol "Catat transaksi" di panel Quick Settings (tarik layar dari atas). */
 class QuickAddTileService : TileService() {
 
     override fun onStartListening() {

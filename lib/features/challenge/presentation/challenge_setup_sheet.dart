@@ -8,7 +8,6 @@ import '../../categories/presentation/category_style.dart';
 import '../../categories/presentation/providers/category_providers.dart';
 import 'challenge_providers.dart';
 
-/// Memilih kategori dan target hari, lalu memulai tantangan.
 Future<void> showChallengeSetup(BuildContext context, {int carryBest = 0}) {
   return showModalBottomSheet<void>(
     context: context,

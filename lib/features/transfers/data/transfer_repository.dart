@@ -54,15 +54,16 @@ class TransferRepository {
   Future<void> delete(String uid, String id) =>
       writeSafe(() => _col(uid).doc(id).delete());
 
-  /// Apakah ada transfer yang memakai dompet ini (asal atau tujuan).
   Future<bool> usesWallet(String uid, String walletId) async {
-    final from = await _col(
-      uid,
-    ).where('fromWalletId', isEqualTo: walletId).limit(1).get();
+    final from = await _col(uid)
+        .where('fromWalletId', isEqualTo: walletId)
+        .limit(1)
+        .get();
     if (from.docs.isNotEmpty) return true;
-    final to = await _col(
-      uid,
-    ).where('toWalletId', isEqualTo: walletId).limit(1).get();
+    final to = await _col(uid)
+        .where('toWalletId', isEqualTo: walletId)
+        .limit(1)
+        .get();
     return to.docs.isNotEmpty;
   }
 }

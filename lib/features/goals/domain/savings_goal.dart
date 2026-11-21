@@ -23,12 +23,9 @@ class SavingsGoal extends Equatable {
 
   bool get reached => saved >= target;
 
-  /// 0..1 (dibatasi), untuk bilah progres.
   double get progress =>
       target <= 0 ? 0 : (saved / target).clamp(0.0, 1.0).toDouble();
 
-  /// Berapa yang perlu ditabung per bulan agar tepat waktu. Null jika tidak
-  /// ada tenggat, sudah tercapai, atau tenggat sudah lewat.
   int? monthlyNeeded(DateTime now) {
     final d = deadline;
     if (d == null || reached) return null;

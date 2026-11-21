@@ -43,58 +43,60 @@ class TransactionTile extends StatelessWidget {
 
     return PressScale(
       child: Card(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          child: Row(
-            children: [
-              CategoryAvatar(icon: look.icon, color: look.color),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      look.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: tt.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(
+              children: [
+                CategoryAvatar(icon: look.icon, color: look.color),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        look.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: tt.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
-                    ),
-                  ],
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: tt.bodySmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              if (transaction.hasReceipt) ...[
-                Icon(
-                  Icons.attach_file_rounded,
-                  size: 16,
-                  color: cs.onSurfaceVariant,
+                const SizedBox(width: 8),
+                if (transaction.hasReceipt) ...[
+                  Icon(
+                    Icons.attach_file_rounded,
+                    size: 16,
+                    color: cs.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 4),
+                ],
+                Text(
+                  '${isIncome ? '+' : '-'}${Fmt.rupiah(transaction.amount)}',
+                  style: tt.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: amountColor,
+                  ),
                 ),
-                const SizedBox(width: 4),
               ],
-              Text(
-                '${isIncome ? '+' : '-'}${Fmt.rupiah(transaction.amount)}',
-                style: tt.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: amountColor,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
-    ),
     );
   }
 }

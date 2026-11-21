@@ -10,7 +10,6 @@ import '../../categories/presentation/providers/category_providers.dart';
 import 'challenge_providers.dart';
 import 'challenge_widgets.dart';
 
-/// Kartu ringkas tantangan di dashboard.
 class ChallengeCard extends ConsumerWidget {
   const ChallengeCard({super.key});
 

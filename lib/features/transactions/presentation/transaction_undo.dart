@@ -25,19 +25,12 @@ void _show(
     );
 }
 
-/// Menghapus transaksi lalu menawarkan "Batalkan" selama beberapa detik.
-/// Foto struk (jika ada) ikut dikembalikan saat dibatalkan.
-///
-/// Mengembalikan true jika transaksi berhasil dihapus. [onUndone] dipanggil
-/// setelah pembatalan berhasil.
 Future<bool> deleteWithUndo(
   BuildContext context,
   WidgetRef ref,
   MoneyTransaction t, {
   VoidCallback? onUndone,
 }) async {
-  // Ambil semua yang dibutuhkan sebelum await, karena halaman bisa saja
-  // sudah tertutup saat proses selesai.
   final messenger = ScaffoldMessenger.of(context);
   final actions = ref.read(transactionActionsProvider);
 
@@ -67,7 +60,6 @@ Future<bool> deleteWithUndo(
   return true;
 }
 
-/// Menggandakan transaksi dengan tanggal hari ini, dengan opsi "Batalkan".
 Future<void> duplicateWithUndo(
   BuildContext context,
   WidgetRef ref,

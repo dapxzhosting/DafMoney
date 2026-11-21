@@ -12,8 +12,6 @@ import 'core/providers/shared_prefs_provider.dart';
 import 'firebase_options.dart';
 import 'quick_add/quick_add_main.dart';
 
-/// Titik masuk untuk QuickAddActivity (tombol widget, Quick Settings Tile,
-/// menu Bagikan). Harus di main.dart agar ditemukan oleh Android.
 @pragma('vm:entry-point')
 Future<void> quickAddMain() => runQuickAdd();
 

@@ -28,10 +28,6 @@ class ReminderState {
       );
 }
 
-/// Pengaturan pengingat harian (tersimpan di perangkat).
-///
-/// Bila hari ini sudah mencatat transaksi, pengingat hari ini dilewati dan
-/// baru berbunyi lagi besok.
 class ReminderNotifier extends Notifier<ReminderState> {
   @override
   ReminderState build() {
@@ -52,10 +48,8 @@ class ReminderNotifier extends Notifier<ReminderState> {
 
   static String _day(DateTime d) => '-${d.day.toString().padLeft(2, '0')}';
 
-  /// Menyelaraskan jadwal notifikasi dengan pengaturan saat ini.
   Future<void> sync() async {
     try {
-      // Tanpa akun yang masuk, tidak ada yang perlu diingatkan.
       final signedIn = ref.read(uidProvider) != null;
       if (!state.enabled || !signedIn) {
         await NotificationService.cancelDailyReminder();
@@ -66,9 +60,7 @@ class ReminderNotifier extends Notifier<ReminderState> {
         minute: state.minute,
         skipToday: _loggedToday,
       );
-    } catch (_) {
-      // Notifikasi tidak kritis: abaikan bila platform tidak mendukung.
-    }
+    } catch (_) {}
   }
 
   Future<void> setEnabled(bool value) async {
@@ -87,7 +79,6 @@ class ReminderNotifier extends Notifier<ReminderState> {
     await sync();
   }
 
-  /// Dipanggil setelah pengguna mencatat transaksi bertanggal hari ini.
   Future<void> onTransactionLogged() async {
     final now = DateTime.now();
     await ref
@@ -110,7 +101,6 @@ final reminderProvider = NotifierProvider<ReminderNotifier, ReminderState>(
   ReminderNotifier.new,
 );
 
-/// Apakah peringatan anggaran (80% dan 100%) dikirim sebagai notifikasi.
 class BudgetAlertsNotifier extends Notifier<bool> {
   @override
   bool build() =>

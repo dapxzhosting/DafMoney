@@ -33,11 +33,8 @@ class AuthRepository {
     });
   }
 
-  /// Ambil kredensial Google lewat pemilih akun native di dalam aplikasi
-  /// (tidak membuka browser / website). Mengembalikan null bila dibatalkan.
   Future<AuthCredential?> _googleCredential() async {
     final google = GoogleSignIn(scopes: const ['email']);
-    // Paksa pemilih akun muncul lagi (bukan otomatis memakai akun sebelumnya).
     await google.signOut();
     final account = await google.signIn();
     if (account == null) return null;
@@ -48,7 +45,6 @@ class AuthRepository {
     );
   }
 
-  /// Masuk dengan akun Google langsung di aplikasi (native).
   Future<void> signInWithGoogle() {
     return _guard(() async {
       final credential = await _googleCredential();
@@ -61,8 +57,6 @@ class AuthRepository {
     });
   }
 
-  /// True bila akun ini punya kata sandi (daftar email). Akun yang hanya
-  /// memakai Google tidak punya kata sandi.
   bool get usesPassword =>
       _auth.currentUser?.providerData.any((p) => p.providerId == 'password') ??
       false;

@@ -29,8 +29,7 @@ class RecurringPage extends ConsumerWidget {
     final ok = await confirmDialog(
       context,
       title: 'Hapus transaksi berulang?',
-      message:
-          'Aturan ini dihapus. Transaksi yang sudah tercatat tidak ikut terhapus.',
+      message: 'Aturan ini dihapus. Transaksi yang sudah tercatat tidak ikut terhapus.',
       confirmLabel: 'Hapus',
       destructive: true,
     );
@@ -59,8 +58,7 @@ class RecurringPage extends ConsumerWidget {
               image: AppImages.recurringEmpty,
               icon: Icons.event_repeat_rounded,
               title: 'Belum ada transaksi berulang',
-              message:
-                  'Catat gaji, langganan, atau cicilan sekali saja. DafMoney yang mencatatnya setiap periode.',
+              message: 'Catat gaji, langganan, atau cicilan sekali saja. DafMoney yang mencatatnya setiap periode.',
               actionLabel: 'Tambah transaksi berulang',
               onAction: () => showRecurringSheet(context),
             );
@@ -100,7 +98,10 @@ class _RecurringCard extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
     final fin = context.finance;
-    final look = resolveCategory(ref.watch(categoryMapProvider), entry.categoryId);
+    final look = resolveCategory(
+      ref.watch(categoryMapProvider),
+      entry.categoryId,
+    );
     final wallet = entry.walletId == null
         ? null
         : ref.watch(walletMapProvider)[entry.walletId!];

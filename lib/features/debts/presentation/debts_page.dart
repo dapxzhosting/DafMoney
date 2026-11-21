@@ -235,9 +235,7 @@ class _DebtCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        debt.settled
-                            ? 'Lunas ✓'
-                            : Fmt.rupiah(debt.remaining),
+                        debt.settled ? 'Lunas ✓' : Fmt.rupiah(debt.remaining),
                         style: tt.titleSmall?.copyWith(
                           fontWeight: FontWeight.w800,
                           color: debt.settled ? Colors.green : color,

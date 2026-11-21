@@ -16,8 +16,6 @@ const csvHeader = [
 String _ymd(DateTime d) =>
     '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
-/// CSV semua transaksi (urut tanggal), siap dibuka di Excel / Sheets dan
-/// bisa diimpor kembali oleh DafMoney.
 String buildTransactionsCsv(
   List<MoneyTransaction> txns,
   Map<String, Category> cats,
@@ -55,7 +53,6 @@ class ImportRow {
   final int amount;
   final String note;
 
-  /// Kunci untuk mendeteksi transaksi yang sama (hindari impor ganda).
   String get dedupeKey => dedupeKeyOf(date, type, amount, note, categoryName);
 }
 
@@ -73,7 +70,6 @@ class ImportPreview {
 
   final List<ImportRow> rows;
 
-  /// Pesan per baris bermasalah, mis. "Baris 7: tanggal tidak valid".
   final List<String> errors;
 }
 
@@ -87,7 +83,6 @@ int? _col(List<String> header, List<String> names) {
   return null;
 }
 
-/// Mengurai tanggal: yyyy-MM-dd, yyyy/MM/dd, dd/MM/yyyy, dd-MM-yyyy, dd.MM.yyyy.
 DateTime? parseCsvDate(String raw) {
   final s = raw.trim().split(RegExp(r'[ T]')).first;
   final iso = RegExp(r'^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$').firstMatch(s);
@@ -106,13 +101,10 @@ DateTime? parseCsvDate(String raw) {
   }
   if (m < 1 || m > 12 || d < 1 || d > 31 || y < 1970 || y > 2100) return null;
   final dt = DateTime(y, m, d);
-  // Menolak tanggal yang "meluber" (mis. 31 Februari).
   if (dt.month != m || dt.day != d) return null;
   return dt;
 }
 
-/// Mengurai nominal rupiah: "1500000", "1.500.000", "Rp 1.500.000",
-/// "1,500,000", "1500000.00". Mengembalikan null bila tidak valid / nol.
 int? parseCsvAmount(String raw) {
   var s = raw.trim().toLowerCase().replaceAll('rp', '').replaceAll(' ', '');
   if (s.startsWith('-') || s.startsWith('+')) s = s.substring(1);
@@ -136,10 +128,18 @@ int? parseCsvAmount(String raw) {
 EntryType? parseCsvType(String raw) {
   final s = raw.trim().toLowerCase();
   if (s.isEmpty) return null;
-  if (s.contains('masuk') || s.contains('pemasukan') || s == 'income' || s == 'in' || s == '+') {
+  if (s.contains('masuk') ||
+      s.contains('pemasukan') ||
+      s == 'income' ||
+      s == 'in' ||
+      s == '+') {
     return EntryType.income;
   }
-  if (s.contains('keluar') || s.contains('pengeluaran') || s == 'expense' || s == 'out' || s == '-') {
+  if (s.contains('keluar') ||
+      s.contains('pengeluaran') ||
+      s == 'expense' ||
+      s == 'out' ||
+      s == '-') {
     return EntryType.expense;
   }
   return null;
@@ -193,7 +193,9 @@ ImportPreview parseTransactionsCsv(String text) {
     }
     final type = parseCsvType(cell(r, iType));
     if (type == null) {
-      err('Baris $line: jenis "${cell(r, iType)}" harus Pemasukan atau Pengeluaran.');
+      err(
+        'Baris $line: jenis "${cell(r, iType)}" harus Pemasukan atau Pengeluaran.',
+      );
       continue;
     }
     final amount = parseCsvAmount(cell(r, iAmount));

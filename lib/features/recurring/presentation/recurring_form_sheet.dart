@@ -105,11 +105,11 @@ class _RecurringFormSheetState extends ConsumerState<RecurringFormSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final cats = (ref.watch(categoriesProvider).valueOrNull ?? const <Category>[])
-        .where((c) => c.type == _type)
-        .toList();
+    final cats =
+        (ref.watch(categoriesProvider).valueOrNull ?? const <Category>[])
+            .where((c) => c.type == _type)
+            .toList();
     final wallets = ref.watch(walletsProvider).valueOrNull ?? const <Wallet>[];
-    // Kategori yang tipenya tidak cocok lagi dikosongkan.
     final validCat = cats.any((c) => c.id == _categoryId) ? _categoryId : null;
     final validWallet = wallets.any((w) => w.id == _walletId)
         ? _walletId
@@ -203,9 +203,8 @@ class _RecurringFormSheetState extends ConsumerState<RecurringFormSheet> {
         const SizedBox(height: 8),
         Text(
           'Jika tanggal mulai sudah lewat, transaksi yang terlewat langsung dicatat (maksimal 31 kali).',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+          style: Theme.of(context).textTheme.bodySmall
+              ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 20),
         SizedBox(

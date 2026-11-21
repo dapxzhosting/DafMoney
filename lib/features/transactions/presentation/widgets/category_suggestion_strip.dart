@@ -5,8 +5,6 @@ import '../../../categories/domain/category.dart';
 import '../../../categories/presentation/category_style.dart';
 import '../../domain/category_suggester.dart';
 
-/// Saran kategori di bawah kolom catatan. Muncul dengan animasi saat ada
-/// kecocokan dengan riwayat.
 class CategorySuggestionStrip extends StatelessWidget {
   const CategorySuggestionStrip({
     super.key,

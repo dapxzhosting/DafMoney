@@ -45,8 +45,6 @@ class _TransferSheetState extends ConsumerState<TransferSheet> {
     _error = null;
   });
 
-  /// Hapus pesan galat lama begitu pengguna mengubah isian, supaya tidak
-  /// tertinggal (mis. "harus berbeda" padahal dompet sudah dibedakan).
   void _clearError() {
     if (_error != null) setState(() => _error = null);
   }
@@ -64,11 +62,9 @@ class _TransferSheetState extends ConsumerState<TransferSheet> {
     setState(() => _error = error);
     if (error != null) return;
 
-    // Saldo dompet asal tidak cukup: tanya dulu, jangan diam-diam jadi minus.
     final wallets = ref.read(walletsProvider).valueOrNull ?? const <Wallet>[];
     final totals =
-        ref.read(walletTotalsProvider).valueOrNull ??
-        const <String, Balance>{};
+        ref.read(walletTotalsProvider).valueOrNull ?? const <String, Balance>{};
     final source = wallets.where((w) => w.id == _from).firstOrNull;
     if (source != null) {
       final balance = source.initialBalance + (totals[source.id]?.total ?? 0);

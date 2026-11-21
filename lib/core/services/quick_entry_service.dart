@@ -7,19 +7,12 @@ import 'package:timezone/timezone.dart' as tz;
 import '../models/entry_type.dart';
 import 'quick_entry_saver.dart';
 
-/// Dipanggil Android saat tombol notifikasi ditekan sementara app TERTUTUP.
-/// Harus top-level dan diberi `vm:entry-point`.
 @pragma('vm:entry-point')
 Future<void> quickEntryBackgroundHandler(NotificationResponse response) async {
   DartPluginRegistrant.ensureInitialized();
   await QuickEntryService.handleResponse(response);
 }
 
-/// Catat transaksi langsung dari notifikasi tanpa membuka app.
-///
-/// Notifikasi permanen punya dua tombol ("Pengeluaran" dan "Pemasukan") dengan
-/// kolom ketik. Tulis mis. `makan siang 25rb`, lalu kirim: transaksi langsung
-/// tersimpan ke Firestore lewat isolate latar belakang.
 class QuickEntryService {
   QuickEntryService._();
 
@@ -37,8 +30,6 @@ class QuickEntryService {
     android: AndroidInitializationSettings('@mipmap/ic_launcher'),
   );
 
-  /// Mendaftarkan penangan tombol notifikasi. Panggil setelah
-  /// `NotificationService.init()`.
   static Future<void> init() async {
     await _plugin.initialize(
       _settings,
@@ -83,10 +74,9 @@ class QuickEntryService {
   );
 
   static const _title = 'DafMoney · Catat cepat';
-  static const _body = 'Ketuk Pengeluaran / Pemasukan, lalu ketik mis. "kopi 15rb".';
+  static const _body =
+      'Ketuk Pengeluaran / Pemasukan, lalu ketik mis. "kopi 15rb".';
 
-  /// Menampilkan notifikasi catat cepat dan menjadwalkan pemasangan ulang
-  /// tiap pagi (supaya muncul lagi setelah HP restart).
   static Future<void> show() async {
     await _plugin.show(_mainId, _title, _body, _mainDetails);
     try {
@@ -113,8 +103,6 @@ class QuickEntryService {
   static int _flashSeq = 0;
 
   static Future<void> _flash(String title, String body) {
-    // Id unik: kalau Anda mencatat beberapa kali berturut-turut, tiap hasil
-    // muncul sendiri-sendiri (bukan saling menimpa).
     final id = _resultId + 1 + (_flashSeq++ % 20);
     return _plugin.show(
       id,
@@ -124,7 +112,8 @@ class QuickEntryService {
         android: AndroidNotificationDetails(
           'quick_entry_result_v2',
           'Hasil Catat Cepat',
-          channelDescription: 'Konfirmasi transaksi yang dicatat dari notifikasi',
+          channelDescription:
+              'Konfirmasi transaksi yang dicatat dari notifikasi',
           importance: Importance.high,
           priority: Priority.high,
           showWhen: true,
@@ -140,7 +129,6 @@ class QuickEntryService {
     _ready = true;
   }
 
-  /// Notifikasi hasil singkat (dipakai juga oleh tombol template widget).
   static Future<void> notify(String title, String body) async {
     await _ensureReady();
     await _flash(title, body);
@@ -154,7 +142,6 @@ class QuickEntryService {
     await _ensureReady();
     final result = await QuickEntrySaver.save(type, r.input ?? '');
     await _flash(result.title, result.body);
-    // Kembalikan notifikasi utama (menghentikan animasi "mengirim").
     await show();
   }
 }

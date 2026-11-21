@@ -10,11 +10,6 @@ import android.os.Vibrator
 import android.widget.Toast
 import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 
-/**
- * Perantara tombol template di widget: memberi umpan balik langsung (getar +
- * toast "Menyimpan...") lalu meneruskan ketukan ke Dart yang menyimpan di
- * latar belakang. Hasil akhirnya muncul sebagai notifikasi "Tersimpan ✓".
- */
 class WidgetTemplateReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val i = intent.getIntExtra("i", 0)

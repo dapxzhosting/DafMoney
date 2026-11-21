@@ -239,7 +239,6 @@ class _ExportSheetState extends ConsumerState<ExportSheet> {
                 onSelectionChanged: (s) => setState(() {
                   _scope = s.first;
                   _error = null;
-                  // Daftar transaksi panjang: default mati untuk periode besar.
                   _includeEntries =
                       _scope == ExportScope.month ||
                       _scope == ExportScope.custom;

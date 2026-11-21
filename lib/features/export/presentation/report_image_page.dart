@@ -12,7 +12,6 @@ import '../domain/export_report.dart';
 import 'report_image_card.dart';
 import '../../../core/widgets/motion.dart';
 
-/// Pratinjau kartu laporan + tombol bagikan / simpan sebagai gambar PNG.
 class ReportImagePage extends StatefulWidget {
   const ReportImagePage({super.key, required this.report});
 
@@ -30,7 +29,6 @@ class _ReportImagePageState extends State<ReportImagePage> {
     final ctx = _boundaryKey.currentContext;
     if (ctx == null) return null;
     final boundary = ctx.findRenderObject() as RenderRepaintBoundary;
-    // Beri waktu agar font dan frame terakhir selesai digambar.
     await Future<void>.delayed(const Duration(milliseconds: 60));
     final image = await boundary.toImage(pixelRatio: 3);
     final data = await image.toByteData(format: ui.ImageByteFormat.png);

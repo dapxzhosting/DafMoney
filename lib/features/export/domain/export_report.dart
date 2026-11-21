@@ -2,7 +2,6 @@ import 'package:flutter/painting.dart' show Color;
 
 import '../../../core/models/entry_type.dart';
 
-/// Cakupan periode laporan yang bisa diekspor.
 enum ExportScope {
   month('Bulan'),
   year('Tahun'),
@@ -14,7 +13,6 @@ enum ExportScope {
   final String label;
 }
 
-/// Satu batang pada ringkasan (satu minggu, satu bulan, atau satu tahun).
 class ExportBucket {
   const ExportBucket(this.label, this.income, this.expense);
 
@@ -37,7 +35,6 @@ class ExportCategory {
   final Color color;
   final int total;
 
-  /// Bagian dari total jenisnya (0..1).
   final double ratio;
 }
 
@@ -59,7 +56,6 @@ class ExportEntry {
   final int amount;
 }
 
-/// Semua angka yang dibutuhkan PDF maupun kartu gambar, sudah dihitung.
 class ExportReport {
   const ExportReport({
     required this.scope,
@@ -91,12 +87,10 @@ class ExportReport {
   final List<ExportCategory> expenseCategories;
   final List<ExportCategory> incomeCategories;
 
-  /// Urut dari tanggal terlama ke terbaru.
   final List<ExportEntry> entries;
 
   final int avgDailyExpense;
 
-  /// null bila tidak ada pemasukan.
   final double? savingsRate;
 
   int get net => income - expense;

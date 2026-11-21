@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/quick_entry_provider.dart';
 
-/// Saklar notifikasi catat cepat (input transaksi tanpa membuka app).
 class QuickEntrySection extends ConsumerWidget {
   const QuickEntrySection({super.key});
 

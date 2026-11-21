@@ -4,8 +4,6 @@ import '../../../../core/utils/date_utils.dart';
 import '../../domain/money_transaction.dart';
 import 'transaction_providers.dart';
 
-/// 6 bulan terakhir (sampai akhir bulan ini). Rentangnya sama dengan dashboard
-/// saat bulan berjalan dipilih, jadi data dipakai bersama tanpa baca ulang.
 final recentHistoryRangeProvider = Provider.autoDispose<DateRange>((ref) {
   final n = DateTime.now();
   return DateRange(

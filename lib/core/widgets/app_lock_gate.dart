@@ -6,8 +6,6 @@ import '../providers/app_lock_providers.dart';
 import '../providers/firebase_providers.dart';
 import '../services/biometric_service.dart';
 
-/// Membungkus seluruh aplikasi. Saat kunci aktif, layar kunci menutup semua
-/// konten sampai pengguna lolos verifikasi (sidik jari / wajah / PIN perangkat).
 class AppLockGate extends ConsumerStatefulWidget {
   const AppLockGate({super.key, required this.child});
 
@@ -28,7 +26,6 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Cold start: kalau kunci aktif, langsung terkunci.
     _locked = ref.read(appLockEnabledProvider);
     if (_locked) WidgetsBinding.instance.addPostFrameCallback((_) => _unlock());
   }
@@ -41,7 +38,6 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // `inactive` sengaja diabaikan: dialog biometrik sistem memicunya.
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden) {
       if (!_authenticating) _leftAt ??= DateTime.now();
@@ -75,17 +71,15 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
           _locked = false;
           _message = null;
         case AuthResult.failed:
-          _message = 'Verifikasi dibatalkan. Ketuk "Buka kunci" untuk mencoba lagi.';
-        case AuthResult.unavailable:
           _message =
-              'Kunci layar perangkat tidak aktif. Aktifkan sidik jari atau PIN di pengaturan perangkat, atau keluar dari akun.';
+              'Verifikasi dibatalkan. Ketuk "Buka kunci" untuk mencoba lagi.';
+        case AuthResult.unavailable:
+          _message = 'Kunci layar perangkat tidak aktif. Aktifkan sidik jari atau PIN di pengaturan perangkat, atau keluar dari akun.';
       }
     });
   }
 
   Future<void> _signOut() async {
-    // Kunci adalah pengaturan perangkat; matikan agar akun berikutnya tidak
-    // ikut terkunci.
     await ref
         .read(appLockEnabledProvider.notifier)
         .set(false, syncRemote: false);
@@ -95,11 +89,8 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
 
   @override
   Widget build(BuildContext context) {
-    // Pengguna mematikan kunci dari Pengaturan saat aplikasi terbuka.
     ref.listen<bool>(appLockEnabledProvider, (prev, next) {
       if (!next && _locked) setState(() => _locked = false);
-      // Kunci menyala karena sinkronisasi akun (mis. setelah instal ulang),
-      // bukan dari tombol Pengaturan: langsung kunci.
       if (!(prev ?? false) &&
           next &&
           !_locked &&

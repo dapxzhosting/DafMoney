@@ -9,9 +9,7 @@ import '../domain/money_transaction.dart';
 Future<void> writeSafe(Future<void> Function() op) async {
   try {
     await op().timeout(const Duration(seconds: 6));
-  } on TimeoutException {
-    // Offline mode: Firestore will sync automatically when back online.
-  }
+  } on TimeoutException {}
 }
 
 class TransactionRepository {
@@ -64,7 +62,6 @@ class TransactionRepository {
         });
   }
 
-  /// Mengembalikan id dokumen baru (dipakai untuk menyimpan foto struk).
   Future<String> add(
     String uid, {
     required EntryType type,
@@ -119,8 +116,6 @@ class TransactionRepository {
     );
   }
 
-  /// Mengembalikan transaksi yang baru dihapus, dengan id yang sama.
-  /// createdAt dibuat ulang oleh server (aturan Firestore mewajibkannya).
   Future<void> restore(
     String uid,
     MoneyTransaction t, {
@@ -141,7 +136,6 @@ class TransactionRepository {
     );
   }
 
-  /// Menghapus transaksi beserta foto struknya (jika ada).
   Future<void> delete(String uid, String id) {
     final user = _db.collection('users').doc(uid);
     final batch = _db.batch()
@@ -155,7 +149,6 @@ class TransactionRepository {
     return snap.docs.map(_fromDoc).toList();
   }
 
-  /// Total per dompet. Kunci '' berarti transaksi tanpa dompet.
   Stream<Map<String, Balance>> watchTotalsByWallet(String uid) {
     return _col(uid).snapshots().map((snap) {
       final inc = <String, int>{};

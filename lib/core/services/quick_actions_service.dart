@@ -9,8 +9,6 @@ class QuickActionsService {
 
   static const QuickActions _actions = QuickActions();
 
-  /// Tidak boleh melempar: platform tanpa dukungan shortcut (mis. lingkungan
-  /// tes atau perangkat tertentu) cukup melewatkannya.
   static Future<void> init(GoRouter router) async {
     try {
       await _actions.initialize((String shortcutType) {

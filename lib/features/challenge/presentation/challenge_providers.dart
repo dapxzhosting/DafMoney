@@ -13,7 +13,6 @@ import '../../transactions/presentation/providers/history_provider.dart';
 import '../domain/no_spend_challenge.dart';
 import '../../../core/providers/account_sync.dart';
 
-/// Tantangan aktif (disimpan lokal & disinkronkan ke akun Cloud Firestore).
 class ChallengeNotifier extends Notifier<NoSpendChallenge?> {
   @override
   NoSpendChallenge? build() {
@@ -23,16 +22,11 @@ class ChallengeNotifier extends Notifier<NoSpendChallenge?> {
     final key = '${AppConstants.challengeKey}_$uid';
     final raw = ref.read(sharedPrefsProvider).getString(key);
 
-    // Sync tantangan & streak dari akun Firestore saat login / instal ulang aplikasi
     ref.listen<AsyncValue<DocumentSnapshot<Map<String, dynamic>>>>(
       userDocStreamProvider(uid),
       (previous, next) {
         final snap = next.value;
         final data = snap?.data();
-        // Tantangan dihentikan di perangkat lain: field `challenge` terhapus.
-        // Hanya dipercaya bila snapshot dari server dan tanpa penulisan lokal
-        // yang belum terkirim, supaya tantangan lokal tidak terhapus sebelum
-        // sinkron (mis. snapshot pertama setelah instal ulang).
         if (snap != null &&
             data != null &&
             !data.containsKey('challenge') &&
@@ -63,9 +57,6 @@ class ChallengeNotifier extends Notifier<NoSpendChallenge?> {
       },
     );
 
-    // Listener di atas tidak terpanggil untuk data akun yang sudah termuat
-    // sebelum provider ini dibuat (Beranda dibuka setelah dokumen akun selesai
-    // dimuat), jadi tantangan dari akun harus diambil langsung di sini.
     final remoteMap = loadedUserData(ref, uid)?['challenge'];
     if (remoteMap is Map<String, dynamic>) {
       final remote = NoSpendChallenge.fromJson(remoteMap);
@@ -111,7 +102,6 @@ class ChallengeNotifier extends Notifier<NoSpendChallenge?> {
     }
   }
 
-  /// Memulai tantangan baru mulai hari ini. [carryBest] menjaga rekor lama.
   Future<void> start({
     required String categoryId,
     required int targetDays,
@@ -135,7 +125,6 @@ final challengeProvider =
       ChallengeNotifier.new,
     );
 
-/// Kemajuan tantangan, dihitung dari riwayat 6 bulan terakhir.
 final challengeProgressProvider = Provider.autoDispose<ChallengeProgress?>((
   ref,
 ) {

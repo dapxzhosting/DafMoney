@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/app_constants.dart';
 import 'shared_prefs_provider.dart';
 
-/// true bila pengguna sudah melihat / melewati onboarding di perangkat ini.
 class OnboardingNotifier extends Notifier<bool> {
   @override
   bool build() =>

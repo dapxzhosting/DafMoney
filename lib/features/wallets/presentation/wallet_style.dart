@@ -4,7 +4,6 @@ import '../../categories/presentation/category_style.dart';
 import '../domain/wallet.dart';
 
 abstract class WalletIcons {
-  /// Subset ikon dari [CategoryIcons] yang cocok untuk dompet.
   static const List<String> keys = [
     'payments',
     'bank',

@@ -7,9 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Membungkus widget dalam MaterialApp. Sengaja TIDAK memuat DafMoneyApp:
-/// aplikasi penuh butuh Firebase dan plugin platform yang tidak ada di
-/// `flutter test`, jadi tes yang membootnya gagal di CI.
 Widget _host(Widget child, {ThemeMode mode = ThemeMode.light}) {
   return MaterialApp(
     themeMode: mode,
