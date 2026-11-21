@@ -1,4 +1,5 @@
 import java.util.Properties
+import org.gradle.api.GradleException
 
 plugins {
     id("com.android.application")
@@ -45,7 +46,8 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("release")
+                ?: throw GradleException("Konfigurasi signing release tidak ditemukan")
             isMinifyEnabled = false
             isShrinkResources = false
         }
