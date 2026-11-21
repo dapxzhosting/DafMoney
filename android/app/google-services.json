@@ -12,7 +12,20 @@
           "package_name": "com.example.keuangan"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "502701571624-66kciumf8fgf1g3gu3objpdv6voltqaa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.keuangan",
+            "certificate_hash": "8a1907bb2368fd83a3af6ee47dcddb14696fbf0c"
+          }
+        },
+        {
+          "client_id": "502701571624-a976glfehaf9l5d2uu4431ul7u2ti9f8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDvn2Wlk1N5Sm9LQ2GI5O5nqo2kFDC0fL4"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "502701571624-a976glfehaf9l5d2uu4431ul7u2ti9f8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "502701571624-vbrm796entdvi34sp1r1gqd10kp6s2kt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.keuangan"
+              }
+            }
+          ]
         }
       }
     }
