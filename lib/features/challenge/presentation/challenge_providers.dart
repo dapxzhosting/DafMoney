@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_constants.dart';
-import '../../../core/providers/account_sync.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../../core/providers/session_providers.dart';
 import '../../../core/providers/shared_prefs_provider.dart';

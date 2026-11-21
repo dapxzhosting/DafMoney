@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/transactions/data/transaction_repository.dart'
@@ -28,7 +29,9 @@ Future<void> syncToAccount(
     await writeSafe(
       () => db.collection('users').doc(uid).set(data, SetOptions(merge: true)),
     );
-  } catch (_) {}
+  } catch (e) {
+    debugPrint('syncToAccount gagal: $e');
+  }
 }
 
 /// True bila snapshot ini sudah dipastikan dari server dan tidak ada

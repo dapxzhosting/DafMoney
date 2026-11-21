@@ -27,7 +27,6 @@ import '../providers/firebase_providers.dart';
 import '../providers/onboarding_provider.dart';
 import '../widgets/animated_branch_container.dart';
 import '../widgets/main_shell.dart';
-import '../widgets/motion.dart';
 import 'app_routes.dart';
 
 class _RouterRefresh extends ChangeNotifier {

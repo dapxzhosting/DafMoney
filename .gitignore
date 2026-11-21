@@ -63,3 +63,6 @@ key.properties
 android/.kotlin/
 android/build/
 hs_err_pid*.log
+
+# Firebase Hosting cache
+.firebase/
