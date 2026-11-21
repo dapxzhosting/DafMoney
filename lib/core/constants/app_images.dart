@@ -17,9 +17,36 @@ abstract class AppImages {
   /// Perempuan menghitung koin di meja kerja.
   static const womanDesk = '$_dir/woman_desk.webp';
 
-  static const tantanganCelengan = '$_dir/tantangan_celengan.jpeg';
-  static const dompetKosong = '$_dir/dompet_kosong.jpeg';
-  static const transaksiTerbaru = '$_dir/transaksi_terbaru.jpeg';
-  static const pengeluaranKategori = '$_dir/pengeluaran_kategori.jpeg';
-  static const targetTabungan = '$_dir/target_tabungan.jpeg';
+  /// Papan catatan dengan koin dicoret (belum ada anggaran).
+  static const budgetEmpty = '$_dir/budget_empty.webp';
+
+  /// Dompet biru dengan uang dan koin (belum ada dompet).
+  static const walletEmpty = '$_dir/wallet_empty.webp';
+
+  /// Celengan babi dengan tanda plus (target tabungan, tantangan).
+  static const goalEmpty = '$_dir/goal_empty.webp';
+
+  /// Struk dengan kaca pembesar dan tanda silang (belum ada transaksi).
+  static const transactionEmpty = '$_dir/transaction_empty.webp';
+
+  /// Dokumen merah dengan jam dan panah turun (utang).
+  static const debtEmpty = '$_dir/debt_empty.webp';
+
+  /// Dokumen hijau dengan panah masuk (piutang).
+  static const receivableEmpty = '$_dir/receivable_empty.webp';
+
+  /// Semua aset; dipakai tes untuk memastikan berkasnya ada.
+  static const all = <String>[
+    moneyBag,
+    growthTablet,
+    womanChart,
+    manDashboard,
+    womanDesk,
+    budgetEmpty,
+    walletEmpty,
+    goalEmpty,
+    transactionEmpty,
+    debtEmpty,
+    receivableEmpty,
+  ];
 }

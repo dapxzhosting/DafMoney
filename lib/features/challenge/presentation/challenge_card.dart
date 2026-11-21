@@ -10,7 +10,6 @@ import '../../../core/widgets/illustration.dart';
 import '../../categories/presentation/category_style.dart';
 import '../../categories/presentation/providers/category_providers.dart';
 import 'challenge_providers.dart';
-import 'challenge_widgets.dart';
 
 /// Kartu ringkas tantangan di dashboard.
 class ChallengeCard extends ConsumerWidget {
@@ -37,7 +36,7 @@ class ChallengeCard extends ConsumerWidget {
             padding: const EdgeInsets.all(Gap.md),
             child: Row(
               children: [
-                const Illustration(AppImages.tantanganCelengan, size: 40),
+                const Illustration(AppImages.goalEmpty, size: 40),
                 const SizedBox(width: Gap.sm),
                 Expanded(
                   child: Column(
@@ -88,7 +87,7 @@ class ChallengeCard extends ConsumerWidget {
           padding: const EdgeInsets.all(Gap.md),
           child: Row(
             children: [
-              const Illustration(AppImages.tantanganCelengan, size: 40),
+              const Illustration(AppImages.goalEmpty, size: 40),
               const SizedBox(width: Gap.sm),
               Expanded(
                 child: Column(

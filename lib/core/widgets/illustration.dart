@@ -38,8 +38,8 @@ class Illustration extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: dark ? 0.35 : 0.08),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
+            blurRadius: (size * 0.14).clamp(4.0, 24.0),
+            offset: Offset(0, (size * 0.06).clamp(1.0, 10.0)),
           ),
         ],
       ),

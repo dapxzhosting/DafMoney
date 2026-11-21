@@ -3,6 +3,7 @@ import 'package:daf_money/core/widgets/empty_state.dart';
 import 'package:daf_money/core/widgets/illustration.dart';
 import 'package:daf_money/features/onboarding/presentation/onboarding_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,6 +20,15 @@ Widget _host(Widget child, {ThemeMode mode = ThemeMode.light}) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  test('semua aset ilustrasi di AppImages tersedia dan tidak kosong', () async {
+    for (final path in AppImages.all) {
+      final data = await rootBundle.load(path);
+      expect(data.lengthInBytes, greaterThan(0), reason: path);
+    }
+  });
+
   group('EmptyState', () {
     testWidgets('memakai ilustrasi bila image diberikan', (tester) async {
       await tester.pumpWidget(

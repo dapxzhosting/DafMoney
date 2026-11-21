@@ -33,7 +33,7 @@ class GoalsPage extends ConsumerWidget {
         data: (items) {
           if (items.isEmpty) {
             return EmptyState(
-              image: AppImages.moneyBag,
+              image: AppImages.goalEmpty,
               icon: Icons.flag_rounded,
               title: 'Belum ada target tabungan',
               message:
