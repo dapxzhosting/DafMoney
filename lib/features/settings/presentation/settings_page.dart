@@ -262,12 +262,13 @@ class SettingsPage extends ConsumerWidget {
             title: 'Keamanan',
             children: [
               const AppLockSection(),
-              _Tile(
-                icon: Icons.lock_reset_rounded,
-                title: 'Ubah kata sandi',
-                onTap: () =>
-                    showSettingsSheet(context, const ChangePasswordSheet()),
-              ),
+              if (ref.watch(authRepositoryProvider).usesPassword)
+                _Tile(
+                  icon: Icons.lock_reset_rounded,
+                  title: 'Ubah kata sandi',
+                  onTap: () =>
+                      showSettingsSheet(context, const ChangePasswordSheet()),
+                ),
             ],
           ),
           _Group(

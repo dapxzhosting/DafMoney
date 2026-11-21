@@ -6,6 +6,7 @@ import '../../../../core/utils/amount_formatter.dart';
 import '../../../../core/utils/snackbar.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../auth/presentation/widgets/app_text_field.dart';
 import '../providers/settings_providers.dart';
 
@@ -307,7 +308,9 @@ class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
     setState(() => _deleting = true);
     final err = await ref
         .read(settingsActionsProvider)
-        .deleteAccount(_password.text);
+        .deleteAccount(
+          ref.read(authRepositoryProvider).usesPassword ? _password.text : null,
+        );
     if (!mounted) return;
     setState(() => _deleting = false);
     if (err != null) {
@@ -322,19 +325,23 @@ class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
     final cs = Theme.of(context).colorScheme;
     return _Frame(
       title: 'Hapus akun',
-      subtitle: 'Akun beserta semua transaksi, kategori, dan anggaran akan dihapus PERMANEN dan tidak bisa dikembalikan. Masukkan kata sandi untuk melanjutkan.',
+      subtitle: ref.read(authRepositoryProvider).usesPassword
+          ? 'Akun beserta semua transaksi, kategori, dan anggaran akan dihapus PERMANEN dan tidak bisa dikembalikan. Masukkan kata sandi untuk melanjutkan.'
+          : 'Akun beserta semua transaksi, kategori, dan anggaran akan dihapus PERMANEN dan tidak bisa dikembalikan. Anda akan diminta masuk dengan Google sekali lagi untuk konfirmasi.',
       children: [
         Form(
           key: _form,
-          child: AppTextField(
-            controller: _password,
-            label: 'Kata sandi',
-            icon: Icons.lock_outline_rounded,
-            obscure: true,
-            textInputAction: TextInputAction.done,
-            validator: Validators.passwordRequired,
-            onSubmitted: (_) => _delete(),
-          ),
+          child: ref.read(authRepositoryProvider).usesPassword
+              ? AppTextField(
+                  controller: _password,
+                  label: 'Kata sandi',
+                  icon: Icons.lock_outline_rounded,
+                  obscure: true,
+                  textInputAction: TextInputAction.done,
+                  validator: Validators.passwordRequired,
+                  onSubmitted: (_) => _delete(),
+                )
+              : const SizedBox.shrink(),
         ),
         const SizedBox(height: 16),
         FilledButton(

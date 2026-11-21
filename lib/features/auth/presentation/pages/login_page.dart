@@ -92,6 +92,30 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ),
         const SizedBox(height: 8),
         PrimaryButton(label: 'Masuk', loading: loading, onPressed: _submit),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(child: Divider(color: cs.outlineVariant)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text('atau', style: TextStyle(color: cs.onSurfaceVariant)),
+            ),
+            Expanded(child: Divider(color: cs.outlineVariant)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: loading
+              ? null
+              : () => ref
+                    .read(authControllerProvider.notifier)
+                    .signInWithGoogle(),
+          icon: const Icon(Icons.account_circle_outlined),
+          label: const Text('Lanjutkan dengan Google'),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size.fromHeight(52),
+          ),
+        ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

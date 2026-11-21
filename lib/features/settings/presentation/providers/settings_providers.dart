@@ -58,9 +58,13 @@ class SettingsActions {
     await Clipboard.setData(ClipboardData(text: csv));
   });
 
-  Future<String?> deleteAccount(String password) => runGuarded(() async {
+  Future<String?> deleteAccount(String? password) => runGuarded(() async {
     final uid = _uid;
-    await _auth.reauthenticate(password);
+    if (password == null) {
+      await _auth.reauthenticateWithGoogle();
+    } else {
+      await _auth.reauthenticate(password);
+    }
     await _repo.deleteAllData(uid);
     try {
       await _auth.deleteCurrentUser();

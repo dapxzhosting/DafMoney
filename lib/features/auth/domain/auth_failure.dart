@@ -29,11 +29,19 @@ class AuthFailure implements AppException {
         return const AuthFailure('Tidak ada koneksi internet.');
       case 'operation-not-allowed':
         return const AuthFailure(
-          'Login Email/Password belum diaktifkan di Firebase Console.',
+          'Metode masuk ini belum diaktifkan di Firebase Console.',
         );
       case 'requires-recent-login':
         return const AuthFailure(
           'Demi keamanan, keluar lalu masuk lagi, kemudian ulangi.',
+        );
+      case 'canceled':
+      case 'web-context-canceled':
+      case 'popup-closed-by-user':
+        return const AuthFailure('Masuk dengan Google dibatalkan.');
+      case 'account-exists-with-different-credential':
+        return const AuthFailure(
+          'Email ini sudah terdaftar dengan cara masuk lain. Masuk dengan kata sandi.',
         );
       case 'permission-denied':
         return const AuthFailure('Akses ditolak oleh aturan keamanan.');

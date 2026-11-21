@@ -32,6 +32,31 @@ class AuthRepository {
     });
   }
 
+  /// Masuk dengan akun Google lewat alur bawaan Firebase (tanpa paket tambahan).
+  Future<void> signInWithGoogle() {
+    return _guard(() async {
+      final cred = await _auth.signInWithProvider(
+        GoogleAuthProvider()..addScope('email'),
+      );
+      final user = cred.user;
+      if (user != null) await _ensureProfile(user);
+    });
+  }
+
+  /// True bila akun ini punya kata sandi (daftar email). Akun yang hanya
+  /// memakai Google tidak punya kata sandi.
+  bool get usesPassword =>
+      _auth.currentUser?.providerData.any((p) => p.providerId == 'password') ??
+      false;
+
+  Future<void> reauthenticateWithGoogle() {
+    return _guard(() async {
+      final user = _auth.currentUser;
+      if (user == null) throw const AuthFailure('Sesi berakhir. Masuk lagi.');
+      await user.reauthenticateWithProvider(GoogleAuthProvider());
+    });
+  }
+
   Future<void> register({
     required String name,
     required String email,
@@ -147,7 +172,10 @@ class AuthRepository {
       final snap = await ref.get();
       if (!snap.exists) {
         final fallback = (user.email ?? 'Pengguna').split('@').first;
-        await _createProfile(user, user.displayName ?? fallback);
+        var name = (user.displayName ?? '').trim();
+        if (name.isEmpty) name = fallback;
+        if (name.length > 60) name = name.substring(0, 60);
+        await _createProfile(user, name);
       }
     } catch (_) {}
   }

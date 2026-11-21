@@ -27,6 +27,8 @@ class AuthController extends AsyncNotifier<void> {
   Future<bool> signIn(String email, String password) =>
       _run(() => _repo.signIn(email: email, password: password));
 
+  Future<bool> signInWithGoogle() => _run(_repo.signInWithGoogle);
+
   Future<bool> register(String name, String email, String password) =>
       _run(() => _repo.register(name: name, email: email, password: password));
 
