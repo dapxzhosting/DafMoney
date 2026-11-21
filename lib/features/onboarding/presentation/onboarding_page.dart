@@ -4,55 +4,40 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/app_images.dart';
 import '../../../core/providers/onboarding_provider.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/illustration.dart';
 import '../../../core/widgets/motion.dart';
 
 class _Slide {
   const _Slide({
-    required this.icon,
+    required this.image,
     required this.title,
     required this.message,
-    required this.floating,
   });
 
-  final IconData icon;
+  final String image;
   final String title;
   final String message;
-  final List<IconData> floating;
 }
 
 const _slides = [
   _Slide(
-    icon: Icons.receipt_long_rounded,
+    image: AppImages.womanDesk,
     title: 'Catat dalam hitungan detik',
     message: 'Tambah pemasukan dan pengeluaran dengan cepat, lengkap dengan kategori dan catatan.',
-    floating: [
-      Icons.arrow_downward_rounded,
-      Icons.arrow_upward_rounded,
-      Icons.add_rounded,
-    ],
   ),
   _Slide(
-    icon: Icons.account_balance_wallet_rounded,
+    image: AppImages.moneyBag,
     title: 'Atur dompet & anggaran',
     message: 'Pisahkan saldo tunai, rekening bank, dan dompet digital, lalu pasang batas pengeluaran per kategori.',
-    floating: [
-      Icons.pie_chart_rounded,
-      Icons.savings_rounded,
-      Icons.payments_rounded,
-    ],
   ),
   _Slide(
-    icon: Icons.insert_chart_rounded,
+    image: AppImages.womanChart,
     title: 'Pahami ke mana uangmu pergi',
     message: 'Lihat grafik dan laporan bulanan untuk menemukan kebiasaan yang bisa dihemat.',
-    floating: [
-      Icons.trending_up_rounded,
-      Icons.bar_chart_rounded,
-      Icons.donut_large_rounded,
-    ],
   ),
 ];
 
@@ -224,111 +209,23 @@ class _Illustration extends StatelessWidget {
   final _Slide slide;
   final bool active;
 
-  static const _positions = [
-    Alignment(-0.85, -0.55),
-    Alignment(0.9, -0.2),
-    Alignment(-0.45, 0.9),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final target = active ? 1.0 : 0.0;
-    final tints = [cs.tertiaryContainer, cs.secondaryContainer, cs.primary];
-    final onTints = [
-      cs.onTertiaryContainer,
-      cs.onSecondaryContainer,
-      cs.onPrimary,
-    ];
 
     return SizedBox(
       width: 280,
       height: 260,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-                width: 240,
-                height: 240,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: cs.primaryContainer.withValues(alpha: 0.35),
-                ),
-              )
-              .animate(autoPlay: false, target: target)
-              .scale(
-                begin: const Offset(0.6, 0.6),
-                duration: 600.ms,
-                curve: Curves.easeOutBack,
-              )
-              .fadeIn(),
-          Container(
-                width: 170,
-                height: 170,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: cs.primaryContainer.withValues(alpha: 0.7),
-                ),
-              )
-              .animate(autoPlay: false, target: target)
-              .scale(
-                begin: const Offset(0.5, 0.5),
-                duration: 600.ms,
-                delay: 100.ms,
-                curve: Curves.easeOutBack,
-              )
-              .fadeIn(delay: 100.ms),
-          Container(
-                width: 104,
-                height: 104,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: cs.primary,
-                  boxShadow: [
-                    BoxShadow(
-                      color: cs.primary.withValues(alpha: 0.35),
-                      blurRadius: 28,
-                      offset: const Offset(0, 12),
-                    ),
-                  ],
-                ),
-                child: Icon(slide.icon, size: 52, color: cs.onPrimary),
-              )
-              .animate(autoPlay: false, target: target)
-              .scale(
-                begin: const Offset(0.3, 0.3),
-                duration: 650.ms,
-                delay: 200.ms,
-                curve: Curves.elasticOut,
-              )
-              .fadeIn(delay: 200.ms),
-          for (var i = 0; i < slide.floating.length; i++)
-            Align(
-              alignment: _positions[i],
-              child:
-                  Container(
-                        width: 46,
-                        height: 46,
-                        decoration: BoxDecoration(
-                          color: tints[i],
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Icon(
-                          slide.floating[i],
-                          size: 24,
-                          color: onTints[i],
-                        ),
-                      )
-                      .animate(autoPlay: false, target: target)
-                      .scale(
-                        begin: Offset.zero,
-                        duration: 500.ms,
-                        delay: (350 + i * 120).ms,
-                        curve: Curves.easeOutBack,
-                      )
-                      .fadeIn(delay: (350 + i * 120).ms),
-            ),
-        ],
+      child: Center(
+        child:
+            Illustration(slide.image, size: 224, tilted: true)
+                .animate(autoPlay: false, target: target)
+                .scale(
+                  begin: const Offset(0.7, 0.7),
+                  duration: 650.ms,
+                  curve: Curves.easeOutBack,
+                )
+                .fadeIn(duration: 350.ms),
       ),
     );
   }

@@ -473,6 +473,12 @@ Jika masih gagal, hapus folder `.gradle/caches` lalu build ulang.
 
 ---
 
+## 🖼️ Kredit Ilustrasi
+
+Ilustrasi di folder `assets/illustrations/` (layar sambutan, halaman masuk/daftar, dan tampilan kosong) berasal dari [Freepik](https://www.freepik.com), termasuk karya Sabiqul Fahmi. Pastikan kamu memiliki lisensi yang sesuai (atribusi untuk akun gratis, atau lisensi Premium) sebelum merilis aplikasi ke publik.
+
+---
+
 ## 📄 Lisensi
 
 Proyek ini dibuat untuk keperluan *Open Source*. Bebas digunakan, dimodifikasi, dan dikembangkan kembali.

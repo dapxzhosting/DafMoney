@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/constants/app_images.dart';
 import '../../../../core/models/entry_type.dart';
 import '../../../../core/providers/session_providers.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -100,6 +101,7 @@ class BudgetsPage extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           EmptyState(
+                            image: AppImages.womanChart,
                             icon: Icons.pie_chart_rounded,
                             title: 'Belum ada anggaran',
                             message:

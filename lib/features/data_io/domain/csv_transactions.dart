@@ -136,10 +136,10 @@ int? parseCsvAmount(String raw) {
 EntryType? parseCsvType(String raw) {
   final s = raw.trim().toLowerCase();
   if (s.isEmpty) return null;
-  if (s.contains('masuk') || s == 'income' || s == 'in' || s == '+') {
+  if (s.contains('masuk') || s.contains('pemasukan') || s == 'income' || s == 'in' || s == '+') {
     return EntryType.income;
   }
-  if (s.contains('keluar') || s == 'expense' || s == 'out' || s == '-') {
+  if (s.contains('keluar') || s.contains('pengeluaran') || s == 'expense' || s == 'out' || s == '-') {
     return EntryType.expense;
   }
   return null;

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/illustration.dart';
+
 class AuthScaffold extends StatelessWidget {
   const AuthScaffold({
     super.key,
@@ -10,6 +12,7 @@ class AuthScaffold extends StatelessWidget {
     required this.subtitle,
     required this.children,
     this.canGoBack = false,
+    this.illustration,
   });
 
   final IconData icon;
@@ -17,6 +20,9 @@ class AuthScaffold extends StatelessWidget {
   final String subtitle;
   final List<Widget> children;
   final bool canGoBack;
+
+  /// Aset ilustrasi (lihat `AppImages`). Bila diisi, menggantikan ikon di atas judul.
+  final String? illustration;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +51,15 @@ class AuthScaffold extends StatelessWidget {
                           else
                             const SizedBox(height: 8),
                           const SizedBox(height: 24),
+                          if (illustration != null)
+                            Center(
+                              child: Illustration(
+                                illustration!,
+                                size: 176,
+                                tilted: true,
+                              ),
+                            )
+                          else
                           Container(
                             width: 68,
                             height: 68,

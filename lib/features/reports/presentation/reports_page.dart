@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/app_images.dart';
 import '../../../core/models/entry_type.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
@@ -131,6 +132,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                 return const Padding(
                   padding: EdgeInsets.only(top: 40),
                   child: EmptyState(
+                    image: AppImages.growthTablet,
                     icon: Icons.insert_chart_outlined_rounded,
                     title: 'Belum ada data',
                     message: 'Tidak ada transaksi pada periode ini.',

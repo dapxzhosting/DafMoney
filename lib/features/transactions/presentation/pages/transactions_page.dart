@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_images.dart';
 import '../../../../core/models/entry_type.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -330,6 +331,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
 
                     if (list.isEmpty) {
                       return EmptyState(
+                        image: AppImages.womanDesk,
                         icon: Icons.receipt_long_rounded,
                         title: all.isEmpty
                             ? 'Belum ada transaksi'

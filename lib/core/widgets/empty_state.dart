@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_spacing.dart';
+import 'illustration.dart';
 
 /// Empty state beririsan ilustrasi: ikon besar dengan latar lembut berlapis.
 class EmptyState extends StatelessWidget {
@@ -11,6 +12,7 @@ class EmptyState extends StatelessWidget {
     required this.message,
     this.actionLabel,
     this.onAction,
+    this.image,
   });
 
   final IconData icon;
@@ -18,6 +20,9 @@ class EmptyState extends StatelessWidget {
   final String message;
   final String? actionLabel;
   final VoidCallback? onAction;
+
+  /// Aset ilustrasi (lihat `AppImages`). Bila diisi, menggantikan ikon besar.
+  final String? image;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +34,10 @@ class EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
+            if (image != null)
+              Illustration(image!, size: 168, tilted: true)
+            else
+              SizedBox(
               width: 150,
               height: 130,
               child: Stack(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_images.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/utils/snackbar.dart';
 import '../../../../core/utils/validators.dart';
@@ -52,6 +53,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final cs = Theme.of(context).colorScheme;
 
     return AuthScaffold(
+      illustration: AppImages.womanChart,
       canGoBack: true,
       icon: Icons.person_add_alt_1_rounded,
       title: 'Buat akun baru',

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_images.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/utils/snackbar.dart';
 import '../../../../core/utils/validators.dart';
@@ -48,6 +49,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final cs = Theme.of(context).colorScheme;
 
     return AuthScaffold(
+      illustration: AppImages.manDashboard,
       icon: Icons.savings_rounded,
       title: 'Selamat datang kembali',
       subtitle: 'Masuk untuk melanjutkan mencatat keuangan Anda.',

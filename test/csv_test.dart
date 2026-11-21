@@ -71,6 +71,8 @@ void main() {
 
     test('baris valid dan baris bermasalah dipisah', () {
       final p = parseTransactionsCsv(csv);
+      print('ERRORS: ${p.errors}');
+      print('ROWS: ${p.rows.length}');
       expect(p.rows.length, 2);
       expect(p.errors.length, 2);
       expect(p.rows.first.note, 'Makan siang, kantor');

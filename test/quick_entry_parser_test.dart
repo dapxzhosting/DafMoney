@@ -41,7 +41,7 @@ void sharedTests() {
   test('meringkas teks yang dibagikan', () {
     expect(
       summarizeSharedText('Transfer berhasil Rp 150.000 ke Budi'),
-      'Transfer berhasil 150000',
+      'Transfer berhasil ke Budi 150000',
     );
     expect(summarizeSharedText('Rp 25.000,00'), 'Transaksi 25000');
     expect(guessSharedType('Dana masuk Rp 50.000'), EntryType.income);

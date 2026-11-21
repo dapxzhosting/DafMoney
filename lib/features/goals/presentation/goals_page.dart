@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/app_images.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/snackbar.dart';
 import '../../../core/widgets/animated_amount.dart';
@@ -32,6 +33,7 @@ class GoalsPage extends ConsumerWidget {
         data: (items) {
           if (items.isEmpty) {
             return EmptyState(
+              image: AppImages.moneyBag,
               icon: Icons.flag_rounded,
               title: 'Belum ada target tabungan',
               message:

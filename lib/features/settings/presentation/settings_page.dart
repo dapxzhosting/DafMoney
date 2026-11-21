@@ -362,6 +362,11 @@ class SettingsPage extends ConsumerWidget {
                     Text(
                       'Aplikasi pencatat keuangan pribadi. Data Anda tersimpan di akun Firebase milik Anda sendiri dan hanya bisa diakses oleh Anda.',
                     ),
+                    SizedBox(height: 12),
+                    Text(
+                      'Ilustrasi: Freepik (termasuk karya Sabiqul Fahmi).',
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ],
                 ),
               ),
