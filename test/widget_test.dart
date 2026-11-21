@@ -80,14 +80,14 @@ void main() {
       await tester.pumpWidget(
         const ProviderScope(child: MaterialApp(home: OnboardingPage())),
       );
-      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
 
       expect(find.text('Catat dalam hitungan detik'), findsOneWidget);
       expect(find.text('Lewati'), findsOneWidget);
       expect(find.byType(Illustration), findsWidgets);
 
       await tester.tap(find.text('Lanjut'));
-      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
 
       expect(find.text('Atur dompet & anggaran'), findsOneWidget);
       expect(tester.takeException(), isNull);
