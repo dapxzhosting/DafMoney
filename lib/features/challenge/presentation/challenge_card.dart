@@ -3,13 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/constants/app_images.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/widgets/illustration.dart';
 import '../../categories/presentation/category_style.dart';
 import '../../categories/presentation/providers/category_providers.dart';
 import 'challenge_providers.dart';
+import 'challenge_widgets.dart';
 
 /// Kartu ringkas tantangan di dashboard.
 class ChallengeCard extends ConsumerWidget {
@@ -36,8 +35,8 @@ class ChallengeCard extends ConsumerWidget {
             padding: const EdgeInsets.all(Gap.md),
             child: Row(
               children: [
-                const Illustration(AppImages.goalEmpty, size: 40),
-                const SizedBox(width: Gap.sm),
+                const FlameIcon(size: 30, lit: true),
+                const SizedBox(width: Gap.xs),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,8 +59,6 @@ class ChallengeCard extends ConsumerWidget {
                 ),
                 FilledButton.tonal(
                   onPressed: open,
-                  // Tema tombol aplikasi melebar penuh (minimumSize tak terhingga);
-                  // di dalam Row harus dibatasi agar teks tidak terjepit.
                   style: FilledButton.styleFrom(
                     minimumSize: const Size(0, 38),
                     padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -87,8 +84,8 @@ class ChallengeCard extends ConsumerWidget {
           padding: const EdgeInsets.all(Gap.md),
           child: Row(
             children: [
-              const Illustration(AppImages.goalEmpty, size: 40),
-              const SizedBox(width: Gap.sm),
+              FlameIcon(size: 36, lit: lit),
+              const SizedBox(width: Gap.xs),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
