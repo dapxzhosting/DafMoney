@@ -11,6 +11,7 @@ import '../../../core/utils/date_utils.dart';
 import '../../transactions/data/transaction_repository.dart' show writeSafe;
 import '../../transactions/presentation/providers/history_provider.dart';
 import '../domain/no_spend_challenge.dart';
+import '../../../core/providers/account_sync.dart';
 
 /// Tantangan aktif (disimpan lokal & disinkronkan ke akun Cloud Firestore).
 class ChallengeNotifier extends Notifier<NoSpendChallenge?> {

@@ -9,6 +9,7 @@ import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/reports/presentation/reports_page.dart';
 import '../../features/transactions/domain/money_transaction.dart';
 import '../models/entry_type.dart';
+import '../widgets/motion.dart';
 import '../../features/transactions/presentation/pages/transaction_form_page.dart';
 import '../../features/transactions/presentation/pages/transactions_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';

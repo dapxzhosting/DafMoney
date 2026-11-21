@@ -5,6 +5,7 @@ import '../constants/app_constants.dart';
 import 'firebase_providers.dart';
 import 'session_providers.dart';
 import 'shared_prefs_provider.dart';
+import 'account_sync.dart';
 import '../../features/transactions/data/transaction_repository.dart' show writeSafe;
 
 /// Apakah kunci aplikasi aktif. Disimpan di perangkat DAN disinkronkan ke akun Firestore.
