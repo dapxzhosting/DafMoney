@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../domain/auth_failure.dart';
 
@@ -32,12 +33,29 @@ class AuthRepository {
     });
   }
 
-  /// Masuk dengan akun Google lewat alur bawaan Firebase (tanpa paket tambahan).
+  /// Ambil kredensial Google lewat pemilih akun native di dalam aplikasi
+  /// (tidak membuka browser / website). Mengembalikan null bila dibatalkan.
+  Future<AuthCredential?> _googleCredential() async {
+    final google = GoogleSignIn(scopes: const ['email']);
+    // Paksa pemilih akun muncul lagi (bukan otomatis memakai akun sebelumnya).
+    await google.signOut();
+    final account = await google.signIn();
+    if (account == null) return null;
+    final auth = await account.authentication;
+    return GoogleAuthProvider.credential(
+      accessToken: auth.accessToken,
+      idToken: auth.idToken,
+    );
+  }
+
+  /// Masuk dengan akun Google langsung di aplikasi (native).
   Future<void> signInWithGoogle() {
     return _guard(() async {
-      final cred = await _auth.signInWithProvider(
-        GoogleAuthProvider()..addScope('email'),
-      );
+      final credential = await _googleCredential();
+      if (credential == null) {
+        throw const AuthFailure('Masuk dengan Google dibatalkan.');
+      }
+      final cred = await _auth.signInWithCredential(credential);
       final user = cred.user;
       if (user != null) await _ensureProfile(user);
     });
@@ -53,7 +71,11 @@ class AuthRepository {
     return _guard(() async {
       final user = _auth.currentUser;
       if (user == null) throw const AuthFailure('Sesi berakhir. Masuk lagi.');
-      await user.reauthenticateWithProvider(GoogleAuthProvider());
+      final credential = await _googleCredential();
+      if (credential == null) {
+        throw const AuthFailure('Masuk dengan Google dibatalkan.');
+      }
+      await user.reauthenticateWithCredential(credential);
     });
   }
 

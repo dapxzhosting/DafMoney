@@ -110,7 +110,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               : () => ref
                     .read(authControllerProvider.notifier)
                     .signInWithGoogle(),
-          icon: const Icon(Icons.account_circle_outlined),
+          icon: Image.asset(
+            'assets/illustrations/google_g.png',
+            width: 22,
+            height: 22,
+          ),
           label: const Text('Lanjutkan dengan Google'),
           style: OutlinedButton.styleFrom(
             minimumSize: const Size.fromHeight(52),

@@ -361,7 +361,11 @@ class SettingsPage extends ConsumerWidget {
                   children: const [
                     SizedBox(height: 12),
                     Text(
-                      'Aplikasi pencatat keuangan pribadi. Data Anda tersimpan di akun Firebase milik Anda sendiri dan hanya bisa diakses oleh Anda.',
+                      'DafMoney adalah aplikasi pengelola keuangan pribadi yang membantu Anda mencatat pemasukan, pengeluaran, dan mengatur keuangan dengan lebih mudah.',
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'Data keuangan Anda tersimpan di akun pribadi dan dapat diakses kembali saat Anda masuk ke akun.',
                     ),
                     SizedBox(height: 12),
                     Text(
