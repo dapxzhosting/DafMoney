@@ -16,4 +16,11 @@ abstract class AppImages {
 
   /// Perempuan menghitung koin di meja kerja.
   static const womanDesk = '$_dir/woman_desk.webp';
+
+  static const belumAdaAnggaran = '$_dir/belum_ada_anggaran.jpeg';
+  static const belumAdaDompet = '$_dir/belum_ada_dompet.jpeg';
+  static const belumAdaTargetTabungan = '$_dir/belum_ada_target_tabungan.jpeg';
+  static const belumAdaTransaksi = '$_dir/belum_ada_transaksi.jpeg';
+  static const piutang = '$_dir/piutang.jpeg';
+  static const utang = '$_dir/utang.jpeg';
 }

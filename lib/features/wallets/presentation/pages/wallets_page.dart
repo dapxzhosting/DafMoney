@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/constants/app_images.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/snackbar.dart';
@@ -77,6 +78,7 @@ class WalletsPage extends ConsumerWidget {
             data: (list) {
               if (list.isEmpty) {
                 return EmptyState(
+                  image: AppImages.belumAdaDompet,
                   icon: Icons.account_balance_wallet_rounded,
                   title: 'Belum ada dompet',
                   message: 'Pisahkan saldo Anda, mis. Tunai, rekening bank, atau dompet digital.',
