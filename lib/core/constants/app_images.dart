@@ -35,6 +35,9 @@ abstract class AppImages {
   /// Dokumen hijau dengan panah masuk (piutang).
   static const receivableEmpty = '$_dir/receivable_empty.webp';
 
+  /// Kalender dengan panah ulang, koin Rp, dan tanda silang (belum ada transaksi berulang).
+  static const recurringEmpty = '$_dir/recurring_empty.webp';
+
   /// Semua aset; dipakai tes untuk memastikan berkasnya ada.
   static const all = <String>[
     moneyBag,
@@ -48,5 +51,6 @@ abstract class AppImages {
     transactionEmpty,
     debtEmpty,
     receivableEmpty,
+    recurringEmpty,
   ];
 }

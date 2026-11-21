@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/app_images.dart';
 import '../../../core/models/entry_type.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
@@ -55,6 +56,7 @@ class RecurringPage extends ConsumerWidget {
         data: (items) {
           if (items.isEmpty) {
             return EmptyState(
+              image: AppImages.recurringEmpty,
               icon: Icons.event_repeat_rounded,
               title: 'Belum ada transaksi berulang',
               message:
