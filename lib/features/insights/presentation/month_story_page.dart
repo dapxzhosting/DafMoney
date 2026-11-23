@@ -1,12 +1,21 @@
+import 'dart:async';
 import 'dart:math' as math;
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../core/error/app_exception.dart';
 import '../../../core/models/entry_type.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/utils/snackbar.dart';
+import '../../../core/widgets/motion.dart';
+import '../../export/data/export_service.dart';
 import '../../export/domain/export_report.dart';
 import '../../export/presentation/report_image_page.dart';
 
@@ -117,6 +126,18 @@ class _MonthStoryPageState extends State<MonthStoryPage>
     ).push(MaterialPageRoute<void>(builder: (_) => ReportImagePage(report: r)));
   }
 
+  Future<void> _shareSlide() async {
+    _progress.stop();
+    final kind = _slides[_index];
+    final colors = _palettes[_index % _palettes.length];
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => _StorySharePage(report: r, kind: kind, colors: colors),
+      ),
+    );
+    if (mounted && _index < _slides.length - 1) _progress.forward();
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
@@ -164,6 +185,7 @@ class _MonthStoryPageState extends State<MonthStoryPage>
                         count: _slides.length,
                         index: _index,
                         onClose: () => Navigator.of(context).pop(),
+                        onShare: _shareSlide,
                       ),
                       Expanded(
                         child: AnimatedSwitcher(
@@ -202,29 +224,272 @@ class _MonthStoryPageState extends State<MonthStoryPage>
     );
   }
 
-  Widget _buildSlide(_SlideKind kind) {
-    switch (kind) {
-      case _SlideKind.intro:
-        return _IntroSlide(report: r);
-      case _SlideKind.totals:
-        return _TotalsSlide(report: r);
-      case _SlideKind.categories:
-        return _CategoriesSlide(report: r);
-      case _SlideKind.weeks:
-        return _WeeksSlide(report: r);
-      case _SlideKind.biggest:
-        return _BiggestSlide(report: r);
-      case _SlideKind.outro:
-        return _OutroSlide(
-          report: r,
-          onShare: _openShare,
-          onDone: () => Navigator.of(context).pop(),
-        );
-    }
-  }
+  Widget _buildSlide(_SlideKind kind) => _slideFor(
+    kind,
+    r,
+    onShare: _openShare,
+    onDone: () => Navigator.of(context).pop(),
+  );
 }
 
 enum _SlideKind { intro, totals, categories, weeks, biggest, outro }
+
+Widget _slideFor(
+  _SlideKind kind,
+  ExportReport r, {
+  bool forImage = false,
+  VoidCallback? onShare,
+  VoidCallback? onDone,
+}) {
+  switch (kind) {
+    case _SlideKind.intro:
+      return _IntroSlide(report: r, forImage: forImage);
+    case _SlideKind.totals:
+      return _TotalsSlide(report: r);
+    case _SlideKind.categories:
+      return _CategoriesSlide(report: r);
+    case _SlideKind.weeks:
+      return _WeeksSlide(report: r);
+    case _SlideKind.biggest:
+      return _BiggestSlide(report: r);
+    case _SlideKind.outro:
+      return _OutroSlide(
+        report: r,
+        forImage: forImage,
+        onShare: onShare,
+        onDone: onDone,
+      );
+  }
+}
+
+/// Halaman pratinjau + bagikan satu slide Kilas Bulan sebagai gambar PNG.
+class _StorySharePage extends StatefulWidget {
+  const _StorySharePage({
+    required this.report,
+    required this.kind,
+    required this.colors,
+  });
+
+  final ExportReport report;
+  final _SlideKind kind;
+  final List<Color> colors;
+
+  @override
+  State<_StorySharePage> createState() => _StorySharePageState();
+}
+
+class _StorySharePageState extends State<_StorySharePage> {
+  final _boundaryKey = GlobalKey();
+  Timer? _settle;
+  bool _ready = false;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Tunggu animasi slide (hitung naik, bar, cincin) selesai sebelum difoto.
+    _settle = Timer(const Duration(milliseconds: 3200), () {
+      if (mounted) setState(() => _ready = true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _settle?.cancel();
+    super.dispose();
+  }
+
+  Future<Uint8List?> _capture() async {
+    final ctx = _boundaryKey.currentContext;
+    if (ctx == null) return null;
+    final boundary = ctx.findRenderObject() as RenderRepaintBoundary;
+    await Future<void>.delayed(const Duration(milliseconds: 60));
+    final image = await boundary.toImage(pixelRatio: 3);
+    final data = await image.toByteData(format: ui.ImageByteFormat.png);
+    return data?.buffer.asUint8List();
+  }
+
+  Future<void> _share(Rect? origin) async {
+    setState(() => _busy = true);
+    try {
+      final bytes = await _capture();
+      if (bytes == null) {
+        throw const AppException('Gagal membuat gambar. Coba lagi.');
+      }
+      await ExportService.shareBytes(
+        bytes: bytes,
+        fileName:
+            'DafMoney_kilas_${widget.kind.name}_${widget.report.fileSlug}.png',
+        mimeType: 'image/png',
+        text: 'Kilas ${widget.report.periodLabel} - DafMoney',
+        origin: origin,
+      );
+    } catch (e) {
+      if (mounted) context.showSnack(errorText(e), error: true);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final loading = _busy || !_ready;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Bagikan kilas bulan')),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(Gap.md),
+              child: Center(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.18),
+                        blurRadius: 24,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: RepaintBoundary(
+                        key: _boundaryKey,
+                        child: _StoryImage(
+                          report: widget.report,
+                          kind: widget.kind,
+                          colors: widget.colors,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                Gap.page,
+                Gap.xs,
+                Gap.page,
+                Gap.md,
+              ),
+              child: Builder(
+                builder: (btnContext) => FilledButton.icon(
+                  onPressed: loading
+                      ? null
+                      : () {
+                          final box =
+                              btnContext.findRenderObject() as RenderBox?;
+                          final origin = box == null
+                              ? null
+                              : box.localToGlobal(Offset.zero) & box.size;
+                          _share(origin);
+                        },
+                  icon: loading
+                      ? SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: cs.onPrimary,
+                          ),
+                        )
+                      : const Icon(Icons.ios_share_rounded),
+                  label: SwapText(
+                    loading ? 'Menyiapkan...' : 'Bagikan / simpan gambar',
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StoryImage extends StatelessWidget {
+  const _StoryImage({
+    required this.report,
+    required this.kind,
+    required this.colors,
+  });
+
+  final ExportReport report;
+  final _SlideKind kind;
+  final List<Color> colors;
+
+  static const double width = 360;
+  static const double height = 640;
+
+  Widget _blob(double size, double alpha) => Container(
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.white.withValues(alpha: alpha),
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: colors,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Stack(
+            children: [
+              Positioned(top: -60, right: -60, child: _blob(240, 0.08)),
+              Positioned(bottom: 80, left: -80, child: _blob(220, 0.06)),
+              Positioned(top: 260, right: 30, child: _blob(70, 0.08)),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(28, 26, 28, 0),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.account_balance_wallet_rounded,
+                          size: 18,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 6),
+                        Text('DafMoney', style: _ts(13, weight: FontWeight.w800)),
+                        const Spacer(),
+                        Text(
+                          'Kilas ${report.periodLabel}',
+                          style: _ts(12, alpha: 0.85),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(child: _slideFor(kind, report, forImage: true)),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 TextStyle _ts(
   double size, {
@@ -247,12 +512,14 @@ class _TopBar extends StatelessWidget {
     required this.count,
     required this.index,
     required this.onClose,
+    required this.onShare,
   });
 
   final AnimationController controller;
   final int count;
   final int index;
   final VoidCallback onClose;
+  final VoidCallback onShare;
 
   @override
   Widget build(BuildContext context) {
@@ -304,6 +571,11 @@ class _TopBar extends StatelessWidget {
               const SizedBox(width: 6),
               Text('DafMoney', style: _ts(13, weight: FontWeight.w800)),
               const Spacer(),
+              IconButton(
+                tooltip: 'Bagikan slide ini',
+                onPressed: onShare,
+                icon: const Icon(Icons.ios_share_rounded, color: Colors.white),
+              ),
               IconButton(
                 onPressed: onClose,
                 icon: const Icon(Icons.close_rounded, color: Colors.white),
@@ -410,9 +682,10 @@ class _SlideFrame extends StatelessWidget {
 }
 
 class _IntroSlide extends StatelessWidget {
-  const _IntroSlide({required this.report});
+  const _IntroSlide({required this.report, this.forImage = false});
 
   final ExportReport report;
+  final bool forImage;
 
   @override
   Widget build(BuildContext context) {
@@ -461,10 +734,12 @@ class _IntroSlide extends StatelessWidget {
           'Yuk lihat ke mana uangmu pergi bulan ini.',
           style: _ts(16, alpha: 0.85, weight: FontWeight.w500, height: 1.4),
         ).animate().fadeIn(delay: 650.ms, duration: 500.ms),
-        const SizedBox(height: 40),
-        Text('Ketuk untuk lanjut', style: _ts(12, alpha: 0.65))
-            .animate(onPlay: (c) => c.repeat(reverse: true))
-            .fade(begin: 0.35, end: 1, duration: 900.ms),
+        if (!forImage) ...[
+          const SizedBox(height: 40),
+          Text('Ketuk untuk lanjut', style: _ts(12, alpha: 0.65))
+              .animate(onPlay: (c) => c.repeat(reverse: true))
+              .fade(begin: 0.35, end: 1, duration: 900.ms),
+        ],
       ],
     );
   }
@@ -853,13 +1128,15 @@ class _BiggestSlide extends StatelessWidget {
 class _OutroSlide extends StatelessWidget {
   const _OutroSlide({
     required this.report,
-    required this.onShare,
-    required this.onDone,
+    this.forImage = false,
+    this.onShare,
+    this.onDone,
   });
 
   final ExportReport report;
-  final VoidCallback onShare;
-  final VoidCallback onDone;
+  final bool forImage;
+  final VoidCallback? onShare;
+  final VoidCallback? onDone;
 
   @override
   Widget build(BuildContext context) {
@@ -922,6 +1199,7 @@ class _OutroSlide extends StatelessWidget {
           'Rata-rata pengeluaran ${Fmt.rupiah(report.avgDailyExpense)} per hari.',
           style: _ts(13, alpha: 0.8, weight: FontWeight.w500),
         ).animate().fadeIn(delay: 700.ms, duration: 500.ms),
+        if (!forImage) ...[
         const SizedBox(height: 32),
         Row(
               children: [
@@ -954,6 +1232,7 @@ class _OutroSlide extends StatelessWidget {
             .animate()
             .fadeIn(delay: 900.ms, duration: 400.ms)
             .slideY(begin: 0.3, delay: 900.ms, curve: Curves.easeOutCubic),
+        ],
       ],
     );
   }
