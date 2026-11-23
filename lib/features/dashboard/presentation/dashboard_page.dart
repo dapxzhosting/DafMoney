@@ -36,6 +36,7 @@ import '../../challenge/presentation/challenge_card.dart';
 import '../../export/domain/export_builder.dart';
 import '../../export/domain/export_report.dart';
 import '../../insights/domain/insight_engine.dart';
+import '../../insights/presentation/insight_share_page.dart';
 import '../../insights/presentation/insights_carousel.dart';
 import '../../insights/presentation/month_story_page.dart';
 import '../../reports/domain/report_calculator.dart';
@@ -117,6 +118,17 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       context,
       rootNavigator: true,
     ).push(MonthStoryPage.route(report));
+  }
+
+  void _shareInsight(Insight insight, DateTime month) {
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute<void>(
+        builder: (_) => InsightSharePage(
+          insight: insight,
+          periodLabel: Fmt.monthYear(month),
+        ),
+      ),
+    );
   }
 
   List<double> _sparkline(List<MoneyTransaction> all) {
@@ -258,6 +270,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                           insights: insights,
                           storyTitle: 'Kilas ${Fmt.monthYear(month)}',
                           onOpenStory: () => _openStory(monthTxnsAll),
+                          onShareInsight: (i) => _shareInsight(i, month),
                         ),
                         const SizedBox(height: Gap.lg),
                       ],

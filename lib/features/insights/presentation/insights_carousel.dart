@@ -14,11 +14,13 @@ class InsightsCarousel extends StatefulWidget {
     required this.insights,
     required this.storyTitle,
     required this.onOpenStory,
+    required this.onShareInsight,
   });
 
   final List<Insight> insights;
   final String storyTitle;
   final VoidCallback onOpenStory;
+  final void Function(Insight insight) onShareInsight;
 
   @override
   State<InsightsCarousel> createState() => _InsightsCarouselState();
@@ -127,7 +129,13 @@ class _InsightsCarouselState extends State<InsightsCarousel> {
                                 title: widget.storyTitle,
                                 onTap: widget.onOpenStory,
                               )
-                            : _InsightCard(insight: widget.insights[i - 1]),
+                            : _InsightCard(
+                                insight: widget.insights[i - 1],
+                                onShare: () {
+                                  HapticFeedback.lightImpact();
+                                  widget.onShareInsight(widget.insights[i - 1]);
+                                },
+                              ),
                       )
                       .animate()
                       .fadeIn(duration: 400.ms, delay: (90 * i).ms)
@@ -234,9 +242,10 @@ class _CardShell extends StatelessWidget {
 }
 
 class _InsightCard extends StatelessWidget {
-  const _InsightCard({required this.insight});
+  const _InsightCard({required this.insight, required this.onShare});
 
   final Insight insight;
+  final VoidCallback onShare;
 
   static List<Color> _colors(InsightTone t) {
     switch (t) {
@@ -292,6 +301,12 @@ class _InsightCard extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          IconButton(
+            tooltip: 'Bagikan sebagai gambar',
+            visualDensity: VisualDensity.compact,
+            onPressed: onShare,
+            icon: const Icon(Icons.ios_share_rounded, color: Colors.white),
           ),
         ],
       ),
