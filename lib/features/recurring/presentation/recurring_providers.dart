@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/error/app_exception.dart';
@@ -5,6 +6,7 @@ import '../../../core/models/entry_type.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../../core/providers/session_providers.dart';
 import '../../../core/services/notification_service.dart';
+import '../../../core/utils/formatters.dart';
 import '../data/recurring_repository.dart';
 import '../domain/recurring_entry.dart';
 
@@ -45,9 +47,34 @@ class RecurringActions {
           );
         } catch (_) {}
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('processDue gagal: $e');
     } finally {
       _running = false;
+    }
+    await syncReminders();
+  }
+
+  Future<void> syncReminders() async {
+    final uid = _ref.read(uidProvider);
+    if (uid == null) return;
+    try {
+      final list = await _repo.watch(uid).first;
+      for (final r in list) {
+        final nid = NotificationService.idFor('rec_${r.id}');
+        await NotificationService.cancel(nid);
+        if (!r.active) continue;
+        final label = r.note.trim().isEmpty ? 'Transaksi berulang' : r.note.trim();
+        final verb = r.type == EntryType.income ? 'dicatat sebagai pemasukan' : 'dicatat sebagai pengeluaran';
+        await NotificationService.scheduleOnce(
+          id: nid,
+          title: 'Besok: $label',
+          body: '${Fmt.rupiah(r.amount)} akan otomatis $verb.',
+          when: DateTime(r.nextDate.year, r.nextDate.month, r.nextDate.day - 1, 9),
+        );
+      }
+    } catch (e) {
+      debugPrint('syncReminders gagal: $e');
     }
   }
 
@@ -82,8 +109,8 @@ class RecurringActions {
     required Frequency frequency,
     required DateTime startDate,
     String? walletId,
-  }) => runGuarded(
-    () => _repo.update(
+  }) => runGuarded(() async {
+    await _repo.update(
       _uid,
       old,
       type: type,
@@ -93,13 +120,23 @@ class RecurringActions {
       frequency: frequency,
       startDate: startDate,
       walletId: walletId,
-    ),
-  );
+    );
+    await syncReminders();
+  });
 
-  Future<String?> setActive(String id, bool active) =>
-      runGuarded(() => _repo.setActive(_uid, id, active));
+  Future<String?> setActive(String id, bool active) => runGuarded(() async {
+    await _repo.setActive(_uid, id, active);
+    await syncReminders();
+  });
 
-  Future<String?> delete(String id) => runGuarded(() => _repo.delete(_uid, id));
+  Future<String?> delete(String id) => runGuarded(() async {
+    await _repo.delete(_uid, id);
+    try {
+      await NotificationService.cancel(NotificationService.idFor('rec_$id'));
+    } catch (e) {
+      debugPrint('batal pengingat gagal: $e');
+    }
+  });
 }
 
 final recurringActionsProvider = Provider<RecurringActions>(

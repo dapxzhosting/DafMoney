@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../transactions/data/transaction_repository.dart' show writeSafe;
 import '../domain/user_profile.dart';
 
 class SettingsRepository {
@@ -22,10 +23,10 @@ class SettingsRepository {
   }
 
   Future<void> updateName(String uid, String name) =>
-      _user(uid).update({'name': name});
+      writeSafe(() => _user(uid).update({'name': name}));
 
   Future<void> setInitialBalance(String uid, int value) =>
-      _user(uid).update({'initialBalance': value});
+      writeSafe(() => _user(uid).update({'initialBalance': value}));
 
   Future<void> _deleteCollection(String uid, String name) async {
     final col = _user(uid).collection(name);

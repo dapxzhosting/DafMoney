@@ -18,6 +18,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/utils/snackbar.dart';
 import '../../../core/widgets/animated_amount.dart';
 import '../../../core/widgets/async_view.dart';
 import '../../../core/widgets/category_avatar.dart';
@@ -105,7 +106,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     context.push('${AppRoutes.transactionForm}?type=${type.name}');
   }
 
-  void _openStory(List<MoneyTransaction> monthTxns) {
+  void _openStory(
+    List<MoneyTransaction> monthTxns,
+    List<MoneyTransaction> all,
+  ) {
     final month = ref.read(selectedMonthProvider);
     final report = buildExportReport(
       scope: ExportScope.month,
@@ -113,11 +117,55 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       txns: monthTxns,
       cats: ref.read(categoryMapProvider),
       wallets: ref.read(walletMapProvider),
+      previous: previousPeriodTxns(
+        scope: ExportScope.month,
+        start: month,
+        all: all,
+      ),
     );
     Navigator.of(
       context,
       rootNavigator: true,
     ).push(MonthStoryPage.route(report));
+  }
+
+  Future<void> _openYearStory(int year) async {
+    final uid = ref.read(uidProvider);
+    if (uid == null) return;
+    try {
+      final repo = ref.read(transactionRepositoryProvider);
+      final current = await repo
+          .watchRange(uid, DateRange(DateTime(year), DateTime(year + 1)))
+          .first
+          .timeout(const Duration(seconds: 20));
+      final before = await repo
+          .watchRange(uid, DateRange(DateTime(year - 1), DateTime(year)))
+          .first
+          .timeout(const Duration(seconds: 20));
+      if (!mounted) return;
+      if (current.isEmpty) {
+        context.showSnack('Belum ada transaksi di tahun $year.');
+        return;
+      }
+      final report = buildExportReport(
+        scope: ExportScope.year,
+        range: DateRange(DateTime(year), DateTime(year + 1)),
+        txns: current,
+        cats: ref.read(categoryMapProvider),
+        wallets: ref.read(walletMapProvider),
+        previous: previousPeriodTxns(
+          scope: ExportScope.year,
+          start: DateTime(year),
+          all: before,
+        ),
+      );
+      await Navigator.of(
+        context,
+        rootNavigator: true,
+      ).push(MonthStoryPage.route(report));
+    } catch (e) {
+      if (mounted) context.showSnack(errorText(e), error: true);
+    }
   }
 
   void _shareInsight(Insight insight, DateTime month) {
@@ -269,7 +317,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         InsightsCarousel(
                           insights: insights,
                           storyTitle: 'Kilas ${Fmt.monthYear(month)}',
-                          onOpenStory: () => _openStory(monthTxnsAll),
+                          onOpenStory: () =>
+                              _openStory(monthTxnsAll, allTxns ?? const []),
+                          yearTitle: 'Kilas Tahun ${month.year}',
+                          onOpenYearStory: () => _openYearStory(month.year),
                           onShareInsight: (i) => _shareInsight(i, month),
                         ),
                         const SizedBox(height: Gap.lg),

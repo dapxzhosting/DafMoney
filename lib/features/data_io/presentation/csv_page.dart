@@ -15,11 +15,16 @@ import '../../categories/presentation/providers/category_providers.dart';
 import '../../export/data/export_service.dart';
 import '../../transactions/presentation/providers/transaction_providers.dart';
 import '../../wallets/presentation/providers/wallet_providers.dart';
+import '../data/backup_service.dart';
 import '../data/import_service.dart';
 import '../domain/csv_transactions.dart';
 
 final importServiceProvider = Provider<ImportService>(
   (ref) => ImportService(ref.watch(firestoreProvider)),
+);
+
+final backupServiceProvider = Provider<BackupService>(
+  (ref) => BackupService(ref.watch(firestoreProvider)),
 );
 
 class CsvPage extends ConsumerStatefulWidget {
@@ -123,6 +128,75 @@ class _CsvPageState extends ConsumerState<CsvPage> {
     });
   });
 
+  Future<void> _backupShare() => _guard(() async {
+    final bytes = await ref.read(backupServiceProvider).export(_uid);
+    final d = DateTime.now();
+    final stamp =
+        '${d.year}${d.month.toString().padLeft(2, '0')}${d.day.toString().padLeft(2, '0')}';
+    await ExportService.shareBytes(
+      bytes: bytes,
+      fileName: 'DafMoney_backup_$stamp.json',
+      mimeType: 'application/json',
+      text: 'Backup DafMoney',
+    );
+  });
+
+  Future<void> _backupRestore() => _guard(() async {
+    final res = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['json'],
+      withData: true,
+    );
+    if (res == null || res.files.isEmpty) return;
+    final f = res.files.single;
+    Uint8List? bytes = f.bytes;
+    if (bytes == null && f.path != null) {
+      bytes = await File(f.path!).readAsBytes();
+    }
+    if (bytes == null) throw const AppException('Berkas tidak bisa dibaca.');
+    if (bytes.length > 30 * 1024 * 1024) {
+      throw const AppException('Berkas terlalu besar (maksimal 30 MB).');
+    }
+    final service = ref.read(backupServiceProvider);
+    final preview = service.preview(bytes);
+    if (preview.total == 0) {
+      throw const AppException('Backup ini tidak berisi data.');
+    }
+    if (!mounted) return;
+    final summary = preview.counts.entries
+        .map((e) => '${e.value} ${BackupService.labels[e.key] ?? e.key}')
+        .join(', ');
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Pulihkan backup?'),
+        content: Text(
+          'Berisi $summary. Data dengan ID yang sama dilewati, jadi data yang sudah ada tidak berubah. Foto struk tidak termasuk dalam backup.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Batal'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Pulihkan'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    final r = await service.restore(_uid, bytes);
+    if (!mounted) return;
+    final extra = [
+      if (r.skipped > 0) '${r.skipped} dilewati karena sudah ada',
+      if (r.invalid > 0) '${r.invalid} tidak valid',
+    ];
+    context.showSnack(
+      'Dipulihkan ${r.added} data${extra.isEmpty ? '' : ', ${extra.join(', ')}'}.',
+    );
+  });
+
   Future<void> _import() async {
     final plan = _plan;
     if (plan == null || plan.toImport.isEmpty) return;
@@ -175,7 +249,7 @@ class _CsvPageState extends ConsumerState<CsvPage> {
     final plan = _plan;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Impor & ekspor CSV')),
+      appBar: AppBar(title: const Text('Impor, ekspor & backup')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 40),
         children: [
@@ -263,6 +337,51 @@ class _CsvPageState extends ConsumerState<CsvPage> {
                       padding: EdgeInsets.only(top: 16),
                       child: LinearProgressIndicator(),
                     ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.cloud_sync_rounded, color: cs.primary),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Backup lengkap',
+                        style: tt.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Simpan semua data dalam satu berkas JSON: transaksi, kategori, dompet, anggaran, transaksi berulang, transfer, target tabungan, dan utang. Foto struk tidak ikut. Berguna saat pindah HP atau akun.',
+                    style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: _busy ? null : _backupShare,
+                          icon: const Icon(Icons.ios_share_rounded),
+                          label: const Text('Bagikan backup'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      OutlinedButton(
+                        onPressed: _busy ? null : _backupRestore,
+                        child: const Text('Pulihkan'),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

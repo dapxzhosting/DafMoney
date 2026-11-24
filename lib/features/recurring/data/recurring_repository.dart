@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../core/models/entry_type.dart';
 import '../../../core/utils/date_utils.dart';
@@ -146,7 +147,9 @@ class RecurringRepository {
           tx.update(doc.reference, {'nextDate': Timestamp.fromDate(next)});
           return dates.length;
         });
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('processDue gagal untuk ${doc.id}: $e');
+      }
     }
     return created;
   }

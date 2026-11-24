@@ -46,8 +46,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.findByName("release")
-                ?: throw GradleException("Konfigurasi signing release tidak ditemukan")
+            signingConfigs.findByName("release")?.let { signingConfig = it }
             isMinifyEnabled = false
             isShrinkResources = false
         }
@@ -56,6 +55,16 @@ android {
     lint {
         checkReleaseBuilds = false
         abortOnError = false
+    }
+}
+
+gradle.taskGraph.whenReady {
+    val releaseBuild = allTasks.any {
+        (it.name.startsWith("assemble") || it.name.startsWith("bundle")) &&
+            it.name.endsWith("Release")
+    }
+    if (releaseBuild && !keyProps.containsKey("storeFile")) {
+        throw GradleException("Konfigurasi signing release tidak ditemukan")
     }
 }
 

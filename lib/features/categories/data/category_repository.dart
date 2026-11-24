@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/error/app_exception.dart';
 import '../../../core/models/entry_type.dart';
+import '../../transactions/data/transaction_repository.dart' show writeSafe;
 import '../domain/category.dart';
 import '../domain/category_defaults.dart';
 
@@ -58,9 +59,13 @@ class CategoryRepository {
     required String iconKey,
     required int colorValue,
   }) {
-    return _col(uid)
-        .doc(id)
-        .update({'name': name, 'icon': iconKey, 'color': colorValue});
+    return writeSafe(
+      () => _col(uid).doc(id).update({
+        'name': name,
+        'icon': iconKey,
+        'color': colorValue,
+      }),
+    );
   }
 
   Future<void> delete(String uid, String id) async {

@@ -72,6 +72,9 @@ class ExportReport {
     required this.entries,
     required this.avgDailyExpense,
     required this.savingsRate,
+    this.prevIncome,
+    this.prevExpense,
+    this.prevLabel,
   });
 
   final ExportScope scope;
@@ -92,6 +95,10 @@ class ExportReport {
   final int avgDailyExpense;
 
   final double? savingsRate;
+
+  final int? prevIncome;
+  final int? prevExpense;
+  final String? prevLabel;
 
   int get net => income - expense;
 

@@ -138,7 +138,7 @@ service cloud.firestore {
 
       // Nama, saldo awal, tantangan, dan pengaturan kunci aplikasi yang boleh diubah.
       allow update: if isOwner(uid)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'initialBalance', 'challenge', 'appLockEnabled', 'appLockGrace', 'themeMode', 'accentColor', 'amoled'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'initialBalance', 'challenge', 'appLockEnabled', 'appLockGrace', 'themeMode', 'accentColor', 'amoled', 'onboardingDone'])
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
         && request.resource.data.name.size() <= 60
@@ -157,7 +157,9 @@ service cloud.firestore {
         && (!('accentColor' in request.resource.data)
             || request.resource.data.accentColor is int)
         && (!('amoled' in request.resource.data)
-            || request.resource.data.amoled is bool);
+            || request.resource.data.amoled is bool)
+        && (!('onboardingDone' in request.resource.data)
+            || request.resource.data.onboardingDone is bool);
 
       // Dihapus saat pengguna menghapus akunnya (setelah semua datanya dihapus).
       allow delete: if isOwner(uid);

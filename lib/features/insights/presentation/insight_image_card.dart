@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/utils/formatters.dart';
 import '../domain/insight_engine.dart';
 
-/// Kartu wawasan berukuran tetap yang di-render ke gambar PNG untuk dibagikan.
 class InsightImageCard extends StatelessWidget {
   const InsightImageCard({
     super.key,

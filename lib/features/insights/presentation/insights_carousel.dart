@@ -15,12 +15,16 @@ class InsightsCarousel extends StatefulWidget {
     required this.storyTitle,
     required this.onOpenStory,
     required this.onShareInsight,
+    this.yearTitle,
+    this.onOpenYearStory,
   });
 
   final List<Insight> insights;
   final String storyTitle;
   final VoidCallback onOpenStory;
   final void Function(Insight insight) onShareInsight;
+  final String? yearTitle;
+  final VoidCallback? onOpenYearStory;
 
   @override
   State<InsightsCarousel> createState() => _InsightsCarouselState();
@@ -32,7 +36,10 @@ class _InsightsCarouselState extends State<InsightsCarousel> {
   int _page = 0;
   DateTime _lastTouch = DateTime.fromMillisecondsSinceEpoch(0);
 
-  int get _count => widget.insights.length + 1;
+  bool get _hasYear =>
+      widget.onOpenYearStory != null && widget.yearTitle != null;
+
+  int get _count => widget.insights.length + 1 + (_hasYear ? 1 : 0);
 
   @override
   void initState() {
@@ -128,6 +135,17 @@ class _InsightsCarouselState extends State<InsightsCarousel> {
                             ? _StoryCard(
                                 title: widget.storyTitle,
                                 onTap: widget.onOpenStory,
+                              )
+                            : _hasYear && i == _count - 1
+                            ? _StoryCard(
+                                title: widget.yearTitle!,
+                                subtitle:
+                                    'Lihat perjalanan keuanganmu setahun penuh.',
+                                colors: const [
+                                  Color(0xFF0891B2),
+                                  Color(0xFF1E1B4B),
+                                ],
+                                onTap: widget.onOpenYearStory!,
                               )
                             : _InsightCard(
                                 insight: widget.insights[i - 1],
@@ -315,16 +333,23 @@ class _InsightCard extends StatelessWidget {
 }
 
 class _StoryCard extends StatelessWidget {
-  const _StoryCard({required this.title, required this.onTap});
+  const _StoryCard({
+    required this.title,
+    required this.onTap,
+    this.subtitle = 'Lihat ringkasan bulanmu dalam cerita singkat.',
+    this.colors = const [Color(0xFF8B5CF6), Color(0xFFDB2777)],
+  });
 
   final String title;
+  final String subtitle;
+  final List<Color> colors;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return _CardShell(
-          colors: const [Color(0xFF8B5CF6), Color(0xFFDB2777)],
+          colors: colors,
           onTap: () {
             HapticFeedback.lightImpact();
             onTap();
@@ -366,7 +391,7 @@ class _StoryCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Lihat ringkasan bulanmu dalam cerita singkat.',
+                      subtitle,
                       style: tt.bodySmall?.copyWith(
                         color: Colors.white.withValues(alpha: 0.9),
                         height: 1.3,

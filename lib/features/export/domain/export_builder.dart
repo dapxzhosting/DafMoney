@@ -30,14 +30,61 @@ abstract class ExportRanges {
   }
 }
 
+List<MoneyTransaction> previousPeriodTxns({
+  required ExportScope scope,
+  required DateTime start,
+  required List<MoneyTransaction> all,
+  DateTime? now,
+}) {
+  final today = now ?? DateTime.now();
+  if (scope == ExportScope.month) {
+    final prev = DateTime(start.year, start.month - 1);
+    final isCurrent = start.year == today.year && start.month == today.month;
+    return all
+        .where(
+          (t) =>
+              t.date.year == prev.year &&
+              t.date.month == prev.month &&
+              (!isCurrent || t.date.day <= today.day),
+        )
+        .toList();
+  }
+  if (scope == ExportScope.year) {
+    final isCurrent = start.year == today.year;
+    final limit = DateTime(start.year - 1, today.month, today.day + 1);
+    return all
+        .where(
+          (t) =>
+              t.date.year == start.year - 1 &&
+              (!isCurrent || t.date.isBefore(limit)),
+        )
+        .toList();
+  }
+  return const [];
+}
+
 ExportReport buildExportReport({
   required ExportScope scope,
   required DateRange range,
   required List<MoneyTransaction> txns,
   required Map<String, Category> cats,
   required Map<String, Wallet> wallets,
+  List<MoneyTransaction>? previous,
 }) {
   final summary = summarize(txns);
+  final prevSummary = previous == null || previous.isEmpty
+      ? null
+      : summarize(previous);
+  final nowDate = DateTime.now();
+  final partial = scope == ExportScope.month
+      ? range.start.year == nowDate.year && range.start.month == nowDate.month
+      : range.start.year == nowDate.year;
+  final unit = scope == ExportScope.year ? 'tahun' : 'bulan';
+  final prevLabel = prevSummary == null
+      ? null
+      : partial
+      ? 'periode yang sama $unit lalu'
+      : '$unit lalu';
 
   final sorted = [...txns]..sort((a, b) => a.date.compareTo(b.date));
 
@@ -159,6 +206,9 @@ ExportReport buildExportReport({
     entries: entries,
     avgDailyExpense: (summary.expense / days).round(),
     savingsRate: summary.income <= 0 ? null : summary.net / summary.income,
+    prevIncome: prevSummary?.income,
+    prevExpense: prevSummary?.expense,
+    prevLabel: prevLabel,
   );
 }
 

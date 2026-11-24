@@ -262,7 +262,6 @@ Widget _slideFor(
   }
 }
 
-/// Halaman pratinjau + bagikan satu slide Kilas Bulan sebagai gambar PNG.
 class _StorySharePage extends StatefulWidget {
   const _StorySharePage({
     required this.report,
@@ -287,7 +286,6 @@ class _StorySharePageState extends State<_StorySharePage> {
   @override
   void initState() {
     super.initState();
-    // Tunggu animasi slide (hitung naik, bar, cincin) selesai sebelum difoto.
     _settle = Timer(const Duration(milliseconds: 3200), () {
       if (mounted) setState(() => _ready = true);
     });
@@ -336,7 +334,7 @@ class _StorySharePageState extends State<_StorySharePage> {
     final cs = Theme.of(context).colorScheme;
     final loading = _busy || !_ready;
     return Scaffold(
-      appBar: AppBar(title: const Text('Bagikan kilas bulan')),
+      appBar: AppBar(title: const Text('Bagikan kilas')),
       body: Column(
         children: [
           Expanded(
@@ -629,6 +627,13 @@ class _FloatingBubbles extends StatelessWidget {
   }
 }
 
+String? _deltaText(int current, int? previous, String? label) {
+  if (previous == null || previous <= 0 || label == null) return null;
+  final pct = ((current - previous) / previous * 100).round();
+  if (pct == 0) return 'Sama seperti $label';
+  return pct > 0 ? 'Naik $pct% dari $label' : 'Turun ${-pct}% dari $label';
+}
+
 class _CountUp extends StatelessWidget {
   const _CountUp({
     required this.value,
@@ -712,7 +717,10 @@ class _IntroSlide extends StatelessWidget {
             )
             .fadeIn(duration: 300.ms),
         const SizedBox(height: 28),
-        Text('Kilas Bulan', style: _ts(16, alpha: 0.85, spacing: 1.2))
+        Text(
+              report.scope == ExportScope.year ? 'Kilas Tahun' : 'Kilas Bulan',
+              style: _ts(16, alpha: 0.85, spacing: 1.2),
+            )
             .animate()
             .fadeIn(delay: 250.ms, duration: 400.ms)
             .slideY(begin: 0.4, curve: Curves.easeOutCubic),
@@ -731,7 +739,9 @@ class _IntroSlide extends StatelessWidget {
             .slideY(begin: 0.35, curve: Curves.easeOutCubic),
         const SizedBox(height: 14),
         Text(
-          'Yuk lihat ke mana uangmu pergi bulan ini.',
+          report.scope == ExportScope.year
+              ? 'Yuk lihat ke mana uangmu pergi tahun ini.'
+              : 'Yuk lihat ke mana uangmu pergi bulan ini.',
           style: _ts(16, alpha: 0.85, weight: FontWeight.w500, height: 1.4),
         ).animate().fadeIn(delay: 650.ms, duration: 500.ms),
         if (!forImage) ...[
@@ -754,7 +764,13 @@ class _TotalsSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     final maxV = math.max(1, math.max(report.income, report.expense));
 
-    Widget row(String label, int value, double ratio, int delayMs) {
+    Widget row(
+      String label,
+      int value,
+      double ratio,
+      int delayMs, {
+      String? delta,
+    }) {
       return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -789,6 +805,10 @@ class _TotalsSlide extends StatelessWidget {
                   ),
                 ),
               ),
+              if (delta != null) ...[
+                const SizedBox(height: 8),
+                Text(delta, style: _ts(12, alpha: 0.8, weight: FontWeight.w600)),
+              ],
             ],
           )
           .animate()
@@ -804,13 +824,29 @@ class _TotalsSlide extends StatelessWidget {
     return _SlideFrame(
       children: [
         Text(
-          'Bulan ini kamu',
+          report.scope == ExportScope.year ? 'Tahun ini kamu' : 'Bulan ini kamu',
           style: _ts(18, alpha: 0.9),
         ).animate().fadeIn(duration: 400.ms),
         const SizedBox(height: 26),
-        row('Menerima', report.income, report.income / maxV, 150),
+        row(
+          'Menerima',
+          report.income,
+          report.income / maxV,
+          150,
+          delta: _deltaText(report.income, report.prevIncome, report.prevLabel),
+        ),
         const SizedBox(height: 26),
-        row('Membelanjakan', report.expense, report.expense / maxV, 400),
+        row(
+          'Membelanjakan',
+          report.expense,
+          report.expense / maxV,
+          400,
+          delta: _deltaText(
+            report.expense,
+            report.prevExpense,
+            report.prevLabel,
+          ),
+        ),
         const SizedBox(height: 30),
         Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -978,7 +1014,9 @@ class _WeeksSlide extends StatelessWidget {
         ).animate().fadeIn(duration: 400.ms),
         const SizedBox(height: 10),
         Text(
-              'Tanggal ${peak.label}',
+              report.scope == ExportScope.year
+                  ? 'Bulan ${peak.label}'
+                  : 'Tanggal ${peak.label}',
               style: _ts(38, weight: FontWeight.w800, spacing: -1.2),
             )
             .animate()
@@ -999,7 +1037,9 @@ class _WeeksSlide extends StatelessWidget {
               for (var i = 0; i < buckets.length; i++)
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: buckets.length > 7 ? 2 : 4,
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -1142,13 +1182,16 @@ class _OutroSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     final rate = report.savingsRate;
     final shown = (rate ?? 0).clamp(0.0, 1.0).toDouble();
+    final yearly = report.scope == ExportScope.year;
+    final thisUnit = yearly ? 'tahun ini' : 'bulan ini';
+    final nextUnit = yearly ? 'tahun depan' : 'bulan depan';
     final message = rate == null
-        ? 'Belum ada pemasukan tercatat bulan ini.'
+        ? 'Belum ada pemasukan tercatat $thisUnit.'
         : rate >= 0.2
         ? 'Keren! Kamu berhasil menyisihkan sebagian besar pemasukanmu.'
         : rate >= 0
-        ? 'Sudah baik. Coba sisihkan sedikit lebih banyak bulan depan.'
-        : 'Bulan ini pengeluaran melebihi pemasukan. Bulan depan pasti lebih baik!';
+        ? 'Sudah baik. Coba sisihkan sedikit lebih banyak $nextUnit.'
+        : 'Pengeluaran $thisUnit melebihi pemasukan. Semoga $nextUnit lebih baik!';
 
     return _SlideFrame(
       children: [
