@@ -1,4 +1,3 @@
-
 name: Build DafMoney APK
 
 on:
@@ -20,6 +19,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -52,7 +54,13 @@ jobs:
           } > android/key.properties
 
       - name: Build Release APK
-        run: flutter build apk --release
+        run: |
+          for attempt in 1 2 3; do
+            flutter build apk --release && exit 0
+            echo "Build gagal pada percobaan $attempt, mengulang setelah jeda"
+            sleep $((attempt * 60))
+          done
+          exit 1
 
       - name: Verifikasi tanda tangan release
         run: |
