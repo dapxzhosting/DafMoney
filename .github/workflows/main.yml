@@ -66,6 +66,13 @@ jobs:
             echo "keyPassword=$KEY_PASSWORD"
           } > android/key.properties
 
+      - name: Cetak Fingerprint SHA-1 Keystore Rilis
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          keytool -list -v -keystore android/app/release.jks -alias "$KEY_ALIAS" -storepass "$KEYSTORE_PASSWORD"
+
       - name: Build Release APK
         run: |
           for attempt in 1 2 3; do
