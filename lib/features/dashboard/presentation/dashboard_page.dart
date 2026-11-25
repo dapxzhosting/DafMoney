@@ -211,17 +211,29 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         ? const PeriodSummary(0, 0)
         : summarize(allTxns.where((t) => monthRange.contains(t.date)).toList());
 
-    final profile = ref.watch(userProfileProvider).valueOrNull;
+    final profileAsync = ref.watch(userProfileProvider);
+    final profile = profileAsync.valueOrNull;
     final int initialBalance =
         (profile?.initialBalance ?? 0).toInt() +
         ref.watch(walletsInitialSumProvider).toInt();
     final wallets = ref.watch(walletMapProvider);
-    final fullName = (profile?.name.trim().isNotEmpty ?? false)
+    final rawName = (profile?.name.trim().isNotEmpty ?? false)
         ? profile!.name.trim()
         : (user?.displayName?.trim() ?? '');
-    final name = fullName.isNotEmpty ? fullName.split(' ').first : 'Pengguna';
+    final name = rawName.isNotEmpty
+        ? rawName.split(' ').first
+        : (profileAsync.isLoading && profile == null ? null : 'Pengguna');
 
-    final totalBalance = (balance.valueOrNull?.total ?? 0) + initialBalance;
+    final totalBalance = balance.isLoading && !balance.hasValue
+        ? null
+        : (balance.valueOrNull?.total ?? 0) + initialBalance;
+
+    final incomeVal = txAsync.isLoading && !txAsync.hasValue
+        ? null
+        : monthSummary.income;
+    final expenseVal = txAsync.isLoading && !txAsync.hasValue
+        ? null
+        : monthSummary.expense;
     final budgetList = budgets.valueOrNull ?? const <BudgetProgress>[];
     final monthTxnsAll = allTxns == null
         ? const <MoneyTransaction>[]
@@ -300,11 +312,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                       const MonthSelector(),
                       const SizedBox(height: Gap.md),
                       _BalanceCard(
-                        total: balance.valueOrNull == null
-                            ? null
-                            : balance.valueOrNull!.total + initialBalance,
-                        income: monthSummary.income,
-                        expense: monthSummary.expense,
+                        total: totalBalance,
+                        income: incomeVal,
+                        expense: expenseVal,
                         sparkline: allTxns == null
                             ? const <double>[]
                             : _sparkline(allTxns),
@@ -800,7 +810,7 @@ class _WalletStrip extends ConsumerWidget {
 class _Header extends StatelessWidget {
   const _Header({required this.name, required this.onAvatarTap});
 
-  final String name;
+  final String? name;
   final VoidCallback onAvatarTap;
 
   @override
@@ -818,13 +828,16 @@ class _Header extends StatelessWidget {
                 style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
               ),
               const SizedBox(height: 4),
-              Text(
-                'Halo, $name',
-                style: tt.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.5,
+              if (name == null)
+                const SkeletonBox(width: 130, height: 26, radius: 8)
+              else
+                Text(
+                  'Halo, $name',
+                  style: tt.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -834,13 +847,15 @@ class _Header extends StatelessWidget {
           child: CircleAvatar(
             radius: 22,
             backgroundColor: cs.primaryContainer,
-            child: Text(
-              name.characters.first.toUpperCase(),
-              style: tt.titleMedium?.copyWith(
-                color: cs.onPrimaryContainer,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
+            child: name == null
+                ? Icon(Icons.person_rounded, size: 22, color: cs.onPrimaryContainer)
+                : Text(
+                    name!.characters.first.toUpperCase(),
+                    style: tt.titleMedium?.copyWith(
+                      color: cs.onPrimaryContainer,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
           ),
         ),
       ],
@@ -858,8 +873,8 @@ class _BalanceCard extends ConsumerWidget {
   });
 
   final int? total;
-  final int income;
-  final int expense;
+  final int? income;
+  final int? expense;
   final List<double> sparkline;
   final String? error;
 
@@ -869,7 +884,7 @@ class _BalanceCard extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
     final hidden = ref.watch(hideBalanceProvider);
 
-    Widget pill(IconData icon, String label, int value) => Expanded(
+    Widget pill(IconData icon, String label, int? value) => Expanded(
       child: Container(
         padding: const EdgeInsets.all(Gap.sm),
         decoration: BoxDecoration(
@@ -897,17 +912,27 @@ class _BalanceCard extends ConsumerWidget {
                       color: Colors.white.withValues(alpha: 0.85),
                     ),
                   ),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: AnimatedAmount(
-                      value: value,
-                      style: tt.titleSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
+                  if (value == null)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 4),
+                      child: SkeletonBox(
+                        width: 60,
+                        height: 14,
+                        color: Colors.white24,
+                      ),
+                    )
+                  else
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: AnimatedAmount(
+                        value: value,
+                        style: tt.titleSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
