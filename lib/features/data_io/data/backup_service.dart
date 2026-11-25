@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/error/app_exception.dart';
+import 'commit_util.dart';
 
 class BackupPreview {
   const BackupPreview({required this.counts, required this.exportedAt});
@@ -171,7 +172,7 @@ class BackupService {
       for (final p in chunk) {
         batch.set(p.ref, p.fields);
       }
-      await batch.commit();
+      await commitBatch(batch);
       done += chunk.length;
       onProgress?.call(done, pending.length);
     }

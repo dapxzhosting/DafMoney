@@ -12,7 +12,7 @@ class AppException implements Exception {
 String firebaseMessage(String code) {
   switch (code) {
     case 'permission-denied':
-      return 'Akses ditolak. Pastikan email terverifikasi dan aturan Firestore sudah di-deploy.';
+      return 'Akses ditolak. Pastikan email sudah terverifikasi, lalu coba masuk ulang.';
     case 'unavailable':
     case 'network-request-failed':
       return 'Tidak ada koneksi internet.';

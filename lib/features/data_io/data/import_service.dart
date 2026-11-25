@@ -7,6 +7,7 @@ import '../../categories/presentation/category_style.dart';
 import '../../transactions/domain/money_transaction.dart';
 import '../../wallets/domain/wallet.dart';
 import '../domain/csv_transactions.dart';
+import 'commit_util.dart';
 
 class ImportPlan {
   const ImportPlan({
@@ -132,7 +133,7 @@ class ImportService {
         'Terlalu banyak kategori/dompet baru (>450). Rapikan nama di berkas lalu coba lagi.',
       );
     }
-    if (setupOps > 0) await setup.commit();
+    if (setupOps > 0) await commitBatch(setup);
 
     var done = 0;
     final total = plan.toImport.length;
@@ -153,7 +154,7 @@ class ImportService {
           if (walletId != null) 'walletId': walletId,
         });
       }
-      await batch.commit();
+      await commitBatch(batch);
       done += chunk.length;
       onProgress?.call(done, total);
     }

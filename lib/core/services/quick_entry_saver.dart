@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/transactions/data/transaction_repository.dart';
 import '../../firebase_options.dart';
+import '../constants/app_constants.dart';
+import '../error/app_exception.dart';
 import '../models/entry_type.dart';
 import 'quick_entry_parser.dart';
 
@@ -101,12 +104,25 @@ class QuickEntrySaver {
         .get();
   }
 
+  static Future<bool> _appLockOn(String uid) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.reload();
+      return prefs.getBool('${AppConstants.appLockKey}_$uid') ?? false;
+    } catch (_) {
+      return true;
+    }
+  }
+
   static Future<List<QuickNote>> topNotes(
     EntryType type, {
     int limit = 6,
   }) async {
     final uid = await currentUid();
     if (uid == null) return const [];
+    // Catat cepat berjalan tanpa layar kunci. Saat kunci aplikasi aktif,
+    // jangan tampilkan catatan/nominal dari riwayat transaksi.
+    if (await _appLockOn(uid)) return const [];
     final user = FirebaseFirestore.instance.collection('users').doc(uid);
     final past = await _recent(user);
 
@@ -266,7 +282,7 @@ class QuickEntrySaver {
       return QuickSaveResult(
         ok: false,
         title: 'Gagal menyimpan',
-        body: 'Coba lagi atau buka DafMoney. ($e)',
+        body: 'Coba lagi atau buka DafMoney. (${errorText(e)})',
       );
     }
   }

@@ -185,8 +185,21 @@ List<Insight> buildInsights({
     for (final t in cur)
       if (t.type == EntryType.expense) t.date.day,
   };
+  // Hitung hanya sejak hari pertama ada pencatatan, supaya akun baru tidak
+  // dianggap "tanpa pengeluaran" untuk hari sebelum aplikasi dipakai.
+  var trackStart = 1;
+  if (all.isNotEmpty) {
+    final earliest = all
+        .map((t) => t.date)
+        .reduce((a, b) => a.isBefore(b) ? a : b);
+    if (earliest.year == month.year && earliest.month == month.month) {
+      trackStart = earliest.day;
+    }
+  }
   var noSpend = 0;
-  for (var d = 1; d <= cutoff; d++) {
+  var trackedDays = 0;
+  for (var d = trackStart; d <= cutoff; d++) {
+    trackedDays++;
     if (!spendDays.contains(d)) noSpend++;
   }
   if (noSpend >= 3 && curSum.expense > 0) {
@@ -194,7 +207,7 @@ List<Insight> buildInsights({
       Insight(
         icon: Icons.event_available_rounded,
         title: '$noSpend hari tanpa pengeluaran',
-        message: 'Dari $cutoff hari yang sudah berjalan. Mantap!',
+        message: 'Dari $trackedDays hari yang sudah tercatat. Mantap!',
         tone: InsightTone.good,
       ),
     );

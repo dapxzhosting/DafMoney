@@ -44,6 +44,8 @@ dependencies:
 
   # Impor CSV (memilih berkas)
   file_picker: ^10.1.2
+  firebase_crashlytics: ^4.3.10
+  firebase_app_check: ^0.3.2+10
 
 dev_dependencies:
   flutter_test:
