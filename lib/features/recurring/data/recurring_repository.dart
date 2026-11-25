@@ -143,9 +143,7 @@ class RecurringRepository {
             );
           }
         }
-      } catch (e) {
-        debugPrint('setActive: gagal membaca aturan $id: $e');
-      }
+      } catch (_) {}
     }
     return writeSafe(
       () => _col(uid).doc(id).update({
@@ -198,9 +196,7 @@ class RecurringRepository {
           tx.update(doc.reference, {'nextDate': Timestamp.fromDate(next)});
           return dates.length;
         });
-      } catch (e) {
-        debugPrint('processDue gagal untuk ${doc.id}: $e');
-      }
+      } catch (_) {}
     }
     return created;
   }

@@ -47,8 +47,7 @@ class RecurringActions {
           );
         } catch (_) {}
       }
-    } catch (e) {
-      debugPrint('processDue gagal: $e');
+    } catch (_) {
     } finally {
       _running = false;
     }
@@ -73,9 +72,7 @@ class RecurringActions {
           when: DateTime(r.nextDate.year, r.nextDate.month, r.nextDate.day - 1, 9),
         );
       }
-    } catch (e) {
-      debugPrint('syncReminders gagal: $e');
-    }
+    } catch (_) {}
   }
 
   Future<String?> add({
@@ -133,9 +130,7 @@ class RecurringActions {
     await _repo.delete(_uid, id);
     try {
       await NotificationService.cancel(NotificationService.idFor('rec_$id'));
-    } catch (e) {
-      debugPrint('batal pengingat gagal: $e');
-    }
+    } catch (_) {}
   });
 }
 

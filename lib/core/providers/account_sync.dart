@@ -18,9 +18,7 @@ Future<void> syncToAccount(
     await writeSafe(
       () => db.collection('users').doc(uid).set(data, SetOptions(merge: true)),
     );
-  } catch (e) {
-    debugPrint('syncToAccount gagal: $e');
-  }
+  } catch (_) {}
 }
 
 bool isSettledServerSnapshot(DocumentSnapshot<Map<String, dynamic>> snap) =>
