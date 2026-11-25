@@ -254,7 +254,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     final hideBalanceForWidget = ref.watch(hideBalanceProvider);
     if (balance.hasValue && budgets.hasValue) {
       WidgetService.updateWidgetData(
-        balance: totalBalance,
+        balance: totalBalance ?? 0,
         remainingBudget: remainingBudget,
         hidden: hideBalanceForWidget,
       );
@@ -513,7 +513,7 @@ class _CompactBar extends ConsumerWidget {
   });
 
   final bool visible;
-  final String name;
+  final String? name;
   final int? total;
   final VoidCallback onAvatarTap;
 
@@ -590,13 +590,15 @@ class _CompactBar extends ConsumerWidget {
                     child: CircleAvatar(
                       radius: 16,
                       backgroundColor: cs.primaryContainer,
-                      child: Text(
-                        name.characters.first.toUpperCase(),
-                        style: tt.labelLarge?.copyWith(
-                          color: cs.onPrimaryContainer,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
+                      child: name == null || name!.isEmpty
+                          ? Icon(Icons.person_rounded, size: 16, color: cs.onPrimaryContainer)
+                          : Text(
+                              name!.characters.first.toUpperCase(),
+                              style: tt.labelLarge?.copyWith(
+                                color: cs.onPrimaryContainer,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
                     ),
                   ),
                 ],
