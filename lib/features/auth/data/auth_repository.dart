@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/services/widget_service.dart';
@@ -11,15 +12,32 @@ class AuthRepository {
   final FirebaseAuth _auth;
   final FirebaseFirestore _db;
 
+  static const _webClientId =
+      '502701571624-a976glfehaf9l5d2uu4431ul7u2ti9f8.apps.googleusercontent.com';
+
   Future<T> _guard<T>(Future<T> Function() action) async {
     try {
       return await action();
     } on AuthFailure {
       rethrow;
+    } on FirebaseAuthException catch (e) {
+      throw AuthFailure.fromCode(e.code);
     } on FirebaseException catch (e) {
       throw AuthFailure.fromCode(e.code);
-    } catch (_) {
-      throw const AuthFailure('Terjadi kesalahan. Coba lagi.');
+    } on PlatformException catch (e) {
+      if (e.code == 'sign_in_canceled' || e.code == 'canceled') {
+        throw const AuthFailure('Masuk dengan Google dibatalkan.');
+      }
+      if (e.code == 'sign_in_failed' ||
+          e.message?.contains('10') == true ||
+          e.message?.contains('12500') == true) {
+        throw const AuthFailure(
+          'Gagal Google Sign-In (Code 10): Pastikan SHA-1 fingerprint aplikasi Anda sudah ditambahkan di Firebase Console.',
+        );
+      }
+      throw AuthFailure('Gagal masuk Google (${e.code}: ${e.message ?? 'Unknown'}).');
+    } catch (e) {
+      throw AuthFailure('Terjadi kesalahan ($e). Coba lagi.');
     }
   }
 
@@ -35,7 +53,10 @@ class AuthRepository {
   }
 
   Future<AuthCredential?> _googleCredential() async {
-    final google = GoogleSignIn(scopes: const ['email']);
+    final google = GoogleSignIn(
+      serverClientId: _webClientId,
+      scopes: const ['email'],
+    );
     await google.signOut();
     final account = await google.signIn();
     if (account == null) return null;
