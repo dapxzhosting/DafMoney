@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 
 import '../../../core/models/entry_type.dart';
+import '../../../core/utils/csv_codec.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../categories/domain/category.dart';
 import '../../transactions/domain/money_transaction.dart';
@@ -115,7 +116,8 @@ List<DayTotal> byDay(List<MoneyTransaction> txns, DateRange range) {
 }
 
 String buildCsv(List<MoneyTransaction> txns, Map<String, Category> cats) {
-  String esc(String s) => '"${s.replaceAll('"', '""')}"';
+  String esc(String s) =>
+      '"${CsvCodec.sanitizeCell(s).replaceAll('"', '""')}"';
   final df = DateFormat('yyyy-MM-dd');
   final sorted = [...txns]..sort((a, b) => a.date.compareTo(b.date));
   final sb = StringBuffer('Tanggal,Jenis,Kategori,Jumlah,Catatan\n');

@@ -239,10 +239,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       (sum, b) => sum + (b.remaining > 0 ? b.remaining : 0),
     );
 
+    final hideBalanceForWidget = ref.watch(hideBalanceProvider);
     if (balance.hasValue && budgets.hasValue) {
       WidgetService.updateWidgetData(
         balance: totalBalance,
         remainingBudget: remainingBudget,
+        hidden: hideBalanceForWidget,
       );
     }
 

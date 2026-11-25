@@ -82,4 +82,61 @@ void main() {
       expect(d.length, 31);
     });
   });
+
+  group('firstOccurrenceOnOrAfter (perbaikan H1)', () {
+    test('mulai di masa depan: tetap tanggal mulai', () {
+      expect(
+        firstOccurrenceOnOrAfter(
+          start: DateTime(2026, 12, 10),
+          today: DateTime(2026, 11, 25),
+          frequency: Frequency.weekly,
+          anchorDay: 10,
+        ),
+        DateTime(2026, 12, 10),
+      );
+    });
+
+    test('bulanan sejak Januari diubah ke mingguan: tidak mundur ke Januari', () {
+      final next = firstOccurrenceOnOrAfter(
+        start: DateTime(2026, 1, 15),
+        today: DateTime(2026, 11, 25),
+        frequency: Frequency.weekly,
+        anchorDay: 15,
+      );
+      expect(next.isBefore(DateTime(2026, 11, 25)), isFalse);
+      expect(next.difference(DateTime(2026, 11, 25)).inDays, lessThan(7));
+      // Tidak ada tanggal jatuh tempo historis yang dibuat ulang.
+      final due = dueDates(
+        next: next,
+        today: DateTime(2026, 11, 25),
+        frequency: Frequency.weekly,
+        anchorDay: 15,
+      );
+      expect(due.length, lessThanOrEqualTo(1));
+    });
+
+    test('bulanan: ikut tanggal jangkar', () {
+      expect(
+        firstOccurrenceOnOrAfter(
+          start: DateTime(2026, 1, 31),
+          today: DateTime(2026, 11, 25),
+          frequency: Frequency.monthly,
+          anchorDay: 31,
+        ),
+        DateTime(2026, 11, 30),
+      );
+    });
+
+    test('jatuh tepat hari ini: dipakai hari ini', () {
+      expect(
+        firstOccurrenceOnOrAfter(
+          start: DateTime(2026, 11, 18),
+          today: DateTime(2026, 11, 25),
+          frequency: Frequency.weekly,
+          anchorDay: 18,
+        ),
+        DateTime(2026, 11, 25),
+      );
+    });
+  });
 }

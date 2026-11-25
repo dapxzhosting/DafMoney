@@ -157,4 +157,19 @@ void main() {
       expect(plan.newWallets, {'dana'});
     });
   });
+
+  group('sanitasi formula CSV (L1)', () {
+    test('sel berawalan rumus diberi apostrof, angka tidak berubah', () {
+      final out = CsvCodec.encode([
+        ['=1+1', '-5 teh', '@cmd', 'aman', 25000, null],
+      ]);
+      expect(out, "'=1+1,'-5 teh,'@cmd,aman,25000,\r\n");
+    });
+
+    test('unsanitizeCell membalikkan sanitizeCell', () {
+      for (final v in ['=1+1', '+62', '-x', '@a', 'biasa', "'kutip", '']) {
+        expect(CsvCodec.unsanitizeCell(CsvCodec.sanitizeCell(v)), v);
+      }
+    });
+  });
 }

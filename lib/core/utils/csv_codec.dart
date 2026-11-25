@@ -1,4 +1,21 @@
 abstract class CsvCodec {
+  static const _formulaStarts = ['=', '+', '-', '@', '\t', '\r'];
+
+  /// Netralkan sel yang diawali karakter rumus (=, +, -, @) agar tidak
+  /// dieksekusi saat CSV dibuka di Excel/Sheets (formula injection).
+  static String sanitizeCell(String s) {
+    if (s.isEmpty) return s;
+    return _formulaStarts.contains(s[0]) ? "'$s" : s;
+  }
+
+  /// Kebalikan [sanitizeCell], dipakai saat impor.
+  static String unsanitizeCell(String s) {
+    if (s.length >= 2 && s[0] == "'" && _formulaStarts.contains(s[1])) {
+      return s.substring(1);
+    }
+    return s;
+  }
+
   static String encodeField(String s) {
     final needsQuote =
         s.contains(',') ||
@@ -12,7 +29,9 @@ abstract class CsvCodec {
   static String encode(List<List<Object?>> rows) {
     final sb = StringBuffer();
     for (final row in rows) {
-      sb.write(row.map((v) => encodeField('${v ?? ''}')).join(','));
+      sb.write(row
+            .map((v) => encodeField(v is String ? sanitizeCell(v) : '${v ?? ''}'))
+            .join(','));
       sb.write('\r\n');
     }
     return sb.toString();

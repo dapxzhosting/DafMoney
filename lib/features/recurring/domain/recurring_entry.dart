@@ -83,6 +83,27 @@ int _clampDay(DateTime firstOfMonth, int day) {
   return day > last ? last : day;
 }
 
+/// Kemunculan pertama jadwal yang jatuh pada atau setelah [today].
+///
+/// Dipakai saat jadwal transaksi berulang diubah, supaya `nextDate` tidak
+/// dikembalikan ke tanggal mulai lama dan membuat ulang riwayat.
+/// Jika [start] masih di masa depan, hasilnya adalah [start] itu sendiri.
+DateTime firstOccurrenceOnOrAfter({
+  required DateTime start,
+  required DateTime today,
+  required Frequency frequency,
+  required int anchorDay,
+}) {
+  final end = DateTime(today.year, today.month, today.day);
+  var d = DateTime(start.year, start.month, start.day);
+  var guard = 0;
+  while (d.isBefore(end) && guard < 100000) {
+    d = nextOccurrence(d, frequency, anchorDay);
+    guard++;
+  }
+  return d;
+}
+
 List<DateTime> dueDates({
   required DateTime next,
   required DateTime today,

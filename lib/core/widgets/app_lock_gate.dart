@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/app_lock_providers.dart';
 import '../providers/firebase_providers.dart';
 import '../services/biometric_service.dart';
+import '../services/screen_security_service.dart';
+import '../services/widget_service.dart';
 
 class AppLockGate extends ConsumerStatefulWidget {
   const AppLockGate({super.key, required this.child});
@@ -27,6 +29,7 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _locked = ref.read(appLockEnabledProvider);
+    ScreenSecurityService.setSecure(_locked);
     if (_locked) WidgetsBinding.instance.addPostFrameCallback((_) => _unlock());
   }
 
@@ -72,7 +75,7 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
           _message = null;
         case AuthResult.failed:
           _message =
-              'Verifikasi dibatalkan. Ketuk "Buka kunci" untuk mencoba lagi.';
+          'Verifikasi dibatalkan. Ketuk "Buka kunci" untuk mencoba lagi.';
         case AuthResult.unavailable:
           _message = 'Kunci layar perangkat tidak aktif. Aktifkan sidik jari atau PIN di pengaturan perangkat, atau keluar dari akun.';
       }
@@ -84,11 +87,16 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
         .read(appLockEnabledProvider.notifier)
         .set(false, syncRemote: false);
     await ref.read(firebaseAuthProvider).signOut();
+    await WidgetService.clear();
     if (mounted) setState(() => _locked = false);
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<bool>(
+      appLockEnabledProvider,
+          (prev, next) => ScreenSecurityService.setSecure(next),
+    );
     ref.listen<bool>(appLockEnabledProvider, (prev, next) {
       if (!next && _locked) setState(() => _locked = false);
       if (!(prev ?? false) &&

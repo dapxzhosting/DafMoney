@@ -43,13 +43,15 @@ class CategoryRepository {
     required String iconKey,
     required int colorValue,
   }) {
-    return _col(uid).add({
-      'name': name,
-      'type': type.name,
-      'icon': iconKey,
-      'color': colorValue,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+    return writeSafe(
+      () => _col(uid).doc().set({
+        'name': name,
+        'type': type.name,
+        'icon': iconKey,
+        'color': colorValue,
+        'createdAt': FieldValue.serverTimestamp(),
+      }),
+    );
   }
 
   Future<void> update(
@@ -98,7 +100,7 @@ class CategoryRepository {
       batch.delete(b.reference);
     }
     batch.delete(_col(uid).doc(id));
-    await batch.commit();
+    await writeSafe(() => batch.commit());
   }
 
   Future<void> seedDefaultsIfEmpty(String uid) async {
@@ -114,6 +116,6 @@ class CategoryRepository {
         'createdAt': FieldValue.serverTimestamp(),
       });
     }
-    await batch.commit();
+    await writeSafe(() => batch.commit());
   }
 }

@@ -203,10 +203,10 @@ ImportPreview parseTransactionsCsv(String text) {
       err('Baris $line: jumlah "${cell(r, iAmount)}" tidak valid.');
       continue;
     }
-    var cat = cell(r, iCat);
+    var cat = CsvCodec.unsanitizeCell(cell(r, iCat));
     if (cat.isEmpty) cat = 'Lainnya';
     if (cat.length > 40) cat = cat.substring(0, 40);
-    var note = cell(r, iNote);
+    var note = CsvCodec.unsanitizeCell(cell(r, iNote));
     if (note.length > 200) note = note.substring(0, 200);
     final wallet = cell(r, iWallet);
     rows.add(

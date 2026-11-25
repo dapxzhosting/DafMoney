@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../core/services/widget_service.dart';
 import '../domain/auth_failure.dart';
 
 class AuthRepository {
@@ -169,10 +170,16 @@ class AuthRepository {
   }
 
   Future<void> deleteCurrentUser() {
-    return _guard(() async => _auth.currentUser?.delete());
+    return _guard(() async {
+      await _auth.currentUser?.delete();
+      await WidgetService.clear();
+    });
   }
 
-  Future<void> signOut() => _guard(_auth.signOut);
+  Future<void> signOut() => _guard(() async {
+    await _auth.signOut();
+    await WidgetService.clear();
+  });
 
   Future<void> _createProfile(User user, String name) {
     return _db.collection('users').doc(user.uid).set({

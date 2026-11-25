@@ -84,8 +84,30 @@ class RecurringRepository {
     String? walletId,
   }) {
     final start = dateOnly(startDate);
-    final scheduleChanged =
-        frequency != old.frequency || !isSameDay(start, old.startDate);
+    final today = dateOnly(DateTime.now());
+    final startChanged = !isSameDay(start, old.startDate);
+    final scheduleChanged = frequency != old.frequency || startChanged;
+
+    // Saat jadwal berubah, jangan kembali ke tanggal mulai lama: itu membuat
+    // processDue membuat ulang transaksi historis. Mulai dari kemunculan
+    // pertama pada atau setelah hari ini.
+    DateTime? newNext;
+    if (scheduleChanged) {
+      newNext = firstOccurrenceOnOrAfter(
+        start: start,
+        today: today,
+        frequency: frequency,
+        anchorDay: start.day,
+      );
+      // Hanya frekuensi yang diubah pada aturan yang sudah berjalan dan sudah
+      // diproses sampai hari ini: lewati hari ini agar tidak tercatat ganda.
+      if (!startChanged &&
+          !old.startDate.isAfter(today) &&
+          old.nextDate.isAfter(today) &&
+          isSameDay(newNext, today)) {
+        newNext = nextOccurrence(newNext, frequency, start.day);
+      }
+    }
     return writeSafe(
       () => _col(uid).doc(old.id).update({
         'type': type.name,
@@ -96,13 +118,42 @@ class RecurringRepository {
         'frequency': frequency.name,
         'startDate': Timestamp.fromDate(start),
         'anchorDay': start.day,
-        if (scheduleChanged) 'nextDate': Timestamp.fromDate(start),
+        if (newNext != null) 'nextDate': Timestamp.fromDate(newNext),
       }),
     );
   }
 
-  Future<void> setActive(String uid, String id, bool active) =>
-      writeSafe(() => _col(uid).doc(id).update({'active': active}));
+  Future<void> setActive(String uid, String id, bool active) async {
+    // Saat diaktifkan kembali, lewati tanggal yang terlewat selama dijeda
+    // supaya tidak muncul transaksi susulan sekaligus.
+    DateTime? newNext;
+    if (active) {
+      try {
+        final snap = await _col(uid).doc(id).get();
+        final data = snap.data();
+        if (snap.exists && data != null) {
+          final r = _fromMap(snap.id, data);
+          final today = dateOnly(DateTime.now());
+          if (r.nextDate.isBefore(today)) {
+            newNext = firstOccurrenceOnOrAfter(
+              start: r.nextDate,
+              today: today,
+              frequency: r.frequency,
+              anchorDay: r.anchorDay,
+            );
+          }
+        }
+      } catch (e) {
+        debugPrint('setActive: gagal membaca aturan $id: $e');
+      }
+    }
+    return writeSafe(
+      () => _col(uid).doc(id).update({
+        'active': active,
+        if (newNext != null) 'nextDate': Timestamp.fromDate(newNext),
+      }),
+    );
+  }
 
   Future<void> delete(String uid, String id) =>
       writeSafe(() => _col(uid).doc(id).delete());

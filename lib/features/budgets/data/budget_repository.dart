@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/error/app_exception.dart';
+import '../../transactions/data/transaction_repository.dart' show writeSafe;
 import '../domain/budget.dart';
 
 class BudgetRepository {
@@ -36,15 +37,18 @@ class BudgetRepository {
     required String month,
     required int amount,
   }) {
-    return _col(uid).doc(idFor(month, categoryId)).set({
-      'categoryId': categoryId,
-      'amount': amount,
-      'month': month,
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+    return writeSafe(
+      () => _col(uid).doc(idFor(month, categoryId)).set({
+        'categoryId': categoryId,
+        'amount': amount,
+        'month': month,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }),
+    );
   }
 
-  Future<void> delete(String uid, String id) => _col(uid).doc(id).delete();
+  Future<void> delete(String uid, String id) =>
+      writeSafe(() => _col(uid).doc(id).delete());
 
   Future<void> copyMonth(
     String uid, {
@@ -76,6 +80,6 @@ class BudgetRepository {
     if (count == 0) {
       throw const AppException('Semua anggaran sudah ada di bulan ini.');
     }
-    await batch.commit();
+    await writeSafe(() => batch.commit());
   }
 }
