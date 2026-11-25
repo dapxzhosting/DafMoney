@@ -36,8 +36,8 @@ jobs:
           elif [ -f "android/app/google-services.json" ]; then
             echo "Memakai google-services.json lokal"
           else
-            echo "Membuat mock google-services.json untuk CI build"
-            echo '{"project_info":{"project_number":"502701571624","project_id":"dafmoney","storage_bucket":"dafmoney.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:502701571624:android:e0bb10fbdaa7d754f8ff1d","android_client_info":{"package_name":"com.example.keuangan"}},"oauth_client":[],"api_key":[{"current_key":"AIzaSyDummyKeyForCIBuild1234567890"}],"services":{"appinvite_service":{"other_platform_oauth_client":[]}}}],"configuration_version":"1"}' > android/app/google-services.json
+            echo "Memasang google-services.json resmi dafmoney untuk CI build"
+            echo '{"project_info":{"project_number":"502701571624","project_id":"dafmoney","storage_bucket":"dafmoney.firebasestorage.app"},"client":[{"client_info":{"mobilesdk_app_id":"1:502701571624:android:e0bb10fbdaa7d754f8ff1d","android_client_info":{"package_name":"com.example.keuangan"}},"oauth_client":[{"client_id":"502701571624-66kciumf8fgf1g3gu3objpdv6voltqaa.apps.googleusercontent.com","client_type":1,"android_info":{"package_name":"com.example.keuangan","certificate_hash":"8a1907bb2368fd83a3af6ee47dcddb14696fbf0c"}},{"client_id":"502701571624-a976glfehaf9l5d2uu4431ul7u2ti9f8.apps.googleusercontent.com","client_type":3}],"api_key":[{"current_key":"AIzaSyDvn2Wlk1N5Sm9LQ2GI5O5nqo2kFDC0fL4"}],"services":{"appinvite_service":{"other_platform_oauth_client":[{"client_id":"502701571624-a976glfehaf9l5d2uu4431ul7u2ti9f8.apps.googleusercontent.com","client_type":3},{"client_id":"502701571624-vbrm796entdvi34sp1r1gqd10kp6s2kt.apps.googleusercontent.com","client_type":2,"ios_info":{"bundle_id":"com.example.keuangan"}}]}}}],"configuration_version":"1"}' > android/app/google-services.json
           fi
 
       - name: Analyze project source
