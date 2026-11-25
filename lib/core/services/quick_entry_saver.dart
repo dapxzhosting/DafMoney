@@ -65,10 +65,12 @@ class QuickEntrySaver {
   QuickEntrySaver._();
 
   static Future<void> ensureFirebase() async {
-    if (Firebase.apps.isEmpty) {
+    try {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
+    } catch (e) {
+      if (!e.toString().contains('duplicate-app')) rethrow;
     }
   }
 

@@ -23,10 +23,14 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    if (Firebase.apps.isEmpty) {
+    try {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
-      ).timeout(const Duration(seconds: 20));
+      ).timeout(const Duration(seconds: 10));
+    } catch (e) {
+      if (!e.toString().contains('duplicate-app')) {
+        rethrow;
+      }
     }
 
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
