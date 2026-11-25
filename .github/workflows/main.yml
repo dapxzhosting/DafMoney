@@ -69,9 +69,8 @@ jobs:
       - name: Cetak Fingerprint SHA-1 Keystore Rilis
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: |
-          keytool -list -v -keystore android/app/release.jks -alias "$KEY_ALIAS" -storepass "$KEYSTORE_PASSWORD"
+          keytool -list -v -keystore android/app/release.jks -storepass "$KEYSTORE_PASSWORD" || true
 
       - name: Build Release APK
         run: |
