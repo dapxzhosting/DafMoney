@@ -32,12 +32,20 @@ class AuthRepository {
           e.message?.contains('10') == true ||
           e.message?.contains('12500') == true) {
         throw const AuthFailure(
-          'Gagal Google Sign-In (Code 10): Pastikan SHA-1 fingerprint aplikasi Anda sudah ditambahkan di Firebase Console.',
+          'Gagal Google Sign-In: SHA-1 fingerprint aplikasi belum terdaftar di Firebase Console atau Google Provider belum diaktifkan.',
         );
       }
-      throw AuthFailure('Gagal masuk Google (${e.code}: ${e.message ?? 'Unknown'}).');
+      throw AuthFailure(
+        'Gagal masuk Google (${e.code}: ${e.message ?? 'Unknown'}).',
+      );
     } catch (e) {
-      throw AuthFailure('Terjadi kesalahan ($e). Coba lagi.');
+      final msg = e.toString().replaceAll('Exception: ', '');
+      if (msg.contains('unknown')) {
+        throw const AuthFailure(
+          'Gagal otentikasi Google: Pastikan SHA-1 fingerprint sudah terdaftar di Firebase Console.',
+        );
+      }
+      throw AuthFailure('Terjadi kesalahan ($msg).');
     }
   }
 
@@ -57,7 +65,10 @@ class AuthRepository {
       serverClientId: _webClientId,
       scopes: const ['email'],
     );
-    await google.signOut();
+    try {
+      await google.signOut();
+    } catch (_) {}
+
     final account = await google.signIn();
     if (account == null) return null;
     final auth = await account.authentication;
