@@ -66,7 +66,6 @@ class RecurringActions {
       return;
     }
     final now = DateTime.now();
-    // Satu entri bermasalah tidak boleh menghentikan pengingat entri lain.
     for (final r in list) {
       try {
         final nid = NotificationService.idFor('rec_${r.id}');
@@ -76,8 +75,6 @@ class RecurringActions {
         if (when == null) continue;
         final label = r.note.trim().isEmpty ? 'Transaksi berulang' : r.note.trim();
         final verb = r.type == EntryType.income ? 'pemasukan' : 'pengeluaran';
-        // Pencatatan terjadi saat aplikasi dibuka, jadi teksnya tidak
-        // menjanjikan pencatatan otomatis di latar belakang.
         await NotificationService.scheduleOnce(
           id: nid,
           title: 'Besok: $label',

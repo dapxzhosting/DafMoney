@@ -8,8 +8,6 @@ class WidgetService {
   static const String _androidWidgetName = 'DafMoneyWidgetProvider';
   static const String _masked = 'Rp •••';
 
-  /// Perbarui widget layar utama. Saat [hidden] true (mode "sembunyikan
-  /// saldo"), angka tidak ditulis ke widget sama sekali.
   static Future<void> updateWidgetData({
     required int balance,
     required int remainingBudget,
@@ -31,7 +29,6 @@ class WidgetService {
     } catch (_) {}
   }
 
-  /// Hapus angka akun dari widget. Panggil saat keluar akun atau hapus akun.
   static Future<void> clear() async {
     try {
       await HomeWidget.saveWidgetData<String>('total_balance', _masked);

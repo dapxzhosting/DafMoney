@@ -122,8 +122,6 @@ class QuickEntrySaver {
   }) async {
     final uid = await currentUid();
     if (uid == null) return const [];
-    // Catat cepat berjalan tanpa layar kunci. Saat kunci aplikasi aktif,
-    // jangan tampilkan catatan/nominal dari riwayat transaksi.
     if (await _appLockOn(uid)) return const [];
     final user = FirebaseFirestore.instance.collection('users').doc(uid);
     final past = await _recent(user);

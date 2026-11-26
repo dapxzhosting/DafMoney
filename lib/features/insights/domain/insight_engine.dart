@@ -185,8 +185,6 @@ List<Insight> buildInsights({
     for (final t in cur)
       if (t.type == EntryType.expense) t.date.day,
   };
-  // Hitung hanya sejak hari pertama ada pencatatan, supaya akun baru tidak
-  // dianggap "tanpa pengeluaran" untuk hari sebelum aplikasi dipakai.
   var trackStart = 1;
   if (all.isNotEmpty) {
     final earliest = all

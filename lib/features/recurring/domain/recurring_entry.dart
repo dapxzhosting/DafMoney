@@ -83,11 +83,6 @@ int _clampDay(DateTime firstOfMonth, int day) {
   return day > last ? last : day;
 }
 
-/// Kemunculan pertama jadwal yang jatuh pada atau setelah [today].
-///
-/// Dipakai saat jadwal transaksi berulang diubah, supaya `nextDate` tidak
-/// dikembalikan ke tanggal mulai lama dan membuat ulang riwayat.
-/// Jika [start] masih di masa depan, hasilnya adalah [start] itu sendiri.
 DateTime firstOccurrenceOnOrAfter({
   required DateTime start,
   required DateTime today,
@@ -138,9 +133,6 @@ DateTime? nextDateAfterEdit({
   return next;
 }
 
-/// Waktu pengingat "besok" untuk jadwal yang jatuh pada [nextDate]: sehari
-/// sebelumnya pukul 09.00. Mengembalikan null kalau waktunya sudah lewat
-/// (pengingat tidak boleh dijadwalkan di masa lalu).
 DateTime? reminderTime(DateTime nextDate, DateTime now) {
   final when = DateTime(nextDate.year, nextDate.month, nextDate.day - 1, 9);
   return when.isAfter(now) ? when : null;

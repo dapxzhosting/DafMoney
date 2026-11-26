@@ -5,7 +5,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/services/error_reporter.dart';
 import '../../../core/services/widget_service.dart';
-import '../../settings/data/settings_repository.dart';
 import '../domain/auth_failure.dart';
 
 class AuthRepository {
@@ -43,11 +42,8 @@ class AuthRepository {
       reportError(e);
       throw const AuthFailure('Gagal masuk dengan Google. Coba lagi.');
     } catch (e, st) {
-      // Selalu dilaporkan, termasuk saat dikenali sebagai masalah Google.
       reportError(e, st);
       final text = e.toString();
-      // Petunjuk SHA-1 hanya untuk error yang jelas berasal dari Google
-      // Sign-In, bukan semua error yang kebetulan memuat kata "unknown".
       if (RegExp(r'unknown', caseSensitive: false).hasMatch(text) &&
           RegExp(
             r'google|gms|sign_in|ApiException',
@@ -135,9 +131,6 @@ class AuthRepository {
         await user.sendEmailVerification();
       } catch (_) {}
 
-      // Dipisah: gagal mengubah nama tampilan tidak boleh membatalkan
-      // pembuatan profil. Kalau profil gagal dibuat, _ensureProfile akan
-      // membuatnya saat masuk berikutnya.
       try {
         await user.updateDisplayName(cleanName);
       } catch (_) {}
@@ -220,16 +213,10 @@ class AuthRepository {
     });
   }
 
-  /// Menghapus seluruh data Firestore pengguna, baru kemudian akun Auth-nya.
-  /// Urutan ini wajib: setelah akun terhapus, aturan Firestore tidak lagi
-  /// mengizinkan penghapusan data. Aman dipanggil setelah deleteAllData
-  /// (idempoten). Panggil reauthenticate* dulu supaya `delete()` tidak
-  /// ditolak `requires-recent-login`.
   Future<void> deleteCurrentUser() {
     return _guard(() async {
       final user = _auth.currentUser;
       if (user == null) throw const AuthFailure('Sesi berakhir. Masuk lagi.');
-      await SettingsRepository(_db).deleteAllData(user.uid);
       await user.delete();
       await WidgetService.clear();
     });

@@ -1,7 +1,5 @@
 import 'package:flutter/services.dart';
 
-/// Mengaktifkan FLAG_SECURE di Android: layar disembunyikan dari tangkapan
-/// layar dan pratinjau app switcher. Dipakai saat kunci aplikasi aktif.
 class ScreenSecurityService {
   ScreenSecurityService._();
 

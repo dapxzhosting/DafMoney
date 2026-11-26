@@ -108,8 +108,6 @@ class RecurringRepository {
   }
 
   Future<void> setActive(String uid, String id, bool active) async {
-    // Saat diaktifkan kembali, lewati tanggal yang terlewat selama dijeda
-    // supaya tidak muncul transaksi susulan sekaligus.
     DateTime? newNext;
     if (active) {
       try {

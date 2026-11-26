@@ -15,8 +15,6 @@ class NotificationService {
       final name = await FlutterTimezone.getLocalTimezone();
       tz.setLocalLocation(tz.getLocation(name));
     } catch (_) {
-      // Gagal membaca zona waktu perangkat: jangan biarkan UTC. Pakai zona
-      // yang offset-nya sama dengan perangkat agar pengingat tidak bergeser.
       final offset = DateTime.now().timeZoneOffset;
       final now = DateTime.now().toUtc();
       for (final loc in tz.timeZoneDatabase.locations.values) {

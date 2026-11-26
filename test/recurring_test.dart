@@ -59,7 +59,6 @@ void main() {
     });
 
     test('null bila waktunya sudah lewat (harian, atau jatuh tempo hari ini)', () {
-      // Harian: jatuh tempo besok, tapi sekarang sudah lewat jam 09.00.
       expect(
         reminderTime(DateTime(2026, 11, 27), DateTime(2026, 11, 26, 14)),
         isNull,
@@ -133,7 +132,6 @@ void main() {
       );
       expect(next.isBefore(DateTime(2026, 11, 25)), isFalse);
       expect(next.difference(DateTime(2026, 11, 25)).inDays, lessThan(7));
-      // Tidak ada tanggal jatuh tempo historis yang dibuat ulang.
       final due = dueDates(
         next: next,
         today: DateTime(2026, 11, 25),

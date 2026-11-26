@@ -1,11 +1,11 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/error/app_exception.dart';
 import '../../transactions/data/transaction_repository.dart' show writeSafe;
 import '../domain/user_profile.dart';
 
-/// Semua subkoleksi di bawah `users/{uid}`. Tambahkan nama koleksi baru di sini
-/// supaya ikut terhapus saat pengguna menghapus data atau akunnya.
 const accountDataCollections = <String>[
   'transactions',
   'receipts',
@@ -23,6 +23,8 @@ class SettingsRepository {
 
   final FirebaseFirestore _db;
 
+  static const _deleteTimeout = Duration(seconds: 30);
+
   DocumentReference<Map<String, dynamic>> _user(String uid) =>
       _db.collection('users').doc(uid);
 
@@ -37,15 +39,21 @@ class SettingsRepository {
     });
   }
 
-  // set(merge) dipakai, bukan update(): update() gagal `not-found` kalau
-  // dokumen profil belum sempat dibuat.
-  Future<void> updateName(String uid, String name) => writeSafe(
-    () => _user(uid).set({'name': name}, SetOptions(merge: true)),
-  );
+  Future<void> updateName(String uid, String name) =>
+      writeSafe(() => _user(uid).update({'name': name}));
 
-  Future<void> setInitialBalance(String uid, int value) => writeSafe(
-    () => _user(uid).set({'initialBalance': value}, SetOptions(merge: true)),
-  );
+  Future<void> setInitialBalance(String uid, int value) =>
+      writeSafe(() => _user(uid).update({'initialBalance': value}));
+
+  Future<void> _confirmed(Future<void> Function() op) async {
+    try {
+      await op().timeout(_deleteTimeout);
+    } on TimeoutException {
+      throw const AppException(
+        'Koneksi lambat atau terputus, penghapusan belum selesai. Periksa koneksi lalu coba lagi.',
+      );
+    }
+  }
 
   Future<void> _deleteCollection(String uid, String name) async {
     final col = _user(uid).collection(name);
@@ -53,7 +61,6 @@ class SettingsRepository {
     while (true) {
       final snap = await col.limit(400).get();
       if (snap.docs.isEmpty) break;
-      // Dokumen yang sama muncul lagi setelah dihapus = penghapusan macet.
       if (snap.docs.first.id == lastFirstId) {
         throw const AppException(
           'Gagal menghapus data. Periksa koneksi lalu coba lagi.',
@@ -64,7 +71,7 @@ class SettingsRepository {
       for (final d in snap.docs) {
         batch.delete(d.reference);
       }
-      await writeSafe(() => batch.commit());
+      await _confirmed(() => batch.commit());
     }
   }
 
@@ -77,6 +84,6 @@ class SettingsRepository {
     for (final name in accountDataCollections) {
       await _deleteCollection(uid, name);
     }
-    await writeSafe(() => _user(uid).delete());
+    await _confirmed(() => _user(uid).delete());
   }
 }

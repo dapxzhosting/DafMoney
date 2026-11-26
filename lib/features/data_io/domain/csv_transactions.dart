@@ -106,8 +106,6 @@ DateTime? parseCsvDate(String raw) {
 }
 
 int? parseCsvAmount(String raw) {
-  // Buang semua spasi (termasuk NBSP), tanda, awalan mata uang (Rp, Rp.,
-  // IDR), dan akhiran ",-" supaya "Rp. 50.000" / "50.000,-" ikut terbaca.
   var s = raw.toLowerCase().replaceAll(RegExp(r'\s'), '');
   s = s.replaceFirst(RegExp(r'^[-+]'), '');
   s = s.replaceFirst(RegExp(r'^(rp|idr)\.?'), '');

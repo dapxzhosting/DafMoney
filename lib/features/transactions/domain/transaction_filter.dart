@@ -27,7 +27,6 @@ enum TxScope {
           DateTime(n.year, n.month + 1),
         );
       case TxScope.all:
-        // Selaras dengan batas form (sampai 2100) dan impor CSV (mulai 1970).
         return DateRange(DateTime(1970), DateTime(2101));
     }
   }

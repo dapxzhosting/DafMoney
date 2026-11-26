@@ -4,8 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/error/app_exception.dart';
 
-/// Commit batch dengan batas waktu. Saat offline, Future Firestore baru selesai
-/// setelah server menjawab, sehingga impor/restore besar bisa menggantung.
 Future<void> commitBatch(
   WriteBatch batch, {
   Duration timeout = const Duration(seconds: 30),
