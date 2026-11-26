@@ -37,7 +37,7 @@ class SettingsRepository {
       for (final d in snap.docs) {
         batch.delete(d.reference);
       }
-      await batch.commit();
+      await writeSafe(() => batch.commit());
     }
   }
 
@@ -60,6 +60,6 @@ class SettingsRepository {
     ]) {
       await _deleteCollection(uid, name);
     }
-    await _user(uid).delete();
+    await writeSafe(() => _user(uid).delete());
   }
 }

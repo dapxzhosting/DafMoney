@@ -104,6 +104,43 @@ DateTime firstOccurrenceOnOrAfter({
   return d;
 }
 
+<<<<<<< HEAD
+=======
+DateTime? nextDateAfterEdit({
+  required DateTime start,
+  required DateTime oldStart,
+  required DateTime oldNext,
+  required Frequency oldFrequency,
+  required Frequency frequency,
+  required DateTime today,
+}) {
+  final s = DateTime(start.year, start.month, start.day);
+  final t = DateTime(today.year, today.month, today.day);
+  final oldS = DateTime(oldStart.year, oldStart.month, oldStart.day);
+  if (frequency == oldFrequency && s == oldS) return null;
+  var next = firstOccurrenceOnOrAfter(
+    start: s,
+    today: t,
+    frequency: frequency,
+    anchorDay: s.day,
+  );
+  final oldOccursToday =
+      !oldS.isAfter(t) &&
+      oldNext.isAfter(t) &&
+      firstOccurrenceOnOrAfter(
+            start: oldS,
+            today: t,
+            frequency: oldFrequency,
+            anchorDay: oldS.day,
+          ) ==
+          t;
+  if (oldOccursToday && next == t) {
+    next = nextOccurrence(next, frequency, s.day);
+  }
+  return next;
+}
+
+>>>>>>> 1f1b1b0 (Update DafMoney)
 List<DateTime> dueDates({
   required DateTime next,
   required DateTime today,

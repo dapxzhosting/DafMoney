@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/transactions/data/transaction_repository.dart'
     show writeSafe;
+import '../services/error_reporter.dart';
 import 'firebase_providers.dart';
 
 Map<String, dynamic>? loadedUserData(Ref ref, String uid) =>
@@ -18,7 +18,13 @@ Future<void> syncToAccount(
     await writeSafe(
       () => db.collection('users').doc(uid).set(data, SetOptions(merge: true)),
     );
+<<<<<<< HEAD
   } catch (_) {}
+=======
+  } catch (e, st) {
+    reportError(e, st);
+  }
+>>>>>>> 1f1b1b0 (Update DafMoney)
 }
 
 bool isSettledServerSnapshot(DocumentSnapshot<Map<String, dynamic>> snap) =>

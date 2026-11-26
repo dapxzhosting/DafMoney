@@ -1,6 +1,7 @@
 abstract class CsvCodec {
   static const _formulaStarts = ['=', '+', '-', '@', '\t', '\r'];
 
+<<<<<<< HEAD
   /// Netralkan sel yang diawali karakter rumus (=, +, -, @) agar tidak
   /// dieksekusi saat CSV dibuka di Excel/Sheets (formula injection).
   static String sanitizeCell(String s) {
@@ -15,6 +16,17 @@ abstract class CsvCodec {
     }
     return s;
   }
+=======
+  static bool _needsEscape(String s) {
+    final core = s.replaceFirst(RegExp(r"^'+"), '');
+    return core.isNotEmpty && _formulaStarts.contains(core[0]);
+  }
+
+  static String sanitizeCell(String s) => _needsEscape(s) ? "'$s" : s;
+
+  static String unsanitizeCell(String s) =>
+      s.startsWith("'") && _needsEscape(s.substring(1)) ? s.substring(1) : s;
+>>>>>>> 1f1b1b0 (Update DafMoney)
 
   static String encodeField(String s) {
     final needsQuote =

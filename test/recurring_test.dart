@@ -139,4 +139,81 @@ void main() {
       );
     });
   });
+<<<<<<< HEAD
+=======
+
+  group('nextDateAfterEdit', () {
+    final today = DateTime(2026, 11, 25);
+
+    test('tidak ada perubahan jadwal: tidak mengubah nextDate', () {
+      expect(
+        nextDateAfterEdit(
+          start: DateTime(2026, 1, 15),
+          oldStart: DateTime(2026, 1, 15),
+          oldNext: DateTime(2026, 12, 15),
+          oldFrequency: Frequency.monthly,
+          frequency: Frequency.monthly,
+          today: today,
+        ),
+        isNull,
+      );
+    });
+
+    test('bulanan ke mingguan: mulai dari kemunculan berikutnya', () {
+      expect(
+        nextDateAfterEdit(
+          start: DateTime(2026, 1, 15),
+          oldStart: DateTime(2026, 1, 15),
+          oldNext: DateTime(2026, 12, 15),
+          oldFrequency: Frequency.monthly,
+          frequency: Frequency.weekly,
+          today: today,
+        ),
+        DateTime(2026, 11, 26),
+      );
+    });
+
+    test('jadwal lama sudah mencatat hari ini: hari ini dilewati', () {
+      expect(
+        nextDateAfterEdit(
+          start: DateTime(2026, 11, 4),
+          oldStart: DateTime(2026, 11, 4),
+          oldNext: DateTime(2026, 12, 2),
+          oldFrequency: Frequency.weekly,
+          frequency: Frequency.daily,
+          today: today,
+        ),
+        DateTime(2026, 11, 26),
+      );
+    });
+
+    test('mulai dipindah ke hari ini tanpa catatan hari ini: dipakai', () {
+      expect(
+        nextDateAfterEdit(
+          start: DateTime(2026, 11, 25),
+          oldStart: DateTime(2026, 11, 5),
+          oldNext: DateTime(2026, 12, 5),
+          oldFrequency: Frequency.monthly,
+          frequency: Frequency.monthly,
+          today: today,
+        ),
+        DateTime(2026, 11, 25),
+      );
+    });
+
+    test('mulai dipindah ke masa depan: tanggal itu dipakai', () {
+      expect(
+        nextDateAfterEdit(
+          start: DateTime(2027, 2, 1),
+          oldStart: DateTime(2026, 1, 15),
+          oldNext: DateTime(2026, 12, 15),
+          oldFrequency: Frequency.monthly,
+          frequency: Frequency.monthly,
+          today: today,
+        ),
+        DateTime(2027, 2, 1),
+      );
+    });
+  });
+>>>>>>> 1f1b1b0 (Update DafMoney)
 }

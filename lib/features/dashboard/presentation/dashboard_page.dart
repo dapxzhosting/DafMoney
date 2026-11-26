@@ -76,6 +76,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   bool _fabExtended = true;
   bool _dialOpen = false;
   bool _compact = false;
+  String? _widgetSignature;
 
   static const _compactThreshold = 250.0;
 
@@ -253,11 +254,24 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
     final hideBalanceForWidget = ref.watch(hideBalanceProvider);
     if (balance.hasValue && budgets.hasValue) {
+<<<<<<< HEAD
       WidgetService.updateWidgetData(
         balance: totalBalance ?? 0,
         remainingBudget: remainingBudget,
         hidden: hideBalanceForWidget,
       );
+=======
+      final signature =
+          '${totalBalance ?? 0}|$remainingBudget|$hideBalanceForWidget';
+      if (signature != _widgetSignature) {
+        _widgetSignature = signature;
+        WidgetService.updateWidgetData(
+          balance: totalBalance ?? 0,
+          remainingBudget: remainingBudget,
+          hidden: hideBalanceForWidget,
+        );
+      }
+>>>>>>> 1f1b1b0 (Update DafMoney)
     }
 
     return PopScope(

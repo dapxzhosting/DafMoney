@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 
 import '../../../core/models/entry_type.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../transactions/data/transaction_repository.dart' show writeSafe;
+import '../../../core/services/error_reporter.dart';
 import '../domain/recurring_entry.dart';
 
 class RecurringRepository {
@@ -84,6 +84,7 @@ class RecurringRepository {
     String? walletId,
   }) {
     final start = dateOnly(startDate);
+<<<<<<< HEAD
     final today = dateOnly(DateTime.now());
     final startChanged = !isSameDay(start, old.startDate);
     final scheduleChanged = frequency != old.frequency || startChanged;
@@ -108,6 +109,16 @@ class RecurringRepository {
         newNext = nextOccurrence(newNext, frequency, start.day);
       }
     }
+=======
+    final newNext = nextDateAfterEdit(
+      start: start,
+      oldStart: old.startDate,
+      oldNext: old.nextDate,
+      oldFrequency: old.frequency,
+      frequency: frequency,
+      today: dateOnly(DateTime.now()),
+    );
+>>>>>>> 1f1b1b0 (Update DafMoney)
     return writeSafe(
       () => _col(uid).doc(old.id).update({
         'type': type.name,
@@ -196,7 +207,13 @@ class RecurringRepository {
           tx.update(doc.reference, {'nextDate': Timestamp.fromDate(next)});
           return dates.length;
         });
+<<<<<<< HEAD
       } catch (_) {}
+=======
+      } catch (e, st) {
+        reportError(e, st);
+      }
+>>>>>>> 1f1b1b0 (Update DafMoney)
     }
     return created;
   }

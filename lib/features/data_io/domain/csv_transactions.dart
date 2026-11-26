@@ -208,7 +208,7 @@ ImportPreview parseTransactionsCsv(String text) {
     if (cat.length > 40) cat = cat.substring(0, 40);
     var note = CsvCodec.unsanitizeCell(cell(r, iNote));
     if (note.length > 200) note = note.substring(0, 200);
-    final wallet = cell(r, iWallet);
+    final wallet = CsvCodec.unsanitizeCell(cell(r, iWallet));
     rows.add(
       ImportRow(
         date: date,

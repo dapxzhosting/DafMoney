@@ -99,7 +99,7 @@ class WalletRepository {
       for (final d in rec.docs) {
         batch.update(d.reference, {'walletId': FieldValue.delete()});
       }
-      await batch.commit();
+      await writeSafe(() => batch.commit());
     }
     final txCol = _user(uid).collection('transactions');
     while (true) {
@@ -112,8 +112,8 @@ class WalletRepository {
       for (final d in snap.docs) {
         batch.update(d.reference, {'walletId': FieldValue.delete()});
       }
-      await batch.commit();
+      await writeSafe(() => batch.commit());
     }
-    await _col(uid).doc(id).delete();
+    await writeSafe(() => _col(uid).doc(id).delete());
   }
 }
