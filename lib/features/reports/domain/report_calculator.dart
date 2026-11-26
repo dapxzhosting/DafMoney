@@ -14,7 +14,7 @@ class PeriodSummary {
 
   int get net => income - expense;
 
-  double get savingsRate => income <= 0 ? 0 : net / income;
+  double? get savingsRate => income <= 0 ? null : net / income;
 }
 
 class CategoryTotal {

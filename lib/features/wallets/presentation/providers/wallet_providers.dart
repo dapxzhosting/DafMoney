@@ -81,10 +81,10 @@ class WalletActions {
     ),
   );
 
-  Future<String?> delete(String id) => runGuarded(() async {
-    await _repo.delete(_uid, id);
-    _ref.read(dataVersionProvider.notifier).bump();
-  });
+  Future<String?> adjustBalance(String id, int delta) =>
+      runGuarded(() => _repo.adjustInitialBalance(_uid, id, delta));
+
+  Future<String?> delete(String id) => runGuarded(() => _repo.delete(_uid, id));
 }
 
 final walletActionsProvider = Provider<WalletActions>(

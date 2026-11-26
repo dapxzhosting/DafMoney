@@ -67,13 +67,7 @@ class _WalletAdjustSheetState extends ConsumerState<WalletAdjustSheet> {
     setState(() => _saving = true);
     final err = await ref
         .read(walletActionsProvider)
-        .update(
-          w.id,
-          name: w.name,
-          iconKey: w.iconKey,
-          colorValue: w.colorValue,
-          initialBalance: w.initialBalance + diff,
-        );
+        .adjustBalance(w.id, diff);
     if (!mounted) return;
     setState(() => _saving = false);
     if (err != null) {

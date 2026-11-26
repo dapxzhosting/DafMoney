@@ -63,9 +63,29 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp>
     super.dispose();
   }
 
+  DateTime? _monthAtPause;
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _runRecurring();
+    if (state == AppLifecycleState.paused) {
+      final n = DateTime.now();
+      _monthAtPause = DateTime(n.year, n.month);
+    }
+    if (state == AppLifecycleState.resumed) {
+      _advanceMonthIfNeeded();
+      _runRecurring();
+    }
+  }
+
+  void _advanceMonthIfNeeded() {
+    final before = _monthAtPause;
+    if (before == null) return;
+    final n = DateTime.now();
+    if (DateTime(n.year, n.month) == before) return;
+    if (ref.read(selectedMonthProvider) == before) {
+      ref.read(selectedMonthProvider.notifier).reset();
+    }
+    _monthAtPause = null;
   }
 
   void _runRecurring() {

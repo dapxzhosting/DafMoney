@@ -219,7 +219,6 @@ class _CsvPageState extends ConsumerState<CsvPage> {
                 setState(() => _progress = (done: done, total: total));
             },
           );
-      ref.read(dataVersionProvider.notifier).bump();
       if (!mounted) return;
       setState(() {
         _preview = null;

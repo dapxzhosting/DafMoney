@@ -204,7 +204,9 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  Fmt.percent(summary.savingsRate),
+                                  summary.savingsRate == null
+                                      ? '—'
+                                      : Fmt.percent(summary.savingsRate!),
                                   style: tt.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w800,
                                   ),

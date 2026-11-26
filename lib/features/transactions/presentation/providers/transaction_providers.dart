@@ -73,8 +73,6 @@ class TransactionActions {
 
   ReceiptRepository get _receipts => _ref.read(receiptRepositoryProvider);
 
-  void _bump() => _ref.read(dataVersionProvider.notifier).bump();
-
   Future<String?> add({
     required EntryType type,
     required int amount,
@@ -105,7 +103,6 @@ class TransactionActions {
         rethrow;
       }
     }
-    _bump();
   });
 
   Future<String?> update(
@@ -137,12 +134,10 @@ class TransactionActions {
       await _receipts.delete(_uid, id);
     }
     _ref.invalidate(receiptProvider(id));
-    _bump();
   });
 
   Future<String?> delete(String id) => runGuarded(() async {
     await _repo.delete(_uid, id);
-    _bump();
   });
 
   Future<Uint8List?> receiptBytes(String id) async {
@@ -157,7 +152,6 @@ class TransactionActions {
       runGuarded(() async {
         await _repo.restore(_uid, t, hasReceipt: receipt != null);
         if (receipt != null) await _receipts.save(_uid, t.id, receipt);
-        _bump();
       });
 
   Future<({String? error, String? id})> duplicate(MoneyTransaction t) async {
@@ -172,7 +166,6 @@ class TransactionActions {
         date: DateTime.now(),
         walletId: t.walletId,
       );
-      _bump();
     });
     return (error: err, id: newId);
   }

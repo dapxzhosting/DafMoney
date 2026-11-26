@@ -105,12 +105,16 @@ class QuickPopupActivity : Activity() {
         if (!any) findViewById<View>(R.id.chip_scroll).visibility = View.GONE
     }
 
+    private var submitted = false
+
     private fun submit(raw: String) {
+        if (submitted) return
         val text = raw.trim()
         if (text.isEmpty()) {
             Toast.makeText(this, "Tulis dulu, mis. kopi 15rb", Toast.LENGTH_SHORT).show()
             return
         }
+        submitted = true
         Toast.makeText(this, "Menyimpan \"$text\"…", Toast.LENGTH_SHORT).show()
         buzz()
         val uri = Uri.Builder()

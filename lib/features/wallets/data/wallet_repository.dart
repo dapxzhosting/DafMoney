@@ -57,6 +57,14 @@ class WalletRepository {
     );
   }
 
+  Future<void> adjustInitialBalance(String uid, String id, int delta) {
+    return writeSafe(
+      () => _col(uid).doc(id).update({
+        'initialBalance': FieldValue.increment(delta),
+      }),
+    );
+  }
+
   Future<void> update(
     String uid,
     String id, {

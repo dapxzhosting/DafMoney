@@ -293,13 +293,13 @@ class SettingsPage extends ConsumerWidget {
               _Tile(
                 icon: Icons.delete_sweep_rounded,
                 title: 'Hapus semua transaksi',
-                subtitle: 'Kategori dan anggaran tetap ada',
+                subtitle: 'Kategori, anggaran, transfer, dan transaksi berulang tetap ada',
                 danger: true,
                 onTap: () async {
                   final ok = await confirmDialog(
                     context,
                     title: 'Hapus semua transaksi?',
-                    message: 'Seluruh riwayat transaksi akan dihapus permanen dan tidak bisa dikembalikan.',
+                    message: 'Seluruh riwayat transaksi dan foto struk akan dihapus permanen dan tidak bisa dikembalikan. Transfer antar dompet dan aturan berulang tidak ikut terhapus.',
                     confirmLabel: 'Hapus semua',
                     destructive: true,
                   );

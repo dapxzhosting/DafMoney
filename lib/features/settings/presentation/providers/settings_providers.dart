@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/providers/firebase_providers.dart';
 import '../../../../core/providers/session_providers.dart';
+import '../../../../core/services/error_reporter.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../categories/presentation/providers/category_providers.dart';
@@ -37,7 +38,11 @@ class SettingsActions {
 
   Future<String?> updateName(String name) => runGuarded(() async {
     await _repo.updateName(_uid, name);
-    await _auth.updateDisplayName(name);
+    try {
+      await _auth.updateDisplayName(name);
+    } catch (e, st) {
+      reportError(e, st);
+    }
   });
 
   Future<String?> setInitialBalance(int value) =>

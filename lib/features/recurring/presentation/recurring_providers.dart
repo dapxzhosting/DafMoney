@@ -39,7 +39,6 @@ class RecurringActions {
     try {
       final n = await _repo.processDue(uid);
       if (n > 0) {
-        _ref.read(dataVersionProvider.notifier).bump();
         try {
           await NotificationService.showInfo(
             title: 'Transaksi berulang dicatat',
