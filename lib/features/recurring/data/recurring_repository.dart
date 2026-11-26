@@ -84,32 +84,6 @@ class RecurringRepository {
     String? walletId,
   }) {
     final start = dateOnly(startDate);
-<<<<<<< HEAD
-    final today = dateOnly(DateTime.now());
-    final startChanged = !isSameDay(start, old.startDate);
-    final scheduleChanged = frequency != old.frequency || startChanged;
-
-    // Saat jadwal berubah, jangan kembali ke tanggal mulai lama: itu membuat
-    // processDue membuat ulang transaksi historis. Mulai dari kemunculan
-    // pertama pada atau setelah hari ini.
-    DateTime? newNext;
-    if (scheduleChanged) {
-      newNext = firstOccurrenceOnOrAfter(
-        start: start,
-        today: today,
-        frequency: frequency,
-        anchorDay: start.day,
-      );
-      // Hanya frekuensi yang diubah pada aturan yang sudah berjalan dan sudah
-      // diproses sampai hari ini: lewati hari ini agar tidak tercatat ganda.
-      if (!startChanged &&
-          !old.startDate.isAfter(today) &&
-          old.nextDate.isAfter(today) &&
-          isSameDay(newNext, today)) {
-        newNext = nextOccurrence(newNext, frequency, start.day);
-      }
-    }
-=======
     final newNext = nextDateAfterEdit(
       start: start,
       oldStart: old.startDate,
@@ -118,7 +92,6 @@ class RecurringRepository {
       frequency: frequency,
       today: dateOnly(DateTime.now()),
     );
->>>>>>> 1f1b1b0 (Update DafMoney)
     return writeSafe(
       () => _col(uid).doc(old.id).update({
         'type': type.name,
@@ -207,13 +180,9 @@ class RecurringRepository {
           tx.update(doc.reference, {'nextDate': Timestamp.fromDate(next)});
           return dates.length;
         });
-<<<<<<< HEAD
-      } catch (_) {}
-=======
       } catch (e, st) {
         reportError(e, st);
       }
->>>>>>> 1f1b1b0 (Update DafMoney)
     }
     return created;
   }

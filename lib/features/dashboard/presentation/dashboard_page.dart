@@ -254,13 +254,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
     final hideBalanceForWidget = ref.watch(hideBalanceProvider);
     if (balance.hasValue && budgets.hasValue) {
-<<<<<<< HEAD
-      WidgetService.updateWidgetData(
-        balance: totalBalance ?? 0,
-        remainingBudget: remainingBudget,
-        hidden: hideBalanceForWidget,
-      );
-=======
       final signature =
           '${totalBalance ?? 0}|$remainingBudget|$hideBalanceForWidget';
       if (signature != _widgetSignature) {
@@ -271,7 +264,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           hidden: hideBalanceForWidget,
         );
       }
->>>>>>> 1f1b1b0 (Update DafMoney)
     }
 
     return PopScope(

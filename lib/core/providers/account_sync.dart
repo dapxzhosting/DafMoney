@@ -18,13 +18,9 @@ Future<void> syncToAccount(
     await writeSafe(
       () => db.collection('users').doc(uid).set(data, SetOptions(merge: true)),
     );
-<<<<<<< HEAD
-  } catch (_) {}
-=======
   } catch (e, st) {
     reportError(e, st);
   }
->>>>>>> 1f1b1b0 (Update DafMoney)
 }
 
 bool isSettledServerSnapshot(DocumentSnapshot<Map<String, dynamic>> snap) =>

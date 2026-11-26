@@ -3,10 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-<<<<<<< HEAD
-=======
 import '../../../core/services/error_reporter.dart';
->>>>>>> 1f1b1b0 (Update DafMoney)
 import '../../../core/services/widget_service.dart';
 import '../domain/auth_failure.dart';
 
@@ -32,26 +29,12 @@ class AuthRepository {
       if (e.code == 'sign_in_canceled' || e.code == 'canceled') {
         throw const AuthFailure('Masuk dengan Google dibatalkan.');
       }
-<<<<<<< HEAD
-      if (e.code == 'sign_in_failed' ||
-          e.message?.contains('10') == true ||
-          e.message?.contains('12500') == true) {
-=======
       final text = '${e.code} ${e.message ?? ''}';
       if (RegExp(r'ApiException:\s*(10|12500)\b').hasMatch(text)) {
->>>>>>> 1f1b1b0 (Update DafMoney)
         throw const AuthFailure(
           'Gagal Google Sign-In: SHA-1 fingerprint aplikasi belum terdaftar di Firebase Console atau Google Provider belum diaktifkan.',
         );
       }
-<<<<<<< HEAD
-      throw AuthFailure(
-        'Gagal masuk Google (${e.code}: ${e.message ?? 'Unknown'}).',
-      );
-    } catch (e) {
-      final msg = e.toString().replaceAll('Exception: ', '');
-      if (msg.contains('unknown')) {
-=======
       if (RegExp(r'ApiException:\s*7\b').hasMatch(text) ||
           e.code == 'network_error') {
         throw const AuthFailure('Tidak ada koneksi internet.');
@@ -60,17 +43,12 @@ class AuthRepository {
       throw const AuthFailure('Gagal masuk dengan Google. Coba lagi.');
     } catch (e, st) {
       if (e.toString().contains('unknown')) {
->>>>>>> 1f1b1b0 (Update DafMoney)
         throw const AuthFailure(
           'Gagal otentikasi Google: Pastikan SHA-1 fingerprint sudah terdaftar di Firebase Console.',
         );
       }
-<<<<<<< HEAD
-      throw AuthFailure('Terjadi kesalahan ($msg).');
-=======
       reportError(e, st);
       throw const AuthFailure('Terjadi kesalahan. Coba lagi.');
->>>>>>> 1f1b1b0 (Update DafMoney)
     }
   }
 

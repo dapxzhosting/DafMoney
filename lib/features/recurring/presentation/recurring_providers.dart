@@ -47,12 +47,8 @@ class RecurringActions {
           );
         } catch (_) {}
       }
-<<<<<<< HEAD
-    } catch (_) {
-=======
     } catch (e, st) {
       reportError(e, st);
->>>>>>> 1f1b1b0 (Update DafMoney)
     } finally {
       _running = false;
     }
@@ -77,13 +73,9 @@ class RecurringActions {
           when: DateTime(r.nextDate.year, r.nextDate.month, r.nextDate.day - 1, 9),
         );
       }
-<<<<<<< HEAD
-    } catch (_) {}
-=======
     } catch (e, st) {
       reportError(e, st);
     }
->>>>>>> 1f1b1b0 (Update DafMoney)
   }
 
   Future<String?> add({
@@ -141,13 +133,9 @@ class RecurringActions {
     await _repo.delete(_uid, id);
     try {
       await NotificationService.cancel(NotificationService.idFor('rec_$id'));
-<<<<<<< HEAD
-    } catch (_) {}
-=======
     } catch (e, st) {
       reportError(e, st);
     }
->>>>>>> 1f1b1b0 (Update DafMoney)
   });
 }
 

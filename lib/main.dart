@@ -42,8 +42,6 @@ Future<void> main() async {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       return true;
     };
-<<<<<<< HEAD
-=======
 
     try {
       await FirebaseAppCheck.instance.activate(
@@ -52,7 +50,6 @@ Future<void> main() async {
             : AndroidProvider.playIntegrity,
       );
     } catch (_) {}
->>>>>>> 1f1b1b0 (Update DafMoney)
 
     FirebaseFirestore.instance.settings = const Settings(
       persistenceEnabled: true,

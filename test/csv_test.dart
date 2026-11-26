@@ -167,9 +167,6 @@ void main() {
     });
 
     test('unsanitizeCell membalikkan sanitizeCell', () {
-<<<<<<< HEAD
-      for (final v in ['=1+1', '+62', '-x', '@a', 'biasa', "'kutip", '']) {
-=======
       for (final v in [
         '=1+1',
         '+62',
@@ -182,7 +179,6 @@ void main() {
         "''=a",
         "'",
       ]) {
->>>>>>> 1f1b1b0 (Update DafMoney)
         expect(CsvCodec.unsanitizeCell(CsvCodec.sanitizeCell(v)), v);
       }
     });

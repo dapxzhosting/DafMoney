@@ -104,8 +104,6 @@ DateTime firstOccurrenceOnOrAfter({
   return d;
 }
 
-<<<<<<< HEAD
-=======
 DateTime? nextDateAfterEdit({
   required DateTime start,
   required DateTime oldStart,
@@ -140,7 +138,6 @@ DateTime? nextDateAfterEdit({
   return next;
 }
 
->>>>>>> 1f1b1b0 (Update DafMoney)
 List<DateTime> dueDates({
   required DateTime next,
   required DateTime today,

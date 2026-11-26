@@ -139,8 +139,6 @@ void main() {
       );
     });
   });
-<<<<<<< HEAD
-=======
 
   group('nextDateAfterEdit', () {
     final today = DateTime(2026, 11, 25);
@@ -215,5 +213,4 @@ void main() {
       );
     });
   });
->>>>>>> 1f1b1b0 (Update DafMoney)
 }
