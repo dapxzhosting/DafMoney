@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../core/utils/civil_date.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../transactions/data/transaction_repository.dart' show writeSafe;
 import '../domain/wallet_transfer.dart';
@@ -23,7 +24,7 @@ class TransferRepository {
           toWalletId: (m['toWalletId'] as String?) ?? '',
           amount: (m['amount'] as num?)?.toInt() ?? 0,
           note: (m['note'] as String?) ?? '',
-          date: date is Timestamp ? date.toDate() : DateTime.now(),
+          date: civilDateFromValue(date) ?? dateOnly(DateTime.now()),
         );
       }).toList();
       list.sort((a, b) => b.date.compareTo(a.date));
@@ -45,7 +46,7 @@ class TransferRepository {
         'toWalletId': toWalletId,
         'amount': amount,
         'note': note,
-        'date': Timestamp.fromDate(dateOnly(date)),
+        'date': civilTimestamp(date),
         'createdAt': FieldValue.serverTimestamp(),
       }),
     );

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/models/entry_type.dart';
-import '../../../core/utils/date_utils.dart';
+import '../../../core/utils/civil_date.dart';
 import '../../categories/domain/category.dart';
 import '../../categories/presentation/category_style.dart';
 import '../../transactions/domain/money_transaction.dart';
@@ -149,7 +149,7 @@ class ImportService {
           'amount': r.amount,
           'categoryId': catIds[_catKey(r.type, r.categoryName)],
           'note': r.note,
-          'date': Timestamp.fromDate(dateOnly(r.date)),
+          'date': civilTimestamp(r.date),
           'createdAt': FieldValue.serverTimestamp(),
           if (walletId != null) 'walletId': walletId,
         });

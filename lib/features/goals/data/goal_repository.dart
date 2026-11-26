@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/error/app_exception.dart';
-import '../../../core/utils/date_utils.dart';
+import '../../../core/utils/civil_date.dart';
 import '../../transactions/data/transaction_repository.dart' show writeSafe;
 import '../domain/savings_goal.dart';
 
@@ -25,7 +25,7 @@ class GoalRepository {
           colorValue: (m['color'] as num?)?.toInt() ?? 0xFF14B8A6,
           target: (m['target'] as num?)?.toInt() ?? 0,
           saved: (m['saved'] as num?)?.toInt() ?? 0,
-          deadline: dl is Timestamp ? dl.toDate() : null,
+          deadline: civilDateFromValue(dl),
         );
       }).toList();
       list.sort((a, b) {
@@ -57,7 +57,7 @@ class GoalRepository {
         'target': target,
         'saved': saved,
         if (deadline != null)
-          'deadline': Timestamp.fromDate(dateOnly(deadline)),
+          'deadline': civilTimestamp(deadline),
         'createdAt': FieldValue.serverTimestamp(),
       }),
     );
@@ -80,7 +80,7 @@ class GoalRepository {
         'target': target,
         'deadline': deadline == null
             ? FieldValue.delete()
-            : Timestamp.fromDate(dateOnly(deadline)),
+            : civilTimestamp(deadline),
       }),
     );
   }

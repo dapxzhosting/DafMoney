@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/models/entry_type.dart';
+import '../../../core/utils/civil_date.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../transactions/data/transaction_repository.dart' show writeSafe;
 import '../../../core/services/error_reporter.dart';
@@ -17,7 +18,8 @@ class RecurringRepository {
   CollectionReference<Map<String, dynamic>> _col(String uid) =>
       _user(uid).collection('recurring');
 
-  DateTime _date(dynamic v) => v is Timestamp ? v.toDate() : DateTime.now();
+  DateTime _date(dynamic v) =>
+      civilDateFromValue(v) ?? dateOnly(DateTime.now());
 
   RecurringEntry _fromMap(String id, Map<String, dynamic> m) {
     final w = m['walletId'];
@@ -63,8 +65,8 @@ class RecurringRepository {
         'note': note,
         if (walletId != null) 'walletId': walletId,
         'frequency': frequency.name,
-        'startDate': Timestamp.fromDate(start),
-        'nextDate': Timestamp.fromDate(start),
+        'startDate': civilTimestamp(start),
+        'nextDate': civilTimestamp(start),
         'anchorDay': start.day,
         'active': true,
         'createdAt': FieldValue.serverTimestamp(),
@@ -100,9 +102,9 @@ class RecurringRepository {
         'note': note,
         'walletId': walletId ?? FieldValue.delete(),
         'frequency': frequency.name,
-        'startDate': Timestamp.fromDate(start),
+        'startDate': civilTimestamp(start),
         'anchorDay': start.day,
-        if (newNext != null) 'nextDate': Timestamp.fromDate(newNext),
+        if (newNext != null) 'nextDate': civilTimestamp(newNext),
       }),
     );
   }
@@ -130,7 +132,7 @@ class RecurringRepository {
     return writeSafe(
       () => _col(uid).doc(id).update({
         'active': active,
-        if (newNext != null) 'nextDate': Timestamp.fromDate(newNext),
+        if (newNext != null) 'nextDate': civilTimestamp(newNext),
       }),
     );
   }
@@ -141,7 +143,7 @@ class RecurringRepository {
   Future<int> processDue(String uid) async {
     final today = dateOnly(DateTime.now());
     final snap = await _col(uid)
-        .where('nextDate', isLessThanOrEqualTo: Timestamp.fromDate(today))
+        .where('nextDate', isLessThanOrEqualTo: civilUpperBound(today))
         .get();
     var created = 0;
     for (final doc in snap.docs) {
@@ -168,14 +170,14 @@ class RecurringRepository {
               'amount': r.amount,
               'categoryId': r.categoryId,
               'note': r.note,
-              'date': Timestamp.fromDate(d),
+              'date': civilTimestamp(d),
               'createdAt': FieldValue.serverTimestamp(),
               if (r.walletId != null) 'walletId': r.walletId,
               'recurringId': r.id,
             });
           }
           final next = nextOccurrence(dates.last, r.frequency, r.anchorDay);
-          tx.update(doc.reference, {'nextDate': Timestamp.fromDate(next)});
+          tx.update(doc.reference, {'nextDate': civilTimestamp(next)});
           return dates.length;
         });
       } catch (e, st) {

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/models/entry_type.dart';
+import '../../../core/utils/civil_date.dart';
 import '../../../core/utils/date_utils.dart';
 import '../domain/money_transaction.dart';
 
@@ -28,6 +29,12 @@ class TransactionRepository {
     return DateTime.now();
   }
 
+  DateTime _civil(dynamic v) {
+    if (v is Timestamp) return civilDateFromTimestamp(v);
+    final d = _parseDate(v);
+    return DateTime(d.year, d.month, d.day);
+  }
+
   MoneyTransaction _fromDoc(QueryDocumentSnapshot<Map<String, dynamic>> d) {
     final m = d.data();
     final w = m['walletId'];
@@ -38,7 +45,7 @@ class TransactionRepository {
       amount: (m['amount'] as num?)?.toInt() ?? 0,
       categoryId: (m['categoryId'] as String?) ?? '',
       note: (m['note'] as String?) ?? '',
-      date: _parseDate(m['date']),
+      date: _civil(m['date']),
       createdAt: _parseDate(m['createdAt']),
       walletId: (w is String && w.isNotEmpty) ? w : null,
       recurringId: (r is String && r.isNotEmpty) ? r : null,
@@ -48,12 +55,15 @@ class TransactionRepository {
 
   Stream<List<MoneyTransaction>> watchRange(String uid, DateRange range) {
     return _col(uid)
-        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(range.start))
-        .where('date', isLessThan: Timestamp.fromDate(range.end))
+        .where('date', isGreaterThanOrEqualTo: civilLowerBound(range.start))
+        .where('date', isLessThan: civilUpperBound(range.end))
         .orderBy('date', descending: true)
         .snapshots()
         .map((snap) {
-          final list = snap.docs.map(_fromDoc).toList();
+          final list = snap.docs
+              .map(_fromDoc)
+              .where((t) => range.contains(t.date))
+              .toList();
           list.sort((a, b) {
             final c = b.date.compareTo(a.date);
             return c != 0 ? c : b.createdAt.compareTo(a.createdAt);
@@ -80,7 +90,7 @@ class TransactionRepository {
         'amount': amount,
         'categoryId': categoryId,
         'note': note,
-        'date': Timestamp.fromDate(dateOnly(date)),
+        'date': civilTimestamp(date),
         'createdAt': FieldValue.serverTimestamp(),
         if (walletId != null) 'walletId': walletId,
         if (recurringId != null) 'recurringId': recurringId,
@@ -108,7 +118,7 @@ class TransactionRepository {
         'amount': amount,
         'categoryId': categoryId,
         'note': note,
-        'date': Timestamp.fromDate(dateOnly(date)),
+        'date': civilTimestamp(date),
         'walletId': walletId ?? FieldValue.delete(),
         'hasReceipt': hasReceipt ? true : FieldValue.delete(),
         if (recurringId != null) 'recurringId': recurringId,
@@ -127,7 +137,7 @@ class TransactionRepository {
         'amount': t.amount,
         'categoryId': t.categoryId,
         'note': t.note,
-        'date': Timestamp.fromDate(dateOnly(t.date)),
+        'date': civilTimestamp(t.date),
         'createdAt': FieldValue.serverTimestamp(),
         if (t.walletId != null) 'walletId': t.walletId,
         if (t.recurringId != null) 'recurringId': t.recurringId,

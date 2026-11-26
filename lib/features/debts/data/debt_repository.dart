@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/error/app_exception.dart';
+import '../../../core/utils/civil_date.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../transactions/data/transaction_repository.dart' show writeSafe;
 import '../domain/debt.dart';
@@ -13,7 +14,8 @@ class DebtRepository {
   CollectionReference<Map<String, dynamic>> _col(String uid) =>
       _db.collection('users').doc(uid).collection('debts');
 
-  DateTime _date(dynamic v) => v is Timestamp ? v.toDate() : DateTime.now();
+  DateTime _date(dynamic v) =>
+      civilDateFromValue(v) ?? dateOnly(DateTime.now());
 
   Stream<List<Debt>> watch(String uid) {
     return _col(uid).snapshots().map((snap) {
@@ -28,7 +30,7 @@ class DebtRepository {
           paid: (m['paid'] as num?)?.toInt() ?? 0,
           note: (m['note'] as String?) ?? '',
           date: _date(m['date']),
-          dueDate: due is Timestamp ? due.toDate() : null,
+          dueDate: civilDateFromValue(due),
         );
       }).toList();
       list.sort((a, b) {
@@ -60,8 +62,8 @@ class DebtRepository {
         'amount': amount,
         'paid': 0,
         'note': note,
-        'date': Timestamp.fromDate(dateOnly(date)),
-        if (dueDate != null) 'dueDate': Timestamp.fromDate(dateOnly(dueDate)),
+        'date': civilTimestamp(date),
+        if (dueDate != null) 'dueDate': civilTimestamp(dueDate),
         'createdAt': FieldValue.serverTimestamp(),
       }),
     );
@@ -89,10 +91,10 @@ class DebtRepository {
         'kind': kind.name,
         'amount': amount,
         'note': note,
-        'date': Timestamp.fromDate(dateOnly(date)),
+        'date': civilTimestamp(date),
         'dueDate': dueDate == null
             ? FieldValue.delete()
-            : Timestamp.fromDate(dateOnly(dueDate)),
+            : civilTimestamp(dueDate),
       }),
     );
   }
