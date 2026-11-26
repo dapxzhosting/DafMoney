@@ -58,23 +58,36 @@ class RecurringActions {
   Future<void> syncReminders() async {
     final uid = _ref.read(uidProvider);
     if (uid == null) return;
+    final List<RecurringEntry> list;
     try {
-      final list = await _repo.watch(uid).first;
-      for (final r in list) {
+      list = await _repo.watch(uid).first;
+    } catch (e, st) {
+      reportError(e, st);
+      return;
+    }
+    final now = DateTime.now();
+    // Satu entri bermasalah tidak boleh menghentikan pengingat entri lain.
+    for (final r in list) {
+      try {
         final nid = NotificationService.idFor('rec_${r.id}');
         await NotificationService.cancel(nid);
         if (!r.active) continue;
+        final when = reminderTime(r.nextDate, now);
+        if (when == null) continue;
         final label = r.note.trim().isEmpty ? 'Transaksi berulang' : r.note.trim();
-        final verb = r.type == EntryType.income ? 'dicatat sebagai pemasukan' : 'dicatat sebagai pengeluaran';
+        final verb = r.type == EntryType.income ? 'pemasukan' : 'pengeluaran';
+        // Pencatatan terjadi saat aplikasi dibuka, jadi teksnya tidak
+        // menjanjikan pencatatan otomatis di latar belakang.
         await NotificationService.scheduleOnce(
           id: nid,
           title: 'Besok: $label',
-          body: '${Fmt.rupiah(r.amount)} akan otomatis $verb.',
-          when: DateTime(r.nextDate.year, r.nextDate.month, r.nextDate.day - 1, 9),
+          body: '${Fmt.rupiah(r.amount)} dijadwalkan dicatat sebagai $verb. '
+              'Buka DafMoney agar tercatat.',
+          when: when,
         );
+      } catch (e, st) {
+        reportError(e, st);
       }
-    } catch (e, st) {
-      reportError(e, st);
     }
   }
 

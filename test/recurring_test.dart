@@ -43,6 +43,34 @@ void main() {
     });
   });
 
+  group('reminderTime', () {
+    test('sehari sebelum jam 09.00 bila masih di masa depan', () {
+      expect(
+        reminderTime(DateTime(2026, 12, 5), DateTime(2026, 11, 26, 10)),
+        DateTime(2026, 12, 4, 9),
+      );
+    });
+
+    test('lintas bulan dan tahun', () {
+      expect(
+        reminderTime(DateTime(2027, 1, 1), DateTime(2026, 11, 26)),
+        DateTime(2026, 12, 31, 9),
+      );
+    });
+
+    test('null bila waktunya sudah lewat (harian, atau jatuh tempo hari ini)', () {
+      // Harian: jatuh tempo besok, tapi sekarang sudah lewat jam 09.00.
+      expect(
+        reminderTime(DateTime(2026, 11, 27), DateTime(2026, 11, 26, 14)),
+        isNull,
+      );
+      expect(
+        reminderTime(DateTime(2026, 11, 26), DateTime(2026, 11, 26, 8)),
+        isNull,
+      );
+    });
+  });
+
   group('dueDates', () {
     test('tidak ada yang jatuh tempo jika jadwal di masa depan', () {
       expect(

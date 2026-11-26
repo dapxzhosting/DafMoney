@@ -41,6 +41,18 @@ void main() {
       expect(parseCsvAmount('-25000'), 25000);
     });
 
+    test('awalan Rp./IDR, akhiran ,- dan spasi NBSP', () {
+      expect(parseCsvAmount('Rp. 50.000'), 50000);
+      expect(parseCsvAmount('Rp.50.000'), 50000);
+      expect(parseCsvAmount('RP 1.500.000,00'), 1500000);
+      expect(parseCsvAmount('Rp 50.000,-'), 50000);
+      expect(parseCsvAmount('50.000,-'), 50000);
+      expect(parseCsvAmount('IDR 50.000'), 50000);
+      expect(parseCsvAmount('Rp\u00A050.000'), 50000);
+      expect(parseCsvAmount('-Rp 25.000'), 25000);
+      expect(parseCsvAmount('Rp'), isNull);
+    });
+
     test('menolak nol, kosong, dan teks', () {
       expect(parseCsvAmount('0'), isNull);
       expect(parseCsvAmount(''), isNull);

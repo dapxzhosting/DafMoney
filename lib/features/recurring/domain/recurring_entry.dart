@@ -138,6 +138,14 @@ DateTime? nextDateAfterEdit({
   return next;
 }
 
+/// Waktu pengingat "besok" untuk jadwal yang jatuh pada [nextDate]: sehari
+/// sebelumnya pukul 09.00. Mengembalikan null kalau waktunya sudah lewat
+/// (pengingat tidak boleh dijadwalkan di masa lalu).
+DateTime? reminderTime(DateTime nextDate, DateTime now) {
+  final when = DateTime(nextDate.year, nextDate.month, nextDate.day - 1, 9);
+  return when.isAfter(now) ? when : null;
+}
+
 List<DateTime> dueDates({
   required DateTime next,
   required DateTime today,
