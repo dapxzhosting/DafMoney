@@ -16,6 +16,7 @@ import 'providers/settings_providers.dart';
 import 'widgets/settings_sheets.dart';
 import 'widgets/quick_entry_section.dart';
 import 'widgets/app_lock_section.dart';
+import 'widgets/sound_section.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -167,6 +168,7 @@ class SettingsPage extends ConsumerWidget {
           ),
           const _Group(title: 'Pengingat', children: [ReminderSection()]),
           const _Group(title: 'Catat cepat', children: [QuickEntrySection()]),
+          const _Group(title: 'Suara', children: [SoundSection()]),
           _Group(
             title: 'Tampilan',
             children: [

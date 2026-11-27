@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/models/entry_type.dart';
 import '../../../../core/providers/reminder_provider.dart';
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/services/sound_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/amount_formatter.dart';
 import '../../../../core/utils/date_utils.dart';
@@ -296,6 +297,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
       context.showSnack(err, error: true);
       return;
     }
+    if (!_editing) SoundService.playDong();
     if (alertBefore != null) {
       final i = widget.initial;
       final sameSlot =

@@ -5,6 +5,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import '../core/models/entry_type.dart';
 import '../core/services/quick_entry_parser.dart';
 import '../core/services/quick_entry_saver.dart';
+import '../core/services/sound_service.dart';
 import '../core/theme/app_colors.dart';
 
 const _channel = MethodChannel('dafmoney/quick_add');
@@ -129,6 +130,7 @@ class _QuickAddScreenState extends State<QuickAddScreen> {
     });
     if (r.ok) {
       HapticFeedback.mediumImpact();
+      SoundService.playDong();
       await Future<void>.delayed(const Duration(milliseconds: 1100));
       await _close();
     }

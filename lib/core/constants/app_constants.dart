@@ -13,6 +13,7 @@ abstract class AppConstants {
   static const challengeKey = 'no_spend_challenge';
   static const budgetAlertsKey = 'budget_alerts_enabled';
   static const appLockKey = 'app_lock_enabled';
+  static const soundEnabledKey = 'sound_enabled';
   static const appLockGraceKey = 'app_lock_grace_seconds';
   static const currencyLocale = 'id_ID';
   static const currencySymbol = 'Rp ';

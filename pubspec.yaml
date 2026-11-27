@@ -36,6 +36,7 @@ dependencies:
   local_auth: ^2.3.0
   image_picker: ^1.1.2
   speech_to_text: ^7.0.0
+  audioplayers: ^6.1.0
 
   # Ekspor & bagikan laporan (PDF / gambar)
   pdf: ^3.11.3
@@ -59,6 +60,7 @@ flutter:
   assets:
     - assets/illustrations/
     - assets/google_fonts/
+    - assets/sounds/
 
 flutter_launcher_icons:
   android: true
