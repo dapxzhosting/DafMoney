@@ -28,6 +28,7 @@ import '../../../core/widgets/month_selector.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/skeleton.dart';
 import '../../../core/widgets/speed_dial_fab.dart';
+import '../../../core/widgets/sync_status_banner.dart';
 import '../../budgets/domain/budget.dart';
 import '../../budgets/presentation/pages/budgets_page.dart';
 import '../../budgets/presentation/providers/budget_providers.dart';
@@ -314,6 +315,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         name: name,
                         onAvatarTap: () => context.push(AppRoutes.settings),
                       ),
+                      const SyncStatusBanner(),
                       const SizedBox(height: Gap.md),
                       const MonthSelector(),
                       const SizedBox(height: Gap.md),

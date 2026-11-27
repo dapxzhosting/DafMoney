@@ -140,6 +140,12 @@ class RecurringRepository {
   Future<void> delete(String uid, String id) =>
       writeSafe(() => _col(uid).doc(id).delete());
 
+  String _occurrenceId(String recurringId, DateTime d) {
+    final m = d.month.toString().padLeft(2, '0');
+    final day = d.day.toString().padLeft(2, '0');
+    return '${recurringId}_${d.year}$m$day';
+  }
+
   Future<int> processDue(String uid) async {
     final today = dateOnly(DateTime.now());
     final snap = await _col(uid)
@@ -147,39 +153,35 @@ class RecurringRepository {
         .get();
     var created = 0;
     for (final doc in snap.docs) {
-      if (doc.data()['active'] == false) continue;
+      final data = doc.data();
+      if (data['active'] == false) continue;
       try {
-        created += await _db.runTransaction<int>((tx) async {
-          final fresh = await tx.get(doc.reference);
-          final data = fresh.data();
-          if (!fresh.exists || data == null || data['active'] == false) {
-            return 0;
-          }
-          final r = _fromMap(fresh.id, data);
-          final dates = dueDates(
-            next: r.nextDate,
-            today: today,
-            frequency: r.frequency,
-            anchorDay: r.anchorDay,
-          );
-          if (dates.isEmpty) return 0;
-          final txCol = _user(uid).collection('transactions');
-          for (final d in dates) {
-            tx.set(txCol.doc(), {
-              'type': r.type.name,
-              'amount': r.amount,
-              'categoryId': r.categoryId,
-              'note': r.note,
-              'date': civilTimestamp(d),
-              'createdAt': FieldValue.serverTimestamp(),
-              if (r.walletId != null) 'walletId': r.walletId,
-              'recurringId': r.id,
-            });
-          }
-          final next = nextOccurrence(dates.last, r.frequency, r.anchorDay);
-          tx.update(doc.reference, {'nextDate': civilTimestamp(next)});
-          return dates.length;
-        });
+        final r = _fromMap(doc.id, data);
+        final dates = dueDates(
+          next: r.nextDate,
+          today: today,
+          frequency: r.frequency,
+          anchorDay: r.anchorDay,
+        );
+        if (dates.isEmpty) continue;
+        final batch = _db.batch();
+        final txCol = _user(uid).collection('transactions');
+        for (final d in dates) {
+          batch.set(txCol.doc(_occurrenceId(doc.id, d)), {
+            'type': r.type.name,
+            'amount': r.amount,
+            'categoryId': r.categoryId,
+            'note': r.note,
+            'date': civilTimestamp(d),
+            'createdAt': FieldValue.serverTimestamp(),
+            if (r.walletId != null) 'walletId': r.walletId,
+            'recurringId': r.id,
+          });
+        }
+        final next = nextOccurrence(dates.last, r.frequency, r.anchorDay);
+        batch.update(doc.reference, {'nextDate': civilTimestamp(next)});
+        await writeSafe(() => batch.commit());
+        created += dates.length;
       } catch (e, st) {
         reportError(e, st);
       }
