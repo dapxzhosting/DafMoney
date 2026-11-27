@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/error/app_exception.dart';
 import '../../../core/models/entry_type.dart';
+import '../../../core/providers/app_lock_providers.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../../core/providers/privacy_providers.dart';
 import '../../../core/providers/session_providers.dart';
@@ -253,7 +254,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       (sum, b) => sum + (b.remaining > 0 ? b.remaining : 0),
     );
 
-    final hideBalanceForWidget = ref.watch(hideBalanceProvider);
+    final hideBalanceForWidget =
+        ref.watch(hideBalanceProvider) || ref.watch(appLockEnabledProvider);
     if (balance.hasValue && budgets.hasValue) {
       final signature =
           '${totalBalance ?? 0}|$remainingBudget|$hideBalanceForWidget';

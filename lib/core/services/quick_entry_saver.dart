@@ -172,6 +172,13 @@ class QuickEntrySaver {
           body: 'Buka DafMoney dan login dulu.',
         );
       }
+      if (await _appLockOn(uid)) {
+        return const QuickSaveResult(
+          ok: false,
+          title: 'Aplikasi terkunci',
+          body: 'Buka DafMoney dan verifikasi dulu untuk mencatat.',
+        );
+      }
 
       final db = FirebaseFirestore.instance;
       final user = db.collection('users').doc(uid);

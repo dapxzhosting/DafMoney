@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../constants/app_constants.dart';
 import '../providers/app_lock_providers.dart';
 import '../providers/firebase_providers.dart';
+import '../providers/session_providers.dart';
+import '../providers/shared_prefs_provider.dart';
 import '../services/biometric_service.dart';
 import '../services/screen_security_service.dart';
 import '../services/widget_service.dart';
@@ -28,9 +31,19 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _locked = ref.read(appLockEnabledProvider);
+    _locked = _initialLocked();
     ScreenSecurityService.setSecure(_locked);
     if (_locked) WidgetsBinding.instance.addPostFrameCallback((_) => _unlock());
+  }
+
+  bool _initialLocked() {
+    final uid = ref.read(uidProvider) ??
+        ref.read(firebaseAuthProvider).currentUser?.uid;
+    if (uid == null) return false;
+    return ref
+            .read(sharedPrefsProvider)
+            .getBool('${AppConstants.appLockKey}_$uid') ??
+        false;
   }
 
   @override
