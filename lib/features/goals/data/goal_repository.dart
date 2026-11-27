@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/error/app_exception.dart';
@@ -96,7 +98,11 @@ class GoalRepository {
           throw const AppException('Dana yang ditarik melebihi isi tabungan.');
         }
         tx.update(ref, {'saved': next});
-      });
+      }).timeout(const Duration(seconds: 8));
+    } on TimeoutException {
+      throw const AppException(
+        'Butuh koneksi internet untuk mengubah dana tabungan.',
+      );
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
         throw const AppException(

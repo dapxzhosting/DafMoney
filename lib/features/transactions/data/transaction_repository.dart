@@ -8,9 +8,11 @@ import '../../../core/utils/date_utils.dart';
 import '../domain/money_transaction.dart';
 
 Future<void> writeSafe(Future<void> Function() op) async {
-  try {
-    await op().timeout(const Duration(seconds: 6));
-  } on TimeoutException {}
+  final future = op();
+  await Future.any<void>([
+    future,
+    Future<void>.delayed(const Duration(milliseconds: 800)),
+  ]);
 }
 
 class TransactionRepository {
