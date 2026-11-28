@@ -65,11 +65,13 @@ DafMoney ditujukan untuk penggunaan pribadi. Aplikasi ini bukan layanan perbanka
 
 ### 🔐 Akun dan Keamanan
 
-- Daftar dan masuk menggunakan email serta kata sandi melalui Firebase Authentication.
+- Daftar dan masuk menggunakan email serta kata sandi, atau akun Google, melalui Firebase Authentication.
 - Verifikasi email sebelum pengguna dapat mengakses data yang dilindungi.
 - Reset kata sandi melalui email.
 - Pengelolaan profil, termasuk mengubah nama dan kata sandi.
-- Penghapusan akun beserta data pengguna melalui aplikasi.
+- Kunci aplikasi dengan sidik jari, wajah, atau PIN/pola perangkat.
+- **PIN aplikasi** 4-6 digit buatan DafMoney sendiri dengan keypad di layar kunci. Jika PIN diatur, aplikasi hanya dapat dibuka dengan sidik jari atau PIN DafMoney (PIN/pola perangkat tidak lagi berlaku). Lima kali salah, keypad terkunci 30 detik. PIN disimpan hanya di perangkat (hash + salt per akun), tidak dikirim ke Firestore, dan tidak dapat dipulihkan: jika lupa, keluar dari akun lalu masuk lagi.
+- Penghapusan akun beserta data pengguna melalui aplikasi. Prosesnya meminta autentikasi ulang (kata sandi, atau memilih akun Google yang sama), ketikan `HAPUS` sebagai konfirmasi, dan menyediakan tombol **Simpan backup dulu**.
 - Onboarding untuk pengguna baru dan splash screen.
 
 ### 🏠 Beranda
@@ -121,7 +123,7 @@ DafMoney ditujukan untuk penggunaan pribadi. Aplikasi ini bukan layanan perbanka
 
 - Membuat target nominal tabungan.
 - Memantau progres dan tenggat target.
-- Melihat saran jumlah tabungan per bulan.
+- Melihat saran jumlah tabungan sesuai sisa waktu: per bulan (tenggat 30 hari atau lebih), per minggu (7-29 hari), atau per hari (kurang dari seminggu).
 - Target tabungan berfungsi sebagai pelacak progres dan tidak otomatis mengubah saldo dompet.
 
 ### 🤝 Utang dan Piutang
@@ -131,13 +133,14 @@ DafMoney ditujukan untuk penggunaan pribadi. Aplikasi ini bukan layanan perbanka
 - Memantau sisa pembayaran, progres, dan status jatuh tempo.
 - Pengingat untuk catatan yang mendekati atau melewati jatuh tempo.
 
-### 📥 Impor dan Ekspor CSV
+### 📥 Impor, Ekspor, dan Backup
 
 - Mengekspor data transaksi ke CSV.
 - Mengimpor transaksi dengan pratinjau sebelum disimpan.
 - Deteksi data duplikat.
 - Pembuatan kategori atau dompet yang diperlukan saat proses impor.
 - Mendukung pemisah koma dan titik koma serta format nominal/tanggal Indonesia.
+- Backup lengkap ke satu berkas JSON (transaksi, kategori, dompet, anggaran, transaksi berulang, transfer, target tabungan, dan utang; foto struk tidak ikut) dengan pratinjau sebelum dipulihkan. Data yang sudah ada dilewati, bukan ditimpa.
 
 ### 🏷️ Kategori
 
@@ -177,6 +180,13 @@ DafMoney ditujukan untuk penggunaan pribadi. Aplikasi ini bukan layanan perbanka
 - Notifikasi peringatan anggaran.
 - Notifikasi pengingat jatuh tempo.
 - Fitur kirim notifikasi uji.
+
+### ☁️ Sinkronisasi dan Mode Offline
+
+- Data tetap bisa dicatat saat offline dan disinkronkan otomatis ketika koneksi kembali.
+- Pil **Menunggu sinkron** tampil di setiap halaman selama masih ada perubahan yang belum terkirim ke server.
+- Jika server menolak perubahan setelah layar sempat menampilkannya sebagai berhasil (misalnya karena aturan keamanan), aplikasi menampilkan peringatan dan mengirim laporan non-fatal ke Firebase Crashlytics.
+- Menghapus semua transaksi saat offline memberi tahu bahwa penghapusan tersimpan di perangkat dan akan disinkronkan nanti.
 
 ### 🎨 Personalisasi
 
@@ -223,7 +233,8 @@ Parser mengenali akhiran `rb`, `ribu`, `k`, `jt`, dan `juta`. Angka polos di baw
 | Bahasa | [Dart](https://dart.dev/) |
 | State management | [flutter_riverpod](https://riverpod.dev/) |
 | Navigasi | [go_router](https://pub.dev/packages/go_router) |
-| Autentikasi dan database | [Firebase Authentication](https://firebase.google.com/docs/auth) dan [Cloud Firestore](https://firebase.google.com/docs/firestore) |
+| Autentikasi dan database | [Firebase Authentication](https://firebase.google.com/docs/auth) (email/kata sandi dan Google), [Cloud Firestore](https://firebase.google.com/docs/firestore), [google_sign_in](https://pub.dev/packages/google_sign_in) |
+| Pemantauan | [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics) dan [Firebase App Check](https://firebase.google.com/docs/app-check) |
 | Grafik | [fl_chart](https://pub.dev/packages/fl_chart) |
 | Animasi dan font | [flutter_animate](https://pub.dev/packages/flutter_animate), [google_fonts](https://pub.dev/packages/google_fonts) |
 | Warna dinamis | [dynamic_color](https://pub.dev/packages/dynamic_color) |
@@ -232,7 +243,8 @@ Parser mengenali akhiran `rb`, `ribu`, `k`, `jt`, dan `juta`. Angka polos di baw
 | Ekspor dan berbagi | [pdf](https://pub.dev/packages/pdf), [share_plus](https://pub.dev/packages/share_plus), [path_provider](https://pub.dev/packages/path_provider) |
 | Media dan suara | [image_picker](https://pub.dev/packages/image_picker), [speech_to_text](https://pub.dev/packages/speech_to_text) |
 | Penyimpanan lokal | [shared_preferences](https://pub.dev/packages/shared_preferences) |
-| Lainnya | `intl`, `equatable`, `local_auth` |
+| Keamanan lokal | [local_auth](https://pub.dev/packages/local_auth) (sidik jari/wajah), [crypto](https://pub.dev/packages/crypto) (hash PIN aplikasi) |
+| Lainnya | `intl`, `equatable`, `file_picker`, `audioplayers` |
 
 ---
 
@@ -269,6 +281,11 @@ lib/
     ├── export/
     ├── insights/
     ├── challenge/
+    ├── goals/
+    ├── debts/
+    ├── recurring/
+    ├── transfers/
+    ├── data_io/
     └── settings/
 
 android/app/src/main/kotlin/com/example/keuangan/
@@ -337,7 +354,7 @@ flutter pub get
 ### 3. Siapkan Firebase
 
 1. Buat project di [Firebase Console](https://console.firebase.google.com/).
-2. Aktifkan **Authentication** dengan metode **Email/Password**.
+2. Aktifkan **Authentication** dengan metode **Email/Password** dan **Google**. Untuk Google Sign-In di Android, daftarkan sidik jari SHA-1 dan SHA-256 aplikasi di pengaturan project Firebase, lalu unduh ulang `google-services.json`.
 3. Buat atau aktifkan **Cloud Firestore**.
 4. Pasang Firebase CLI dan FlutterFire CLI.
 
@@ -381,7 +398,8 @@ Hal yang perlu diperhatikan:
 - Setiap pengguna hanya boleh mengakses data miliknya sendiri.
 - Akses data yang dilindungi mensyaratkan email Firebase Authentication telah diverifikasi.
 - Aturan Firestore melakukan validasi terhadap field dan tipe data yang diizinkan.
-- Terapkan Firestore Rules ke project Firebase yang benar sebelum aplikasi digunakan.
+- Terapkan Firestore Rules ke project Firebase yang benar sebelum aplikasi digunakan. Aturan yang ter-deploy harus sama dengan `firestore.rules` di repository; aturan lama akan menolak field pengaturan yang baru dan menimbulkan error `permission-denied`.
+- PIN aplikasi hanya melindungi akses ke aplikasi di perangkat. PIN disimpan sebagai hash di penyimpanan lokal biasa (`shared_preferences`), bukan penyimpanan terenkripsi, sehingga tidak menggantikan enkripsi perangkat.
 - Pertimbangkan mengaktifkan Firebase App Check dengan Play Integrity untuk aplikasi Android yang didistribusikan secara publik.
 - Batasi API key melalui pengaturan Google Cloud sesuai kebutuhan platform.
 - Jangan pernah memasukkan service account private key atau kredensial server ke dalam aplikasi Flutter atau repository publik.
@@ -435,8 +453,12 @@ Test yang tercantum di repository mencakup beberapa area berikut:
 | `csv_test.dart` | Pemrosesan impor dan ekspor CSV |
 | `goals_debts_transfers_test.dart` | Logika target tabungan, utang-piutang, dan transfer |
 | `challenge_json_test.dart` | Bentuk data tantangan yang digunakan bersama Firestore Rules |
+| `civil_date_test.dart` | Penanganan tanggal sipil (tanpa pergeseran zona waktu) |
+| `period_summary_test.dart` | Ringkasan pemasukan dan pengeluaran per periode |
+| `period_comparison_test.dart` | Perbandingan antarperiode |
+| `widget_test.dart` | Pengujian widget dasar |
 
-Test yang tersedia bukan jaminan bahwa seluruh alur aplikasi telah diuji. Sebelum rilis, lakukan juga pengujian manual pada login, sinkronisasi, transaksi, transfer, impor data, notifikasi, dan pemulihan ketika jaringan terputus.
+Belum ada test otomatis untuk PIN aplikasi (`AppPinService`) maupun saran tabungan sesuai sisa waktu (`savingPace`); keduanya perlu diuji manual. Test yang tersedia bukan jaminan bahwa seluruh alur aplikasi telah diuji. Sebelum rilis, lakukan juga pengujian manual pada login (email dan Google), kunci aplikasi dan PIN, hapus akun, sinkronisasi, transaksi, transfer, impor data, notifikasi, dan pemulihan ketika jaringan terputus.
 
 ---
 
@@ -489,6 +511,30 @@ flutter run --release
 ```bash
 firebase deploy --only firestore:rules
 ```
+
+</details>
+
+<details>
+<summary><b>Muncul pesan "Perubahan terakhir gagal disimpan ke server"</b></summary>
+
+- Berarti server menolak penulisan setelah layar sempat menampilkannya sebagai berhasil.
+- Pastikan Firestore Rules yang ter-deploy sama dengan `firestore.rules` terbaru (`firebase deploy --only firestore:rules`).
+- Pastikan email akun sudah terverifikasi.
+- Buka Firebase Crashlytics, cari issue non-fatal `permission-denied`; stack trace-nya memuat nama metode DafMoney yang memicu penolakan.
+
+</details>
+
+<details>
+<summary><b>Hapus akun gagal dengan pesan akun Google berbeda (user-mismatch)</b></summary>
+
+Pilih akun Google yang sama dengan akun yang sedang masuk di DafMoney. Pesan error menampilkan alamat email yang harus dipilih.
+
+</details>
+
+<details>
+<summary><b>Lupa PIN aplikasi</b></summary>
+
+PIN tidak dapat dipulihkan. Ketuk **Keluar dari akun** di layar kunci, lalu masuk kembali. PIN lama dapat dihapus atau diganti dari Pengaturan setelah masuk.
 
 </details>
 

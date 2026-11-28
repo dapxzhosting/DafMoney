@@ -1,6 +1,6 @@
 abstract class AppConstants {
   static const appName = 'DafMoney';
-  static const appVersion = '1.1.0';
+  static const appVersion = '1.2.0';
   static const themeModeKey = 'theme_mode';
   static const hideBalanceKey = 'hide_balance';
   static const accentColorKey = 'accent_color';
