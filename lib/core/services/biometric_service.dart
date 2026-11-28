@@ -18,13 +18,14 @@ class BiometricService {
 
   static Future<AuthResult> authenticate({
     String reason = 'Verifikasi identitas untuk membuka DafMoney',
+    bool biometricOnly = false,
   }) async {
     try {
       if (!await _auth.isDeviceSupported()) return AuthResult.unavailable;
       final ok = await _auth.authenticate(
         localizedReason: reason,
         options: const AuthenticationOptions(
-          biometricOnly: false,
+          biometricOnly: biometricOnly,
           stickyAuth: true,
           useErrorDialogs: true,
         ),

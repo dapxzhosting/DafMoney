@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/app_lock_providers.dart';
+import '../../../../core/providers/app_pin_provider.dart';
 import '../../../../core/services/biometric_service.dart';
 import '../../../../core/utils/snackbar.dart';
+import 'pin_sheets.dart';
+import 'settings_sheets.dart' show showSettingsSheet;
 
 class AppLockSection extends ConsumerWidget {
   const AppLockSection({super.key});
@@ -48,6 +51,7 @@ class AppLockSection extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
     final enabled = ref.watch(appLockEnabledProvider);
     final grace = ref.watch(appLockGraceProvider);
+    final hasPin = ref.watch(appPinProvider);
     String label(int s) =>
         s == 0 ? 'Langsung' : (s == 60 ? '1 menit' : '5 menit');
 
@@ -62,6 +66,26 @@ class AppLockSection extends ConsumerWidget {
           subtitle: const Text('Sidik jari, wajah, atau PIN/pola perangkat'),
           value: enabled,
           onChanged: (v) => _toggle(context, ref, v),
+        ),
+        ListTile(
+          leading: const Icon(Icons.pin_outlined),
+          title: const Text(
+            'PIN aplikasi',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+          subtitle: Text(
+            hasPin
+                ? 'Aktif. Ketuk untuk mengubah.'
+                : 'PIN 4-6 digit buatan DafMoney sendiri',
+          ),
+          trailing: hasPin
+              ? TextButton(
+                  onPressed: () =>
+                      showSettingsSheet(context, const RemovePinSheet()),
+                  child: const Text('Hapus'),
+                )
+              : const Icon(Icons.chevron_right_rounded),
+          onTap: () => showSettingsSheet(context, const SetPinSheet()),
         ),
         AnimatedSize(
           duration: const Duration(milliseconds: 250),

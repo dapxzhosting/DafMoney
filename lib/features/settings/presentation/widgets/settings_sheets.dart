@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/error/app_exception.dart' show errorText;
+import '../../../../core/providers/session_providers.dart';
 import '../../../../core/utils/amount_formatter.dart';
 import '../../../../core/utils/snackbar.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../auth/presentation/widgets/app_text_field.dart';
+import '../../../data_io/presentation/csv_page.dart' show backupServiceProvider;
+import '../../../export/data/export_service.dart';
 import '../providers/settings_providers.dart';
 
 Future<void> showSettingsSheet(BuildContext context, Widget child) {
@@ -293,6 +297,29 @@ class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
   final _password = TextEditingController();
   final _confirmText = TextEditingController();
   bool _deleting = false;
+  bool _backingUp = false;
+
+  Future<void> _backup() async {
+    final uid = ref.read(uidProvider);
+    if (uid == null) return;
+    setState(() => _backingUp = true);
+    try {
+      final bytes = await ref.read(backupServiceProvider).export(uid);
+      final d = DateTime.now();
+      final stamp =
+          '${d.year}${d.month.toString().padLeft(2, '0')}${d.day.toString().padLeft(2, '0')}';
+      await ExportService.shareBytes(
+        bytes: bytes,
+        fileName: 'DafMoney_backup_$stamp.json',
+        mimeType: 'application/json',
+        text: 'Backup DafMoney',
+      );
+    } catch (e) {
+      if (mounted) context.showSnack(errorText(e), error: true);
+    } finally {
+      if (mounted) setState(() => _backingUp = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -370,6 +397,12 @@ class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
           ),
         ),
         const SizedBox(height: 16),
+        OutlinedButton.icon(
+          onPressed: (_backingUp || _deleting) ? null : _backup,
+          icon: const Icon(Icons.ios_share_rounded),
+          label: Text(_backingUp ? 'Menyiapkan backup...' : 'Simpan backup dulu'),
+        ),
+        const SizedBox(height: 10),
         FilledButton(
           style: FilledButton.styleFrom(
             backgroundColor: cs.error,

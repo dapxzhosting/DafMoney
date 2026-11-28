@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../constants/app_constants.dart';
 import '../providers/app_lock_providers.dart';
+import '../providers/app_pin_provider.dart';
 import '../providers/firebase_providers.dart';
 import '../providers/session_providers.dart';
 import '../providers/shared_prefs_provider.dart';
@@ -77,7 +78,8 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
   Future<void> _unlock() async {
     if (_authenticating) return;
     _authenticating = true;
-    final result = await BiometricService.authenticate();
+    final hasPin = ref.read(appPinProvider);
+    final result = await BiometricService.authenticate(biometricOnly: hasPin);
     _authenticating = false;
     _leftAt = null;
     if (!mounted) return;
@@ -87,10 +89,13 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
           _locked = false;
           _message = null;
         case AuthResult.failed:
-          _message =
-          'Verifikasi dibatalkan. Ketuk "Buka kunci" untuk mencoba lagi.';
+          _message = hasPin
+              ? 'Masukkan PIN atau ketuk "Buka kunci" untuk sidik jari.'
+              : 'Verifikasi dibatalkan. Ketuk "Buka kunci" untuk mencoba lagi.';
         case AuthResult.unavailable:
-          _message = 'Kunci layar perangkat tidak aktif. Aktifkan sidik jari atau PIN di pengaturan perangkat, atau keluar dari akun.';
+          _message = hasPin
+              ? 'Masukkan PIN DafMoney untuk membuka.'
+              : 'Kunci layar perangkat tidak aktif. Aktifkan sidik jari atau PIN di pengaturan perangkat, atau keluar dari akun.';
       }
     });
   }
@@ -124,6 +129,7 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
       }
     });
 
+    final hasPin = ref.watch(appPinProvider);
     return Stack(
       children: [
         widget.child,
@@ -133,6 +139,13 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
               message: _message,
               onUnlock: _unlock,
               onSignOut: _signOut,
+              pinVerify: hasPin
+                  ? ref.read(appPinProvider.notifier).verify
+                  : null,
+              onPinOk: () => setState(() {
+                _locked = false;
+                _message = null;
+              }),
             ),
           ),
       ],
@@ -145,11 +158,15 @@ class _LockScreen extends StatelessWidget {
     required this.message,
     required this.onUnlock,
     required this.onSignOut,
+    this.pinVerify,
+    this.onPinOk,
   });
 
   final String? message;
   final VoidCallback onUnlock;
   final VoidCallback onSignOut;
+  final bool Function(String pin)? pinVerify;
+  final VoidCallback? onPinOk;
 
   @override
   Widget build(BuildContext context) {
@@ -209,6 +226,10 @@ class _LockScreen extends StatelessWidget {
                       label: const Text('Buka kunci'),
                     ),
                   ),
+                  if (pinVerify != null && onPinOk != null) ...[
+                    const SizedBox(height: 16),
+                    _PinEntry(verify: pinVerify!, onOk: onPinOk!),
+                  ],
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: onSignOut,
@@ -217,6 +238,82 @@ class _LockScreen extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+class _PinEntry extends StatefulWidget {
+  const _PinEntry({required this.verify, required this.onOk});
+
+  final bool Function(String pin) verify;
+  final VoidCallback onOk;
+
+  @override
+  State<_PinEntry> createState() => _PinEntryState();
+}
+
+class _PinEntryState extends State<_PinEntry> {
+  final _c = TextEditingController();
+  int _fails = 0;
+  DateTime? _blockedUntil;
+  String? _error;
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final until = _blockedUntil;
+    if (until != null && DateTime.now().isBefore(until)) {
+      final s = until.difference(DateTime.now()).inSeconds + 1;
+      setState(() => _error = 'Terlalu banyak percobaan. Coba lagi dalam $s detik.');
+      return;
+    }
+    if (widget.verify(_c.text)) {
+      HapticFeedback.lightImpact();
+      widget.onOk();
+      return;
+    }
+    HapticFeedback.heavyImpact();
+    _fails++;
+    _c.clear();
+    setState(() {
+      if (_fails >= 5) {
+        _fails = 0;
+        _blockedUntil = DateTime.now().add(const Duration(seconds: 30));
+        _error = 'Terlalu banyak percobaan. Coba lagi dalam 30 detik.';
+      } else {
+        _error = 'PIN salah.';
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 240,
+      child: TextField(
+        controller: _c,
+        obscureText: true,
+        textAlign: TextAlign.center,
+        keyboardType: TextInputType.number,
+        maxLength: 6,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        onChanged: (v) {
+          if (_error != null) setState(() => _error = null);
+        },
+        onSubmitted: (_) => _submit(),
+        decoration: InputDecoration(
+          labelText: 'PIN',
+          errorText: _error,
+          counterText: '',
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.arrow_forward_rounded),
+            onPressed: _submit,
           ),
         ),
       ),

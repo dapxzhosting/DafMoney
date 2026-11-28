@@ -17,6 +17,7 @@ import 'core/providers/quick_entry_provider.dart';
 import 'core/services/quick_entry_service.dart';
 import 'core/services/quick_templates.dart';
 import 'core/widgets/app_lock_gate.dart';
+import 'core/widgets/global_sync_pill.dart';
 import 'features/recurring/presentation/recurring_providers.dart';
 
 class DafMoneyApp extends ConsumerStatefulWidget {
@@ -122,8 +123,14 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp>
           themeAnimationDuration: const Duration(milliseconds: 350),
           themeAnimationCurve: Curves.easeInOut,
           routerConfig: router,
-          builder: (context, child) =>
-              AppLockGate(child: child ?? const SizedBox.shrink()),
+          builder: (context, child) => Stack(
+            children: [
+              Positioned.fill(
+                child: AppLockGate(child: child ?? const SizedBox.shrink()),
+              ),
+              const Positioned(top: 0, left: 0, right: 0, child: GlobalSyncPill()),
+            ],
+          ),
           locale: const Locale('id', 'ID'),
           supportedLocales: const [Locale('id', 'ID'), Locale('en')],
           localizationsDelegates: const [

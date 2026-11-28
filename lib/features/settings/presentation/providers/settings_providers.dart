@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/providers/firebase_providers.dart';
 import '../../../../core/providers/session_providers.dart';
+import '../../../../core/providers/shared_prefs_provider.dart';
+import '../../../../core/services/app_pin_service.dart';
 import '../../../../core/services/error_reporter.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
@@ -81,6 +83,9 @@ class SettingsActions {
       await _auth.reauthenticate(password);
     }
     await _repo.deleteAllData(uid);
+    try {
+      await AppPinService.clear(_ref.read(sharedPrefsProvider), uid);
+    } catch (_) {}
     try {
       await _auth.deleteCurrentUser();
     } catch (e) {
