@@ -95,11 +95,7 @@ class _DebtFormSheetState extends ConsumerState<DebtFormSheet> {
           );
     if (!mounted) return;
     setState(() => _saving = false);
-    if (err != null) {
-      context.showSnack(err, error: true);
-      return;
-    }
-    Navigator.pop(context);
+    context.closeSheetWithResult(err);
   }
 
   @override
@@ -227,11 +223,7 @@ class _PaymentSheetState extends ConsumerState<_PaymentSheet> {
         .pay(widget.debt, undo ? -v : v);
     if (!mounted) return;
     setState(() => _saving = false);
-    if (err != null) {
-      context.showSnack(err, error: true);
-      return;
-    }
-    Navigator.pop(context);
+    context.closeSheetWithResult(err);
   }
 
   @override

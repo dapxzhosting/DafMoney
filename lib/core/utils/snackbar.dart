@@ -16,3 +16,23 @@ extension SnackX on BuildContext {
       );
   }
 }
+
+extension SheetX on BuildContext {
+  /// Tutup sheet/dialog lalu tampilkan hasilnya di halaman di bawahnya,
+  /// supaya sheet tidak menggantung saat ada kesalahan.
+  void closeSheetWithResult(String? err) {
+    final nav = Navigator.of(this);
+    final messenger = ScaffoldMessenger.of(this);
+    final cs = Theme.of(this).colorScheme;
+    if (nav.canPop()) nav.pop();
+    if (err == null) return;
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          backgroundColor: cs.error,
+          content: Text(err, style: TextStyle(color: cs.onError)),
+        ),
+      );
+  }
+}

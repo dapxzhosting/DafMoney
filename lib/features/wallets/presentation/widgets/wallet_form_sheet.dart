@@ -91,11 +91,7 @@ class _WalletFormSheetState extends ConsumerState<WalletFormSheet> {
           );
     if (!mounted) return;
     setState(() => _saving = false);
-    if (err != null) {
-      context.showSnack(err, error: true);
-      return;
-    }
-    Navigator.pop(context);
+    context.closeSheetWithResult(err);
   }
 
   @override

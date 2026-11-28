@@ -101,11 +101,7 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
           );
     if (!mounted) return;
     setState(() => _saving = false);
-    if (err != null) {
-      context.showSnack(err, error: true);
-      return;
-    }
-    Navigator.pop(context);
+    context.closeSheetWithResult(err);
   }
 
   @override
@@ -283,11 +279,7 @@ class _GoalFundsSheetState extends ConsumerState<_GoalFundsSheet> {
         : await a.withdraw(widget.goal.id, v);
     if (!mounted) return;
     setState(() => _saving = false);
-    if (err != null) {
-      context.showSnack(err, error: true);
-      return;
-    }
-    Navigator.pop(context);
+    context.closeSheetWithResult(err);
   }
 
   @override

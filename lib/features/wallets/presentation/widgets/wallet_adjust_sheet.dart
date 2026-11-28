@@ -70,11 +70,7 @@ class _WalletAdjustSheetState extends ConsumerState<WalletAdjustSheet> {
         .adjustBalance(w.id, diff);
     if (!mounted) return;
     setState(() => _saving = false);
-    if (err != null) {
-      context.showSnack(err, error: true);
-      return;
-    }
-    Navigator.pop(context);
+    context.closeSheetWithResult(err);
     context.showSnack('${Fmt.rupiah(diff)} ditambahkan ke ${w.name}.');
   }
 

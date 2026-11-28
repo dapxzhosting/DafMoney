@@ -96,11 +96,7 @@ class _EditNameSheetState extends ConsumerState<EditNameSheet> {
         .updateName(_name.text.trim());
     if (!mounted) return;
     setState(() => _saving = false);
-    if (err != null) {
-      context.showSnack(err, error: true);
-      return;
-    }
-    Navigator.pop(context);
+    context.closeSheetWithResult(err);
     context.showSnack('Nama diperbarui.');
   }
 
@@ -159,11 +155,7 @@ class _InitialBalanceSheetState extends ConsumerState<InitialBalanceSheet> {
         .setInitialBalance(value);
     if (!mounted) return;
     setState(() => _saving = false);
-    if (err != null) {
-      context.showSnack(err, error: true);
-      return;
-    }
-    Navigator.pop(context);
+    context.closeSheetWithResult(err);
     context.showSnack('Saldo awal diperbarui.');
   }
 
@@ -227,8 +219,13 @@ class _ChangePasswordSheetState extends ConsumerState<ChangePasswordSheet> {
       context.showSnack(err, error: true);
       return;
     }
+    final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
-    context.showSnack('Kata sandi berhasil diubah.');
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text('Kata sandi berhasil diubah.')),
+      );
   }
 
   @override

@@ -95,11 +95,7 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
         .save(categoryId: _categoryId!, month: widget.month, amount: amount);
     if (!mounted) return;
     setState(() => _saving = false);
-    if (err != null) {
-      context.showSnack(err, error: true);
-      return;
-    }
-    Navigator.pop(context);
+    context.closeSheetWithResult(err);
   }
 
   Future<void> _delete() async {
@@ -115,11 +111,7 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
         .read(budgetActionsProvider)
         .delete(widget.existing!.id);
     if (!mounted) return;
-    if (err != null) {
-      context.showSnack(err, error: true);
-      return;
-    }
-    Navigator.pop(context);
+    context.closeSheetWithResult(err);
   }
 
   @override
