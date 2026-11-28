@@ -24,7 +24,7 @@ class BiometricService {
       if (!await _auth.isDeviceSupported()) return AuthResult.unavailable;
       final ok = await _auth.authenticate(
         localizedReason: reason,
-        options: const AuthenticationOptions(
+        options: AuthenticationOptions(
           biometricOnly: biometricOnly,
           stickyAuth: true,
           useErrorDialogs: true,
