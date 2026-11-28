@@ -178,7 +178,8 @@ class _LockScreen extends StatelessWidget {
         color: cs.surface,
         child: SafeArea(
           child: Center(
-            child: Padding(
+            child: SingleChildScrollView(
+              child: Padding(
               padding: const EdgeInsets.all(32),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -238,12 +239,16 @@ class _LockScreen extends StatelessWidget {
                 ],
               ),
             ),
+            ),
           ),
         ),
       ),
     );
   }
 }
+
+/// Keypad PIN di layar. Sengaja tanpa TextField: layar kunci berada di atas
+/// Navigator (tanpa Overlay), jadi TextField/keyboard sistem tidak bisa dipakai.
 class _PinEntry extends StatefulWidget {
   const _PinEntry({required this.verify, required this.onOk});
 
@@ -255,33 +260,56 @@ class _PinEntry extends StatefulWidget {
 }
 
 class _PinEntryState extends State<_PinEntry> {
-  final _c = TextEditingController();
+  static const _maxLen = 6;
+  String _pin = '';
   int _fails = 0;
   DateTime? _blockedUntil;
   String? _error;
 
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
+  bool get _blocked {
+    final u = _blockedUntil;
+    return u != null && DateTime.now().isBefore(u);
+  }
+
+  void _digit(String d) {
+    if (_pin.length >= _maxLen) return;
+    HapticFeedback.selectionClick();
+    setState(() {
+      _pin += d;
+      _error = null;
+    });
+    // PIN 6 digit langsung dicek; PIN 4-5 digit dicek lewat tombol centang.
+    if (_pin.length == _maxLen) _submit();
+  }
+
+  void _back() {
+    if (_pin.isEmpty) return;
+    HapticFeedback.selectionClick();
+    setState(() {
+      _pin = _pin.substring(0, _pin.length - 1);
+      _error = null;
+    });
   }
 
   void _submit() {
-    final until = _blockedUntil;
-    if (until != null && DateTime.now().isBefore(until)) {
-      final s = until.difference(DateTime.now()).inSeconds + 1;
-      setState(() => _error = 'Terlalu banyak percobaan. Coba lagi dalam $s detik.');
+    if (_pin.length < 4) return;
+    if (_blocked) {
+      final s = _blockedUntil!.difference(DateTime.now()).inSeconds + 1;
+      setState(() {
+        _pin = '';
+        _error = 'Terlalu banyak percobaan. Coba lagi dalam $s detik.';
+      });
       return;
     }
-    if (widget.verify(_c.text)) {
+    if (widget.verify(_pin)) {
       HapticFeedback.lightImpact();
       widget.onOk();
       return;
     }
     HapticFeedback.heavyImpact();
     _fails++;
-    _c.clear();
     setState(() {
+      _pin = '';
       if (_fails >= 5) {
         _fails = 0;
         _blockedUntil = DateTime.now().add(const Duration(seconds: 30));
@@ -292,31 +320,86 @@ class _PinEntryState extends State<_PinEntry> {
     });
   }
 
+  Widget _key(Widget child, VoidCallback? onTap) {
+    return SizedBox(
+      width: 72,
+      height: 56,
+      child: InkResponse(
+        onTap: onTap,
+        radius: 36,
+        child: Center(child: child),
+      ),
+    );
+  }
+
+  Widget _num(String d) => _key(
+    Text(
+      d,
+      style: Theme.of(
+        context,
+      ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
+    ),
+    () => _digit(d),
+  );
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 240,
-      child: TextField(
-        controller: _c,
-        obscureText: true,
-        textAlign: TextAlign.center,
-        keyboardType: TextInputType.number,
-        maxLength: 6,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        onChanged: (v) {
-          if (_error != null) setState(() => _error = null);
-        },
-        onSubmitted: (_) => _submit(),
-        decoration: InputDecoration(
-          labelText: 'PIN',
-          errorText: _error,
-          counterText: '',
-          suffixIcon: IconButton(
-            icon: const Icon(Icons.arrow_forward_rounded),
-            onPressed: _submit,
+    final cs = Theme.of(context).colorScheme;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (var i = 0; i < _maxLen; i++)
+              Container(
+                width: 12,
+                height: 12,
+                margin: const EdgeInsets.symmetric(horizontal: 5),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: i < _pin.length ? cs.primary : Colors.transparent,
+                  border: Border.all(color: cs.outline),
+                ),
+              ),
+          ],
+        ),
+        SizedBox(
+          height: 28,
+          child: Center(
+            child: Text(
+              _error ?? '',
+              style: TextStyle(color: cs.error, fontSize: 13),
+            ),
           ),
         ),
-      ),
+        for (final row in const [
+          ['1', '2', '3'],
+          ['4', '5', '6'],
+          ['7', '8', '9'],
+        ])
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [for (final d in row) _num(d)],
+          ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _key(
+              Icon(Icons.backspace_outlined, color: cs.onSurfaceVariant),
+              _back,
+            ),
+            _num('0'),
+            _key(
+              Icon(
+                Icons.check_circle_rounded,
+                color: _pin.length >= 4 ? cs.primary : cs.outlineVariant,
+              ),
+              _pin.length >= 4 ? _submit : null,
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
