@@ -14,6 +14,12 @@ class AppPinNotifier extends Notifier<bool> {
     return AppPinService.has(ref.read(sharedPrefsProvider), uid);
   }
 
+  int? get length {
+    final uid = _uid;
+    if (uid == null) return null;
+    return AppPinService.length(ref.read(sharedPrefsProvider), uid);
+  }
+
   bool verify(String pin) {
     final uid = _uid;
     if (uid == null) return false;

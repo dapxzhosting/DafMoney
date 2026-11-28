@@ -9,6 +9,9 @@ class AppPinService {
 
   static String _hashKey(String uid) => 'app_pin_hash_$uid';
   static String _saltKey(String uid) => 'app_pin_salt_$uid';
+  static String _lenKey(String uid) => 'app_pin_len_$uid';
+
+  static int? length(SharedPreferences p, String uid) => p.getInt(_lenKey(uid));
 
   static bool isValidFormat(String pin) => RegExp(r'^\d{4,6}$').hasMatch(pin);
 
@@ -28,6 +31,7 @@ class AppPinService {
     final salt = base64Encode(List<int>.generate(16, (_) => rnd.nextInt(256)));
     await p.setString(_saltKey(uid), salt);
     await p.setString(_hashKey(uid), _hash(pin, salt));
+    await p.setInt(_lenKey(uid), pin.length);
   }
 
   static bool verify(SharedPreferences p, String uid, String pin) {
@@ -46,5 +50,6 @@ class AppPinService {
   static Future<void> clear(SharedPreferences p, String uid) async {
     await p.remove(_hashKey(uid));
     await p.remove(_saltKey(uid));
+    await p.remove(_lenKey(uid));
   }
 }

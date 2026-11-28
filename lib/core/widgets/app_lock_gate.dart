@@ -142,6 +142,7 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
               pinVerify: hasPin
                   ? ref.read(appPinProvider.notifier).verify
                   : null,
+              pinLength: hasPin ? ref.read(appPinProvider.notifier).length : null,
               onPinOk: () => setState(() {
                 _locked = false;
                 _message = null;
@@ -159,6 +160,7 @@ class _LockScreen extends StatelessWidget {
     required this.onUnlock,
     required this.onSignOut,
     this.pinVerify,
+    this.pinLength,
     this.onPinOk,
   });
 
@@ -166,6 +168,7 @@ class _LockScreen extends StatelessWidget {
   final VoidCallback onUnlock;
   final VoidCallback onSignOut;
   final bool Function(String pin)? pinVerify;
+  final int? pinLength;
   final VoidCallback? onPinOk;
 
   @override
@@ -229,7 +232,11 @@ class _LockScreen extends StatelessWidget {
                   ),
                   if (pinVerify != null && onPinOk != null) ...[
                     const SizedBox(height: 16),
-                    _PinEntry(verify: pinVerify!, onOk: onPinOk!),
+                    _PinEntry(
+                      verify: pinVerify!,
+                      onOk: onPinOk!,
+                      length: pinLength,
+                    ),
                   ],
                   const SizedBox(height: 8),
                   TextButton(
@@ -248,21 +255,25 @@ class _LockScreen extends StatelessWidget {
 }
 
 class _PinEntry extends StatefulWidget {
-  const _PinEntry({required this.verify, required this.onOk});
+  const _PinEntry({required this.verify, required this.onOk, this.length});
 
   final bool Function(String pin) verify;
   final VoidCallback onOk;
+  final int? length;
 
   @override
   State<_PinEntry> createState() => _PinEntryState();
 }
 
 class _PinEntryState extends State<_PinEntry> {
-  static const _maxLen = 6;
+  int get _maxLen => widget.length ?? 6;
   String _pin = '';
   int _fails = 0;
   DateTime? _blockedUntil;
   String? _error;
+
+  int get _dotCount =>
+      widget.length ?? (_pin.length < 4 ? 4 : _pin.length);
 
   bool get _blocked {
     final u = _blockedUntil;
@@ -348,7 +359,7 @@ class _PinEntryState extends State<_PinEntry> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            for (var i = 0; i < _maxLen; i++)
+            for (var i = 0; i < _dotCount; i++)
               Container(
                 width: 12,
                 height: 12,
@@ -387,13 +398,16 @@ class _PinEntryState extends State<_PinEntry> {
               _back,
             ),
             _num('0'),
-            _key(
-              Icon(
-                Icons.check_circle_rounded,
-                color: _pin.length >= 4 ? cs.primary : cs.outlineVariant,
-              ),
-              _pin.length >= 4 ? _submit : null,
-            ),
+            if (widget.length == null)
+              _key(
+                Icon(
+                  Icons.check_circle_rounded,
+                  color: _pin.length >= 4 ? cs.primary : cs.outlineVariant,
+                ),
+                _pin.length >= 4 ? _submit : null,
+              )
+            else
+              const SizedBox(width: 72, height: 56),
           ],
         ),
       ],

@@ -184,7 +184,7 @@ DafMoney ditujukan untuk penggunaan pribadi. Aplikasi ini bukan layanan perbanka
 ### ☁️ Sinkronisasi dan Mode Offline
 
 - Data tetap bisa dicatat saat offline dan disinkronkan otomatis ketika koneksi kembali.
-- Pil **Menunggu sinkron** tampil di setiap halaman selama masih ada perubahan yang belum terkirim ke server.
+- Banner **Menunggu sinkron** tampil di beranda selama masih ada transaksi yang belum terkirim ke server.
 - Jika server menolak perubahan setelah layar sempat menampilkannya sebagai berhasil (misalnya karena aturan keamanan), aplikasi menampilkan peringatan dan mengirim laporan non-fatal ke Firebase Crashlytics.
 - Menghapus semua transaksi saat offline memberi tahu bahwa penghapusan tersimpan di perangkat dan akan disinkronkan nanti.
 
