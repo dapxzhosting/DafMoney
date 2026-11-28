@@ -6,6 +6,7 @@ import '../../../core/models/entry_type.dart';
 import '../../../core/utils/civil_date.dart';
 import '../../../core/services/error_reporter.dart';
 import '../../../core/utils/date_utils.dart';
+import '../../../core/utils/write_failure_notifier.dart';
 import '../domain/money_transaction.dart';
 
 Future<void> writeSafe(Future<void> Function() op) async {
@@ -13,16 +14,20 @@ Future<void> writeSafe(Future<void> Function() op) async {
   // belakangan dan stack aslinya hanya berisi kode plugin, jadi tanpa ini
   // Crashlytics tidak bisa menunjukkan penulisan mana yang ditolak.
   final caller = StackTrace.current;
+  var settledEarly = false;
   final future = op();
   unawaited(
     future.catchError((Object e, StackTrace _) {
       reportError(e, caller);
+      // Error yang datang setelah layar tampak berhasil: beri tahu pengguna.
+      if (settledEarly) notifyWriteFailure(e);
     }),
   );
   await Future.any<void>([
     future,
     Future<void>.delayed(const Duration(milliseconds: 800)),
   ]);
+  settledEarly = true;
 }
 
 class TransactionRepository {

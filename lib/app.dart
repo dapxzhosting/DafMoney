@@ -17,6 +17,7 @@ import 'core/providers/quick_entry_provider.dart';
 import 'core/services/quick_entry_service.dart';
 import 'core/services/quick_templates.dart';
 import 'core/widgets/app_lock_gate.dart';
+import 'core/utils/write_failure_notifier.dart';
 import 'core/widgets/global_sync_pill.dart';
 import 'features/recurring/presentation/recurring_providers.dart';
 
@@ -107,6 +108,7 @@ class _DafMoneyAppState extends ConsumerState<DafMoneyApp>
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         return MaterialApp.router(
+          scaffoldMessengerKey: rootMessengerKey,
           title: AppConstants.appName,
           debugShowCheckedModeBanner: false,
           theme: accent == null && lightDynamic != null
