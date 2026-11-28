@@ -26,6 +26,24 @@ class SavingsGoal extends Equatable {
   double get progress =>
       target <= 0 ? 0 : (saved / target).clamp(0.0, 1.0).toDouble();
 
+  /// Kebutuhan tabungan sesuai sisa waktu: per bulan bila tenggat >= 30 hari,
+  /// per minggu bila 7-29 hari, per hari bila kurang dari seminggu.
+  ({int amount, String unit})? savingPace(DateTime now) {
+    final d = deadline;
+    if (d == null || reached || !d.isAfter(now)) return null;
+    final days = d.difference(now).inDays;
+    if (days >= 30) {
+      final v = monthlyNeeded(now);
+      return v == null ? null : (amount: v, unit: 'bulan');
+    }
+    if (days >= 7) {
+      final weeks = (days / 7).ceil();
+      return (amount: (remaining / weeks).ceil(), unit: 'minggu');
+    }
+    final left = days < 1 ? 1 : days;
+    return (amount: (remaining / left).ceil(), unit: 'hari');
+  }
+
   int? monthlyNeeded(DateTime now) {
     final d = deadline;
     if (d == null || reached) return null;

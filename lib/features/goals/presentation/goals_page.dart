@@ -129,7 +129,7 @@ class _GoalCard extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
     final color = Color(goal.colorValue);
-    final monthly = goal.monthlyNeeded(DateTime.now());
+    final pace = goal.savingPace(DateTime.now());
     final overdue =
         goal.deadline != null &&
         !goal.reached &&
@@ -222,7 +222,7 @@ class _GoalCard extends ConsumerWidget {
                   overdue
                       ? 'Tenggat ${Fmt.dateShort(goal.deadline!)} sudah lewat'
                       : 'Tenggat ${Fmt.dateShort(goal.deadline!)}'
-                            '${monthly == null ? '' : ' · tabung ±${Fmt.rupiah(monthly)}/bulan'}',
+                            '${pace == null ? '' : ' · tabung ±${Fmt.rupiah(pace.amount)}/${pace.unit}'}',
                   style: tt.bodySmall?.copyWith(
                     color: overdue ? cs.error : cs.onSurfaceVariant,
                   ),

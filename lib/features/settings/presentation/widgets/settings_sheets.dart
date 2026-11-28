@@ -291,11 +291,13 @@ class DeleteAccountSheet extends ConsumerStatefulWidget {
 class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
   final _form = GlobalKey<FormState>();
   final _password = TextEditingController();
+  final _confirmText = TextEditingController();
   bool _deleting = false;
 
   @override
   void dispose() {
     _password.dispose();
+    _confirmText.dispose();
     super.dispose();
   }
 
@@ -339,8 +341,22 @@ class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
       children: [
         Form(
           key: _form,
-          child: ref.read(authRepositoryProvider).usesPassword
-              ? AppTextField(
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _confirmText,
+                textCapitalization: TextCapitalization.characters,
+                decoration: const InputDecoration(
+                  labelText: 'Ketik HAPUS untuk konfirmasi',
+                  prefixIcon: Icon(Icons.warning_amber_rounded),
+                ),
+                validator: (v) => (v ?? '').trim().toUpperCase() == 'HAPUS'
+                    ? null
+                    : 'Ketik HAPUS untuk melanjutkan',
+              ),
+              if (ref.read(authRepositoryProvider).usesPassword) ...[
+                const SizedBox(height: 12),
+                AppTextField(
                   controller: _password,
                   label: 'Kata sandi',
                   icon: Icons.lock_outline_rounded,
@@ -348,8 +364,10 @@ class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
                   textInputAction: TextInputAction.done,
                   validator: Validators.passwordRequired,
                   onSubmitted: (_) => _delete(),
-                )
-              : const SizedBox.shrink(),
+                ),
+              ],
+            ],
+          ),
         ),
         const SizedBox(height: 16),
         FilledButton(
