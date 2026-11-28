@@ -4,11 +4,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/models/entry_type.dart';
 import '../../../core/utils/civil_date.dart';
+import '../../../core/services/error_reporter.dart';
 import '../../../core/utils/date_utils.dart';
 import '../domain/money_transaction.dart';
 
 Future<void> writeSafe(Future<void> Function() op) async {
+  // Simpan jejak pemanggil: error dari server (mis. permission-denied) datang
+  // belakangan dan stack aslinya hanya berisi kode plugin, jadi tanpa ini
+  // Crashlytics tidak bisa menunjukkan penulisan mana yang ditolak.
+  final caller = StackTrace.current;
   final future = op();
+  unawaited(
+    future.catchError((Object e, StackTrace _) {
+      reportError(e, caller);
+    }),
+  );
   await Future.any<void>([
     future,
     Future<void>.delayed(const Duration(milliseconds: 800)),
