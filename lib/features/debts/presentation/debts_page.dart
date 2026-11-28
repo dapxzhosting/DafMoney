@@ -294,6 +294,7 @@ class _DebtCard extends ConsumerWidget {
                   if (!debt.settled)
                     FilledButton.tonal(
                       style: FilledButton.styleFrom(
+                        minimumSize: const Size(0, 40),
                         visualDensity: VisualDensity.compact,
                       ),
                       onPressed: () => showDebtPaymentSheet(context, debt),

@@ -68,7 +68,7 @@ class AuthRepository {
     });
   }
 
-  Future<AuthCredential?> _googleCredential() async {
+  Future<AuthCredential?> _googleCredential({String? mustMatchEmail}) async {
     final google = GoogleSignIn(
       serverClientId: _webClientId,
       scopes: const ['email'],
@@ -79,6 +79,16 @@ class AuthRepository {
 
     final account = await google.signIn();
     if (account == null) return null;
+    if (mustMatchEmail != null &&
+        mustMatchEmail.isNotEmpty &&
+        account.email.toLowerCase() != mustMatchEmail.toLowerCase()) {
+      try {
+        await google.signOut();
+      } catch (_) {}
+      throw AuthFailure(
+        'Pilih akun Google yang sedang dipakai di DafMoney: $mustMatchEmail.',
+      );
+    }
     final auth = await account.authentication;
     return GoogleAuthProvider.credential(
       accessToken: auth.accessToken,
@@ -106,7 +116,7 @@ class AuthRepository {
     return _guard(() async {
       final user = _auth.currentUser;
       if (user == null) throw const AuthFailure('Sesi berakhir. Masuk lagi.');
-      final credential = await _googleCredential();
+      final credential = await _googleCredential(mustMatchEmail: user.email);
       if (credential == null) {
         throw const AuthFailure('Masuk dengan Google dibatalkan.');
       }

@@ -306,10 +306,14 @@ class SettingsPage extends ConsumerWidget {
                     destructive: true,
                   );
                   if (!ok || !context.mounted) return;
-                  await _run(
-                    context,
-                    actions.deleteAllTransactions,
-                    'Semua transaksi dihapus.',
+                  final r = await actions.deleteAllTransactionsStatus();
+                  if (!context.mounted) return;
+                  context.showSnack(
+                    r.error ??
+                        (r.queued
+                            ? 'Transaksi dihapus di perangkat ini. Akan disinkronkan otomatis saat online.'
+                            : 'Semua transaksi dihapus.'),
+                    error: r.error != null,
                   );
                 },
               ),

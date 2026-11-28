@@ -80,6 +80,39 @@ class SettingsRepository {
     await _deleteCollection(uid, 'receipts');
   }
 
+  /// Hapus semua transaksi dan struk, aman dipakai saat offline.
+  /// Mengembalikan true bila penghapusan baru masuk antrean dan akan
+  /// disinkronkan otomatis begitu perangkat online lagi.
+  Future<bool> deleteAllTransactionsOrQueue(String uid) async {
+    var queued = false;
+    for (final name in const ['transactions', 'receipts']) {
+      final col = _user(uid).collection(name);
+      String? lastFirstId;
+      while (true) {
+        final snap = await col.limit(400).get();
+        if (snap.docs.isEmpty) break;
+        if (snap.docs.first.id == lastFirstId) break;
+        lastFirstId = snap.docs.first.id;
+        final batch = _db.batch();
+        for (final d in snap.docs) {
+          batch.delete(d.reference);
+        }
+        final commit = batch.commit();
+        if (queued) {
+          unawaited(commit.catchError((_) {}));
+          continue;
+        }
+        try {
+          await commit.timeout(const Duration(seconds: 6));
+        } on TimeoutException {
+          queued = true;
+          unawaited(commit.catchError((_) {}));
+        }
+      }
+    }
+    return queued;
+  }
+
   Future<void> deleteAllData(String uid) async {
     for (final name in accountDataCollections) {
       await _deleteCollection(uid, name);

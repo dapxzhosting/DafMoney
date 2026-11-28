@@ -54,6 +54,16 @@ class SettingsActions {
   Future<String?> deleteAllTransactions() =>
       runGuarded(() => _repo.deleteAllTransactions(_uid));
 
+  /// (error, queued): queued = tersimpan di perangkat, menunggu sinkron online.
+  Future<({String? error, bool queued})> deleteAllTransactionsStatus() async {
+    try {
+      final queued = await _repo.deleteAllTransactionsOrQueue(_uid);
+      return (error: null, queued: queued);
+    } catch (e) {
+      return (error: errorText(e), queued: false);
+    }
+  }
+
   Future<String?> copyAllCsv() => runGuarded(() async {
     final txns = await _ref.read(transactionRepositoryProvider).fetchAll(_uid);
     if (txns.isEmpty) {

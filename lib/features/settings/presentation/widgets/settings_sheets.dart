@@ -305,19 +305,30 @@ class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
   Future<void> _delete() async {
     if (!_form.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
+    final usesPassword = ref.read(authRepositoryProvider).usesPassword;
+    final nav = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final cs = Theme.of(context).colorScheme;
     setState(() => _deleting = true);
     final err = await ref
         .read(settingsActionsProvider)
-        .deleteAccount(
-          ref.read(authRepositoryProvider).usesPassword ? _password.text : null,
-        );
-    if (!mounted) return;
-    setState(() => _deleting = false);
+        .deleteAccount(usesPassword ? _password.text : null);
+    if (mounted) setState(() => _deleting = false);
     if (err != null) {
-      context.showSnack(err, error: true);
+      // Alur Google: tutup sheet supaya tidak menggantung, pesan tampil di halaman.
+      // Alur kata sandi: sheet tetap terbuka agar bisa mengetik ulang.
+      if (!usesPassword && nav.canPop()) nav.pop();
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            backgroundColor: cs.error,
+            content: Text(err, style: TextStyle(color: cs.onError)),
+          ),
+        );
       return;
     }
-    Navigator.of(context).maybePop();
+    if (nav.canPop()) nav.pop();
   }
 
   @override

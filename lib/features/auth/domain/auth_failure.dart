@@ -43,6 +43,11 @@ class AuthFailure implements AppException {
         return const AuthFailure(
           'Email ini sudah terdaftar dengan cara masuk lain. Masuk dengan kata sandi.',
         );
+      case 'user-mismatch':
+      case 'wrong-account':
+        return const AuthFailure(
+          'Akun Google yang dipilih berbeda dengan akun yang sedang dipakai di DafMoney. Pilih akun yang sama.',
+        );
       case 'permission-denied':
         return const AuthFailure('Akses ditolak oleh aturan keamanan.');
       default:

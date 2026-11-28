@@ -287,6 +287,9 @@ class _CsvPageState extends ConsumerState<CsvPage> {
                       ),
                       const SizedBox(width: 8),
                       OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 54),
+                        ),
                         onPressed: _busy ? null : _copy,
                         child: const Text('Salin'),
                       ),
@@ -376,6 +379,9 @@ class _CsvPageState extends ConsumerState<CsvPage> {
                       ),
                       const SizedBox(width: 8),
                       OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 54),
+                        ),
                         onPressed: _busy ? null : _backupRestore,
                         child: const Text('Pulihkan'),
                       ),

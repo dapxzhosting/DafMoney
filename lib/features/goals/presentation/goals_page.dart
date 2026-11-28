@@ -241,6 +241,9 @@ class _GoalCard extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 54),
+                    ),
                     onPressed: goal.saved == 0
                         ? null
                         : () =>
