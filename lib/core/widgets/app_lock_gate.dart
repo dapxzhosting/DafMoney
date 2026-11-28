@@ -247,8 +247,6 @@ class _LockScreen extends StatelessWidget {
   }
 }
 
-/// Keypad PIN di layar. Sengaja tanpa TextField: layar kunci berada di atas
-/// Navigator (tanpa Overlay), jadi TextField/keyboard sistem tidak bisa dipakai.
 class _PinEntry extends StatefulWidget {
   const _PinEntry({required this.verify, required this.onOk});
 
@@ -278,7 +276,6 @@ class _PinEntryState extends State<_PinEntry> {
       _pin += d;
       _error = null;
     });
-    // PIN 6 digit langsung dicek; PIN 4-5 digit dicek lewat tombol centang.
     if (_pin.length == _maxLen) _submit();
   }
 

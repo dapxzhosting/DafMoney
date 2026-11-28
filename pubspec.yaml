@@ -2,7 +2,7 @@ name: daf_money
 description: "DafMoney - Aplikasi Catatan Keuangan Pribadi Modern"
 publish_to: 'none'
 
-version: 1.2.0+3
+version: 1.2.0+4
 
 environment:
   sdk: ^3.13.5

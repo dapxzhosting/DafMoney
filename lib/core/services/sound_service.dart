@@ -3,8 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_constants.dart';
 
-/// Efek suara singkat ("dongg") saat transaksi berhasil dicatat.
-/// Aman dipanggil dari engine utama maupun popup "Catat cepat".
 class SoundService {
   SoundService._();
 
@@ -24,7 +22,6 @@ class SoundService {
   static Future<void> _play() async {
     if (!_contextSet) {
       _contextSet = true;
-      // Jangan menghentikan musik yang sedang diputar pengguna.
       await AudioPlayer.global.setAudioContext(
         AudioContextConfig(focus: AudioContextConfigFocus.mixWithOthers)
             .build(),
@@ -36,7 +33,6 @@ class SoundService {
     await p.play(AssetSource('sounds/dong.wav'), volume: 0.9);
   }
 
-  /// Putar hanya jika efek suara diaktifkan di pengaturan.
   static Future<void> playDong() async {
     try {
       if (!await _enabled()) return;
@@ -44,7 +40,6 @@ class SoundService {
     } catch (_) {}
   }
 
-  /// Putar tanpa cek pengaturan (untuk pratinjau saat saklar dinyalakan).
   static Future<void> preview() async {
     try {
       await _play();

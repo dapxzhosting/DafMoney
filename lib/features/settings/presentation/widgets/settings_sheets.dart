@@ -341,8 +341,6 @@ class _DeleteAccountSheetState extends ConsumerState<DeleteAccountSheet> {
         .deleteAccount(usesPassword ? _password.text : null);
     if (mounted) setState(() => _deleting = false);
     if (err != null) {
-      // Alur Google: tutup sheet supaya tidak menggantung, pesan tampil di halaman.
-      // Alur kata sandi: sheet tetap terbuka agar bisa mengetik ulang.
       if (!usesPassword && nav.canPop()) nav.pop();
       messenger
         ..hideCurrentSnackBar()

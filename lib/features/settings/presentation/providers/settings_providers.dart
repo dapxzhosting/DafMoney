@@ -53,10 +53,6 @@ class SettingsActions {
   Future<String?> changePassword(String current, String next) =>
       runGuarded(() => _auth.changePassword(current: current, next: next));
 
-  Future<String?> deleteAllTransactions() =>
-      runGuarded(() => _repo.deleteAllTransactions(_uid));
-
-  /// (error, queued): queued = tersimpan di perangkat, menunggu sinkron online.
   Future<({String? error, bool queued})> deleteAllTransactionsStatus() async {
     try {
       final queued = await _repo.deleteAllTransactionsOrQueue(_uid);

@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../error/app_exception.dart' show errorText;
 
-/// Kunci messenger global supaya pesan bisa tampil dari lapisan data.
 final GlobalKey<ScaffoldMessengerState> rootMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
 
 DateTime? _lastShown;
 
-/// Dipanggil bila penulisan ke server ditolak SETELAH layar sempat
-/// menampilkannya sebagai berhasil (data lokal akan kembali ke semula).
 void notifyWriteFailure(Object error) {
   final now = DateTime.now();
   final last = _lastShown;

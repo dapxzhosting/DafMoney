@@ -19,7 +19,6 @@ final pendingSyncProvider = StreamProvider<bool>((ref) {
       .distinct();
 });
 
-/// True bila ada penulisan yang belum terkirim di koleksi mana pun.
 final pendingSyncAnyProvider = StreamProvider<bool>((ref) {
   final uid = ref.watch(uidProvider);
   if (uid == null) return Stream.value(false);

@@ -18,8 +18,6 @@ extension SnackX on BuildContext {
 }
 
 extension SheetX on BuildContext {
-  /// Tutup sheet/dialog lalu tampilkan hasilnya di halaman di bawahnya,
-  /// supaya sheet tidak menggantung saat ada kesalahan.
   void closeSheetWithResult(String? err) {
     final nav = Navigator.of(this);
     final messenger = ScaffoldMessenger.of(this);

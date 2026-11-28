@@ -78,7 +78,6 @@ class _PinFrame extends StatelessWidget {
   }
 }
 
-/// Atur PIN baru, atau ubah PIN (minta PIN lama dulu).
 class SetPinSheet extends ConsumerStatefulWidget {
   const SetPinSheet({super.key});
 
@@ -175,7 +174,6 @@ class _SetPinSheetState extends ConsumerState<SetPinSheet> {
   }
 }
 
-/// Hapus PIN, wajib memasukkan PIN saat ini.
 class RemovePinSheet extends ConsumerStatefulWidget {
   const RemovePinSheet({super.key});
 

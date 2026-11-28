@@ -7,8 +7,6 @@ import '../providers/sync_status_provider.dart';
 import '../router/app_router.dart';
 import '../router/app_routes.dart';
 
-/// Pil kecil "Menunggu sinkron" di semua halaman selain dashboard
-/// (dashboard sudah punya SyncStatusBanner sendiri).
 class GlobalSyncPill extends ConsumerStatefulWidget {
   const GlobalSyncPill({super.key});
 

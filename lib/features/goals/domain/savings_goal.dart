@@ -26,8 +26,6 @@ class SavingsGoal extends Equatable {
   double get progress =>
       target <= 0 ? 0 : (saved / target).clamp(0.0, 1.0).toDouble();
 
-  /// Kebutuhan tabungan sesuai sisa waktu: per bulan bila tenggat >= 30 hari,
-  /// per minggu bila 7-29 hari, per hari bila kurang dari seminggu.
   ({int amount, String unit})? savingPace(DateTime now) {
     final d = deadline;
     if (d == null || reached || !d.isAfter(now)) return null;

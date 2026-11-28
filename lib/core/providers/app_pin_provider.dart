@@ -4,7 +4,6 @@ import '../services/app_pin_service.dart';
 import 'session_providers.dart';
 import 'shared_prefs_provider.dart';
 
-/// State = apakah akun ini punya PIN aplikasi.
 class AppPinNotifier extends Notifier<bool> {
   String? get _uid => ref.read(uidProvider);
 

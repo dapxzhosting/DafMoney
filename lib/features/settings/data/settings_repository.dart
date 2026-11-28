@@ -75,14 +75,6 @@ class SettingsRepository {
     }
   }
 
-  Future<void> deleteAllTransactions(String uid) async {
-    await _deleteCollection(uid, 'transactions');
-    await _deleteCollection(uid, 'receipts');
-  }
-
-  /// Hapus semua transaksi dan struk, aman dipakai saat offline.
-  /// Mengembalikan true bila penghapusan baru masuk antrean dan akan
-  /// disinkronkan otomatis begitu perangkat online lagi.
   Future<bool> deleteAllTransactionsOrQueue(String uid) async {
     var queued = false;
     for (final name in const ['transactions', 'receipts']) {

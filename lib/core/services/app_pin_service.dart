@@ -4,8 +4,6 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// PIN buatan aplikasi sendiri (4-6 digit). Disimpan hanya di perangkat
-/// sebagai hash + salt per akun, tidak pernah dikirim ke Firestore.
 class AppPinService {
   AppPinService._();
 
